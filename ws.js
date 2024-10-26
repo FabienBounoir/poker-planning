@@ -1,4 +1,5 @@
 import { WebSocket, WebSocketServer } from 'ws';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * @type {WebSocketServer}
@@ -13,6 +14,9 @@ let pokerObject = {
     userStory: "Create a poker planning",
 }
 
+let rooms = new Map()
+
+
 export const createWSSGlobalInstance = () => {
     if (wss) return wss;
 
@@ -24,39 +28,59 @@ export const createWSSGlobalInstance = () => {
     /**
      * @param {string} id
      */
-    function getChannel(id) {
-        let channel = channels.get(id);
-        if (!channel) {
-            /**
-             * @type {import('$lib/@types').Channel}
-             */
+    function getRooms(roomId) {
+        let room = rooms.get(roomId)
+        if (!room) {
             const c = {
                 players: new Map(),
-                emit(type, data) {
+                data: {
+                    cards: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+                    state: 'waiting',
+                    userStory: 'Faire un planning poker',
+                },
+                emit(type, data, manager) {
                     c.players.forEach((player) => {
-                        player.socket.send(JSON.stringify({ type, data }));
+                        if (manager) {
+                            if (player.manager) {
+                                player.socket.send(JSON.stringify({ type, data }));
+                            }
+                        }
+                        else {
+                            player.socket.send(JSON.stringify({ type, data }));
+                        }
                     });
                 },
                 emitPlayers() {
                     /** @type {any[]} */
                     const players = [];
                     c.players.forEach((player, id) => {
-                        players.push({ ...player, id, socket: undefined });
+                        if (!player.manager) {
+                            players.push({ ...player, id, socket: undefined });
+                        }
                     });
-                    c.emit('players', players);
+                    console.log("emit", players)
+
+                    c.players.forEach((player) => {
+                        if (player.manager) {
+                            player.socket.send(JSON.stringify({ type: "players", data: players }));
+                        }
+                    });
                 },
-                updateGame() {
-                    if (c.game) {
-                        c.game.players.forEach((player) => (player.gameUpdated = false));
-                        c.emit('game-updated', c.game);
-                    }
+                emitUpdateGame() {
+                    c.emit('game-update', c.data);
+                },
+                resetChoose() {
+                    c.players.forEach((player) => {
+                        c.players.set(player.socket.userId, { ...player, selectedCard: null })
+                    })
+                    this.emitPlayers()
                 }
             };
 
-            channels.set(id, (channel = c));
+            rooms.set(roomId, (room = c));
         }
 
-        return channel;
+        return room;
     }
 
     wss = new WebSocketServer({ noServer: true });
@@ -65,19 +89,81 @@ export const createWSSGlobalInstance = () => {
         (
 			/** @type {WebSocket} */ ws,
 			/** @type {string} */ roomId,
-			/** @type {string} */ username
+			/** @type {string} */ name,
+            /** @type {boolean} */ manager,
         ) => {
-            // const channel = getChannel(roomId);
+            if (manager) {
+
+            }
+
+            const userId = uuidv4();
+            console.log('New connection with ID:', userId);
+
+            // Assigner l'ID à l'objet `socket` pour une référence future
+            ws.userId = userId;
+
+            const room = getRooms(roomId)
+            ws.send(JSON.stringify({ type: "game-update", data: room.data }));
+
+            const player = {
+                socket: ws,
+                name,
+                status: 'playing',
+                selectedCard: null,
+                manager
+            };
+
+
+            room.players.set(userId, player);
+            room.emitPlayers();
+
+
             console.log("room", roomId)
-            console.log("username", username)
+            console.log("name", name)
 
             ws.on('close', () => {
-
+                room.players.delete(userId);
+                if (room.players.size) {
+                    room.emitPlayers();
+                } else {
+                    rooms.delete(roomId);
+                }
             });
 
 
             ws.on('message', async (raw) => {
+                const { type, data } = JSON.parse(raw.toString());
 
+                switch (type) {
+                    case 'vote': {
+                        const player = room.players.get(userId);
+                        player.selectedCard = data.card
+                        room.players.set(userId, player)
+                        room.emitPlayers(true)
+
+                    }
+                        break;
+                    case 'state': {
+                        console.log(" room.data.state", room.data.state)
+                        console.log("data.state", data.state)
+                        room.data.state = data.state
+                        if (data.userStory) {
+                            room.data.userStory = data.userStory
+                        }
+
+                        if (data.state == "playing") {
+                            console.log("RESET USER VOTE")
+                            room.resetChoose()
+                        }
+
+                        room.emitUpdateGame()
+                    }
+                        break;
+
+                    default: {
+                        console.log(`EVENT ${type} doesn't exist`)
+                    }
+                }
             });
         }
     );

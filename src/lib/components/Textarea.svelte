@@ -1,5 +1,5 @@
 <script>
-	let { value = $bindable(), minRows = 3, maxRows = 3 } = $props();
+	let { value = $bindable(), minRows = 3, maxRows = 3, disabled } = $props();
 
 	let minHeight = $state(`${1 + minRows * 1.2}em`);
 	let maxHeight = $state(`${1 + maxRows * 1.2}em`);
@@ -17,10 +17,10 @@
 	<pre aria-hidden="true" style="min-height: {minHeight}; max-height: {maxHeight}">{value +
 			'\n'}</pre>
 
-	<textarea bind:value></textarea>
+	<textarea disabled={!disabled} bind:value></textarea>
 </div>
 
-<style>
+<style lang="scss">
 	.container {
 		position: relative;
 	}
@@ -34,6 +34,11 @@
 		line-height: 1.2;
 		overflow: hidden;
 		width: 100%;
+
+		&:disabled {
+			cursor: not-allowed;
+			filter: grayscale(0.8);
+		}
 	}
 
 	textarea {

@@ -8,6 +8,8 @@
 
 	let pokerManager = $state(null);
 
+	let ws;
+
 	let pokerManagere = {
 		cards: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
 		state: 'playing',
@@ -17,6 +19,7 @@
 	let selectedLetter = $state(null);
 	let username = $state('');
 	let submitting = $state(false);
+	let submittedLetter = $state('');
 
 	const connect = () => {
 		if (username.trim() == '') {
@@ -26,19 +29,39 @@
 		try {
 			submitting = true;
 			const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-			const ws = new WebSocket(
+			ws = new WebSocket(
 				`${protocol}//${window.location.host}/websocket?${new URLSearchParams({
 					roomId,
 					username
 				})}`
 			);
 
-			pokerManager = pokerManagere;
+			ws.onmessage = (e) => {
+				console.log(e);
+				const payload = JSON.parse(e.data);
+				console.log('data', payload.data);
+
+				switch (payload.type) {
+					case 'game-update':
+						{
+							if (payload.data.state == 'playing' && payload.data.state != pokerManager.state) {
+								selectedLetter = null;
+							}
+							pokerManager = payload.data;
+						}
+						break;
+				}
+			};
 		} catch (e) {
 			console.error('Websocket error', e);
 		} finally {
 			submitting = false;
 		}
+	};
+
+	const sendVote = () => {
+		ws.send(JSON.stringify({ type: 'vote', data: { card: selectedLetter } }));
+		submittedLetter = selectedLetter;
 	};
 </script>
 
@@ -53,7 +76,7 @@
 {:else}
 	<main>
 		{#if pokerManager.state === 'waiting'}
-			<p>En attente de joueurs</p>
+			<p>En attente du lancement des votes</p>
 		{:else if pokerManager.state === 'playing'}
 			{#if pokerManager?.userStory}
 				<div class="user-story" transition:scale={{ duration: 500 }}>
@@ -68,7 +91,13 @@
 				{/each}
 			</div>
 
-			<button class:hidden={selectedLetter === null}>
+			<button
+				class:hidden={selectedLetter === null}
+				disabled={submittedLetter != null && selectedLetter == submittedLetter}
+				on:click={() => {
+					sendVote();
+				}}
+			>
 				Je pense que c'est {selectedLetter}
 			</button>
 		{:else if pokerManager.state === 'result'}
@@ -111,6 +140,10 @@
 		width: 100%;
 		height: 100dvh;
 		gap: 5dvh;
+
+		button:disabled {
+			opacity: 0.5;
+		}
 
 		.user-story {
 			display: flex;

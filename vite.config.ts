@@ -15,7 +15,8 @@ export default defineConfig({
 						const params = new URLSearchParams(query);
 						const roomId = params.get('roomId');
 						const username = params.get('username');
-						wss.emit('connection', client, roomId, username);
+						const manager = params.get('manager') || false
+						wss.emit('connection', client, roomId, username, manager);
 					});
 				}
 			});
