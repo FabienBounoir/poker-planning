@@ -112,7 +112,7 @@
 <style lang="scss">
 	main {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+		grid-template-columns: 1fr 1fr;
 		padding: 0 1em;
 		flex-direction: column;
 		align-items: center;
@@ -152,10 +152,6 @@
 				}
 			}
 
-			textarea {
-				width: 100%;
-			}
-
 			.buttons {
 				display: flex;
 				flex-direction: row;
@@ -173,7 +169,6 @@
 			max-height: 100dvh;
 			padding: 0 3em;
 			overflow-y: auto;
-			// background-color: blue;
 			gap: 1em;
 			display: flex;
 			flex-direction: column;
@@ -216,6 +211,23 @@
 						background-color: green;
 					}
 				}
+			}
+		}
+	}
+
+	@media screen and (max-with: 950px) {
+		main {
+			grid-template-columns: 1fr;
+			padding: 1em;
+
+			.information {
+				max-height: none;
+				padding: 0;
+			}
+
+			.manager {
+				max-height: none;
+				padding: 0;
 			}
 		}
 	}
