@@ -1,0 +1,107 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap");
+
+:root {
+    font-family: "Nunito", system-ui;
+
+    --primary-50: #fffaec;
+    --primary-100: #fff3d3;
+    --primary-200: #ffe3a5;
+    --primary-300: #ffcd6d;
+    --primary-400: #ffac32;
+    --primary-500: #ff910a;
+    --primary-600: #ff7900;
+    --primary-700: #cc5802;
+    --primary-800: #a1440b;
+    --primary-900: #823a0c;
+    --primary-950: #461b04;
+}
+
+*,
+*::after,
+*::before {
+    font: inherit;
+    color: inherit;
+
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+
+    transition: none cubic-bezier(0.1, 1.25, 0.25, 1) 600ms;
+}
+
+*::selection {
+    background-color: var(--primary-300);
+    color: var(--on-primary-700);
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+.avatar {
+    display: block;
+    border-radius: 50%;
+
+    width: var(--size, 3rem);
+    height: var(--size, 3rem);
+
+    object-fit: cover;
+}
+
+select,
+input,
+button {
+    outline: 0px solid var(--primary-50);
+
+    transition: outline-width 100ms linear;
+
+    &:focus {
+        outline-width: 3px;
+    }
+}
+
+select,
+input,
+textarea {
+    display: block;
+
+    border: 1px solid var(--primary-300);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+
+    color: var(--primary-700);
+
+    &::placeholder {
+        color: inherit;
+        opacity: 0.5;
+    }
+}
+
+button {
+    cursor: pointer;
+
+    border: none;
+
+    background-color: var(--primary-600);
+    color: var(--on-primary-600);
+
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    outline-color: var(--primary-200);
+    text-align: center;
+
+    transition-property: outline-width, opacity;
+
+    &:disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+}
