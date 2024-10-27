@@ -16,8 +16,6 @@ export const createWSSGlobalInstance = (rooms) => {
     function getRooms(roomId) {
         let room = rooms.get(roomId)
 
-        console.log("room", room)
-
         if (!room) {
             return null
         }
@@ -50,7 +48,6 @@ export const createWSSGlobalInstance = (rooms) => {
                             players.push({ ...player, id, socket: undefined });
                         }
                     });
-                    console.log("emit", players)
 
                     object.players.forEach((player) => {
                         if (player.manager) {
@@ -88,9 +85,8 @@ export const createWSSGlobalInstance = (rooms) => {
 			/** @type {string} */ name,
             /** @type {boolean} */ manager,
         ) => {
-            console.log("CONNECTION ROOMS", rooms)
             const room = getRooms(roomId)
-            console.log("room", room)
+            console.log("> Room", room)
 
             if (!room) {
                 console.warn("Want to join room doesn't exist")
@@ -116,10 +112,6 @@ export const createWSSGlobalInstance = (rooms) => {
             room.players.set(userId, player);
             room.emitPlayers();
 
-
-            console.log("room", roomId)
-            console.log("name", name)
-
             ws.on('close', () => {
                 room.players.delete(userId);
                 if (room.players.size) {
@@ -138,20 +130,18 @@ export const createWSSGlobalInstance = (rooms) => {
                         const player = room.players.get(userId);
                         player.selectedCard = data.card
                         room.players.set(userId, player)
-                        room.emitPlayers(true)
+                        room.emitPlayers()
+                        ws.send(JSON.stringify({ type: "success", success: true }));
 
                     }
                         break;
                     case 'state': {
-                        console.log(" room.data.state", room.data.state)
-                        console.log("data.state", data.state)
                         room.data.state = data.state
                         if (data.userStory) {
                             room.data.userStory = data.userStory
                         }
 
                         if (data.state == "playing") {
-                            console.log("RESET USER VOTE")
                             room.resetChoose()
                         }
 
@@ -174,21 +164,18 @@ export const createWSSGlobalInstance = (rooms) => {
             /** @type {string} */ type,
         ) => {
             if (type && !["TSHIRT", "FIBONACCI", "POWEROF2"].includes(type)) {
-                console.warn(`Want to create room with type: ${type}`)
+                console.warn(`Error: want to create room with type: ${type}`)
                 return ws.close(1000, "Type doesn't exist");
             }
 
             const roomId = createRoomId()
-            console.log("ROOM ID CREATE", roomId)
             rooms.set(roomId, { reserved: true });
-
-            console.log("rooms", rooms)
 
             let object = {
                 team: 'NFS',
                 cards: [],
                 state: 'waiting',
-                userStory: 'Faire un planning poker'
+                userStory: ''
             }
 
             switch (type) {
@@ -209,11 +196,9 @@ export const createWSSGlobalInstance = (rooms) => {
                     break;
             }
 
-            console.log("OBEJCT CREATE", object)
-
 
             rooms.set(roomId, { initialisation: true, data: object });
-            console.log(rooms)
+            console.log("NEW ROOM CREATE", rooms)
 
             ws.send(JSON.stringify({ type: "created", data: { roomId } }));
         })

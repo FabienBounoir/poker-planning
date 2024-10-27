@@ -22,7 +22,6 @@ export default defineConfig({
 				}
 
 				if (pathname === '/create-room' && wss) {
-					console.log("IN CREATE ROOM EVENT")
 					wss.handleUpgrade(req, socket, headers, (client, req) => {
 						const params = new URLSearchParams(query);
 						const type = params.get('type')
@@ -34,5 +33,8 @@ export default defineConfig({
 	}],
 	optimizeDeps: {
 		include: ['svelte-sonner']
+	},
+	server: {
+		port: 34568,
 	}
 });

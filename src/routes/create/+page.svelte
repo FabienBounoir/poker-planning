@@ -1,35 +1,35 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { onDestroy } from 'svelte';
 
 	let type = $state();
+	let team = $state('');
 
 	let submitting = false;
+
+	let ws;
 
 	const create = async () => {
 		submitting = true;
 		try {
 			const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-			const ws = new WebSocket(
+			ws = new WebSocket(
 				`${protocol}//${window.location.host}/create-room?${new URLSearchParams({
 					type: type.id
 				})}`
 			);
 
 			ws.onmessage = (e) => {
-				console.log(e);
 				const payload = JSON.parse(e.data);
-				console.log('payload', payload);
+				console.log('Event Payload', payload);
 				switch (payload.type) {
 					case 'created':
-						{
-							ws.close();
-							goto(`/manager/${payload?.data.roomId}`);
-						}
+						goto(`/manager/${payload?.data.roomId}`);
 						break;
 				}
 			};
-		} catch (e) {
-			console.log('error', e);
+		} catch (error) {
+			console.log('Create Error', error);
 		}
 
 		submitting = false;
@@ -40,11 +40,22 @@
 		{ id: 'FIBONACCI', text: `Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21 )` },
 		{ id: 'POWEROF2', text: `Powers of 2 ( 0, 1, 2, 4, 8, 16, 32 )` }
 	];
+
+	onDestroy(() => {
+		try {
+			if (ws) {
+				ws.close();
+			}
+		} catch (error) {
+			console.log('Destroy Error', error);
+		}
+	});
 </script>
 
 <main>
-	<h1><br />Create un nouveau poker planning<br />🕵️</h1>
+	<h1><br />Create un nouveau poker planning<br />🃏</h1>
 	<form on:submit|preventDefault={create}>
+		<input bind:value={team} placeholder="Nom De La Team" />
 		<select bind:value={type}>
 			{#each choices as choice}
 				<option value={choice}>
@@ -52,7 +63,7 @@
 				</option>
 			{/each}
 		</select>
-		<button type="submit" disabled={submitting}>Crée</button>
+		<button type="submit" disabled={submitting || !team}>Crée</button>
 	</form>
 </main>
 
@@ -62,17 +73,12 @@
 		gap: 0.5em;
 
 		span {
-			text-align: center;
 			font-size: 0.8em;
 
 			&:hover {
 				cursor: pointer;
 				text-decoration: underline;
 			}
-		}
-
-		input {
-			text-align: center;
 		}
 	}
 
@@ -89,5 +95,6 @@
 		font-weight: 900;
 		font-size: 2em;
 		padding-bottom: 1em;
+		color: var(--primary-800);
 	}
 </style>

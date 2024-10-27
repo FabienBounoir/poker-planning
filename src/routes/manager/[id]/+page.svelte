@@ -1,15 +1,16 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
 	import Code from '$lib/components/Code.svelte';
 	import TextArea from '$lib/components/Textarea.svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { backOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
 
 	let roomId = $page.params.id;
 	let url = $state('');
-	let ws;
+
+	let ws: WebSocket;
 
 	let timeout = null;
 
@@ -45,8 +46,8 @@
 		);
 
 		ws.onmessage = (e) => {
-			console.log(e);
 			const payload = JSON.parse(e.data);
+			console.log('Event Payload', payload);
 
 			switch (payload.type) {
 				case 'players':
@@ -67,6 +68,12 @@
 	onMount(() => {
 		url = `${window.location.protocol}//${window.location.host}/rooms/${roomId}`;
 		connect();
+	});
+
+	onDestroy(() => {
+		if (ws) {
+			ws.close();
+		}
 	});
 
 	const changeState = (state) => {

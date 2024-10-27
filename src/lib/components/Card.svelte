@@ -1,11 +1,12 @@
 <script>
-	let { content, cardSelected = $bindable() } = $props();
+	let { content, cardSelected = $bindable(), submittedLetter = $bindable() } = $props();
 </script>
 
 <main
 	class="card"
 	class:gray={cardSelected && cardSelected != content}
 	class:selected={cardSelected === content}
+	class:submit={submittedLetter === content}
 	on:click={() => {
 		if (cardSelected === content) {
 			cardSelected = null;
@@ -51,6 +52,18 @@
 
 		&.gray {
 			filter: grayscale(1);
+		}
+
+		&.submit {
+			border: 3px solid var(--primary-700);
+		}
+	}
+
+	@media screen and (max-width: 500px) {
+		.card {
+			aspect-ratio: auto;
+			width: 90vw;
+			height: auto;
 		}
 	}
 </style>

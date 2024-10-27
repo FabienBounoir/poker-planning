@@ -39,7 +39,7 @@
 
 		h3 {
 			transition: filter 0.3s;
-			filter: blur(5px);
+			filter: blur(7px);
 			font-size: 2em;
 			color: var(--primary-600);
 			font-size: 2rem;

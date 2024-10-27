@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Card from '$lib/components/Card.svelte';
 	import { scale } from 'svelte/transition';
 	import { page } from '$app/stores';
@@ -11,11 +11,7 @@
 
 	let ws;
 
-	// let pokerManagere = {
-	// 	cards: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-	// 	state: 'playing',
-	// 	userStory: 'Faire un planning poker'
-	// };
+	let timeout: number | null;
 
 	let selectedLetter = $state(null);
 	let username = $state('');
@@ -38,17 +34,22 @@
 			);
 
 			ws.onmessage = (e) => {
-				console.log(e);
 				const payload = JSON.parse(e.data);
-				console.log('data', payload.data);
+				console.log('Event Payload', payload);
 
 				switch (payload.type) {
 					case 'game-update':
-						{
-							if (payload.data.state == 'playing' && payload.data.state != pokerManager?.state) {
-								selectedLetter = null;
+						if (payload.data.state == 'playing' && payload.data.state != pokerManager?.state) {
+							selectedLetter = null;
+						}
+						pokerManager = payload.data;
+						break;
+					case 'success':
+						if (payload?.success) {
+							if (timeout) {
+								clearTimeout(timeout);
+								timeout = null;
 							}
-							pokerManager = payload.data;
 						}
 						break;
 				}
@@ -68,8 +69,19 @@
 	};
 
 	const sendVote = () => {
+		timeout = setTimeout(() => {
+			toast.error('Error when send your vote');
+			submittedLetter = null;
+			selectedLetter = null;
+		}, 2000);
+
 		ws.send(JSON.stringify({ type: 'vote', data: { card: selectedLetter } }));
 		submittedLetter = selectedLetter;
+	};
+
+	const includeUS_ID = (userStory) => {
+		const match = userStory.match(/NFS-\d+/i);
+		return match ? `https://portail.agir.orange.com/browse/${match[0]}` : false;
 	};
 </script>
 
@@ -89,13 +101,17 @@
 			{#if pokerManager?.userStory}
 				<div class="user-story" transition:scale={{ duration: 500 }}>
 					<h3>User story</h3>
-					<h1>{pokerManager.userStory}</h1>
+					{#if includeUS_ID(pokerManager.userStory)}
+						<h1><a href={includeUS_ID(pokerManager.userStory)}>{pokerManager.userStory}</a></h1>
+					{:else}
+						<h1>{pokerManager.userStory}</h1>
+					{/if}
 				</div>
 			{/if}
 
-			<div class="grid">
+			<div class="flex">
 				{#each pokerManager.cards as card}
-					<Card content={card} bind:cardSelected={selectedLetter} />
+					<Card content={card} bind:cardSelected={selectedLetter} bind:submittedLetter />
 				{/each}
 			</div>
 
@@ -170,13 +186,12 @@
 			}
 		}
 
-		.grid {
+		.flex {
 			display: flex;
 			gap: 2vw;
 			flex-wrap: wrap;
 			justify-content: center;
 
-			//je veux que les autre enfant soit grisé lorsque j'hover sur un enfant
 			& > * {
 				transition: filter 0.3s;
 			}
@@ -196,6 +211,49 @@
 
 		.hidden {
 			visibility: hidden;
+		}
+	}
+
+	@media screen and (max-width: 500px) {
+		main {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			height: auto;
+			gap: 3em;
+			padding: 3em 0 0 0;
+			text-align: center;
+
+			.flex {
+				display: flex;
+				flex-direction: column;
+				gap: 1em;
+				flex-wrap: wrap;
+				justify-content: center;
+
+				& > * {
+					transition: filter 0.3s;
+				}
+
+				& > *:hover {
+					/* Annule le grisage pour la carte survolée */
+					filter: none;
+					background-color: red !important;
+				}
+
+				& > *:not(:hover) {
+					/* Grise les autres cartes */
+					filter: grayscale(1) !important;
+					pointer-events: none; /* Empêche les autres cartes d'être sélectionnées lors du survol */
+				}
+			}
+
+			button {
+				position: sticky;
+				bottom: 1em;
+			}
 		}
 	}
 </style>

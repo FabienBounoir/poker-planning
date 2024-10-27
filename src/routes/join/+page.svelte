@@ -9,14 +9,6 @@
 	const join = async () => {
 		submitting = true;
 		try {
-			const res = await fetch(`_api/room?roomId=${roomId}`, {
-				method: 'GET'
-			});
-
-			if (res.status != 200) {
-				throw new Error("This Room doesn't exist");
-			}
-
 			await goto(`/rooms/${roomId}`);
 		} catch (error) {
 			toast.warning("This Room doesn't exist");
@@ -26,7 +18,7 @@
 	};
 
 	function handleInput(event) {
-		let value = event.target.value.replace(/[^A-Za-z0-9]/g, ''); // Supprime tout sauf les lettres et les chiffres
+		let value = event.target.value.replace(/[^A-Za-z0-9]/g, '');
 		if (value.length > 3) {
 			value = value.slice(0, 3) + '-' + value.slice(3, 6);
 		}

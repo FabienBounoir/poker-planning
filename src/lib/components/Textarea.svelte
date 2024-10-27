@@ -34,6 +34,7 @@
 		line-height: 1.2;
 		overflow: hidden;
 		width: 100%;
+		max-width: 40vw;
 
 		&:disabled {
 			cursor: not-allowed;
@@ -47,5 +48,12 @@
 		height: 100%;
 		top: 0;
 		resize: none;
+	}
+
+	@media screen and (max-width: 950px) {
+		pre,
+		textarea {
+			max-width: 95vw;
+		}
 	}
 </style>
