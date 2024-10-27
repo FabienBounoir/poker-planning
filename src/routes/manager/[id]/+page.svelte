@@ -5,12 +5,11 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { backOut } from 'svelte/easing';
-	import { fade, fly, scale } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 
 	let roomId = $page.params.id;
+	let url = $state('');
 	let ws;
-
-	let userStory = $state('NFS-1345 - Faire un planning poker');
 
 	let timeout = null;
 
@@ -22,8 +21,6 @@
 	});
 
 	let users = $state([]);
-
-	let selectedLetter = $state(null);
 
 	const canStarVote = () => {
 		if (pokerManager.userStory == '') {
@@ -38,42 +35,37 @@
 	};
 
 	const connect = () => {
-		try {
-			const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-			ws = new WebSocket(
-				`${protocol}//${window.location.host}/websocket?${new URLSearchParams({
-					roomId,
-					username: 'ADMIN',
-					manager: true
-				})}`
-			);
+		const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+		ws = new WebSocket(
+			`${protocol}//${window.location.host}/websocket?${new URLSearchParams({
+				roomId,
+				username: 'ADMIN',
+				manager: true
+			})}`
+		);
 
-			ws.onmessage = (e) => {
-				console.log(e);
-				const payload = JSON.parse(e.data);
+		ws.onmessage = (e) => {
+			console.log(e);
+			const payload = JSON.parse(e.data);
 
-				switch (payload.type) {
-					case 'players':
-						{
-							users = payload.data;
-						}
-						break;
-					case 'state': {
-						pokerManager.state = payload.data.state;
+			switch (payload.type) {
+				case 'players':
+					{
+						users = payload.data;
 					}
-					case 'game-update': {
-						pokerManager = payload.data;
-					}
+					break;
+				case 'state': {
+					pokerManager.state = payload.data.state;
 				}
-			};
-		} catch (e) {
-			console.error('Websocket error', e);
-		} finally {
-			submitting = false;
-		}
+				case 'game-update': {
+					pokerManager = payload.data;
+				}
+			}
+		};
 	};
 
 	onMount(() => {
+		url = `${window.location.protocol}//${window.location.host}/rooms/${roomId}`;
 		connect();
 	});
 
@@ -93,10 +85,7 @@
 
 			<div class="me">Bienvenue NFS!</div>
 
-			<Code
-				code={'123-534'}
-				url={`${window.location.protocol}//${window.location.host}/rooms/${roomId}`}
-			/>
+			<Code code={roomId} {url} />
 		</div>
 
 		<label>Define here your user story:</label>

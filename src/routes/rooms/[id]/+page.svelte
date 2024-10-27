@@ -3,6 +3,7 @@
 	import { scale } from 'svelte/transition';
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
 
 	let roomId = $page.params.id;
 
@@ -10,11 +11,11 @@
 
 	let ws;
 
-	let pokerManagere = {
-		cards: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-		state: 'playing',
-		userStory: 'Faire un planning poker'
-	};
+	// let pokerManagere = {
+	// 	cards: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+	// 	state: 'playing',
+	// 	userStory: 'Faire un planning poker'
+	// };
 
 	let selectedLetter = $state(null);
 	let username = $state('');
@@ -44,12 +45,19 @@
 				switch (payload.type) {
 					case 'game-update':
 						{
-							if (payload.data.state == 'playing' && payload.data.state != pokerManager.state) {
+							if (payload.data.state == 'playing' && payload.data.state != pokerManager?.state) {
 								selectedLetter = null;
 							}
 							pokerManager = payload.data;
 						}
 						break;
+				}
+			};
+
+			ws.onclose = (e) => {
+				if (e.reason == "Room doesn't exist") {
+					toast.error("This Rooms doesn't exist");
+					goto('/join');
 				}
 			};
 		} catch (e) {

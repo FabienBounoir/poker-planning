@@ -1,25 +1,57 @@
 <script>
 	import { goto } from '$app/navigation';
 
-	let code = '';
+	let type = $state();
 
 	let submitting = false;
 
-	const join = async () => {
+	const create = async () => {
 		submitting = true;
 		try {
-			await goto('/manager/1');
-		} catch (error) {
-		} finally {
-			submitting = false;
+			const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+			const ws = new WebSocket(
+				`${protocol}//${window.location.host}/create-room?${new URLSearchParams({
+					type: type.id
+				})}`
+			);
+
+			ws.onmessage = (e) => {
+				console.log(e);
+				const payload = JSON.parse(e.data);
+				console.log('payload', payload);
+				switch (payload.type) {
+					case 'created':
+						{
+							ws.close();
+							goto(`/manager/${payload?.data.roomId}`);
+						}
+						break;
+				}
+			};
+		} catch (e) {
+			console.log('error', e);
 		}
+
+		submitting = false;
 	};
+
+	let choices = [
+		{ id: 'TSHIRT', text: `T-shirts (XS, S, M, L, XL)` },
+		{ id: 'FIBONACCI', text: `Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21 )` },
+		{ id: 'POWEROF2', text: `Powers of 2 ( 0, 1, 2, 4, 8, 16, 32 )` }
+	];
 </script>
 
 <main>
 	<h1><br />Create un nouveau poker planning<br />🕵️</h1>
-	<form on:submit|preventDefault={join}>
-		<input type="text" bind:value={code} placeholder="XXXXXX" disabled={submitting} />
+	<form on:submit|preventDefault={create}>
+		<select bind:value={type}>
+			{#each choices as choice}
+				<option value={choice}>
+					{choice.text}
+				</option>
+			{/each}
+		</select>
 		<button type="submit" disabled={submitting}>Crée</button>
 	</form>
 </main>

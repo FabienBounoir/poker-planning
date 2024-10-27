@@ -1,16 +1,25 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { toast } from 'svelte-sonner';
 
-	let code = '';
+	let roomId = '';
 
 	let submitting = false;
 
 	const join = async () => {
-		goto('/rooms/1');
 		submitting = true;
 		try {
-			await goto('/rooms/1');
+			const res = await fetch(`_api/room?roomId=${roomId}`, {
+				method: 'GET'
+			});
+
+			if (res.status != 200) {
+				throw new Error("This Room doesn't exist");
+			}
+
+			await goto(`/rooms/${roomId}`);
 		} catch (error) {
+			toast.warning("This Room doesn't exist");
 		} finally {
 			submitting = false;
 		}
@@ -21,7 +30,7 @@
 		if (value.length > 3) {
 			value = value.slice(0, 3) + '-' + value.slice(3, 6);
 		}
-		code = value;
+		roomId = value;
 	}
 </script>
 
@@ -30,7 +39,7 @@
 	<form on:submit|preventDefault={join}>
 		<input
 			type="text"
-			bind:value={code}
+			bind:value={roomId}
 			on:input={handleInput}
 			placeholder="XXX-XXX"
 			disabled={submitting}

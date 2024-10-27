@@ -1,45 +1,37 @@
 import { WebSocket, WebSocketServer } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
+import { createRoomId } from './src/lib/rooms';
 
 /**
  * @type {WebSocketServer}
  */
 let wss;
 
-let pokerObject = {
-    roomId: "123456",
-    customUrl: "nfs",
-    cards: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    state: "INIT",
-    userStory: "Create a poker planning",
-}
-
-let rooms = new Map()
-
-
-export const createWSSGlobalInstance = () => {
+export const createWSSGlobalInstance = (rooms) => {
     if (wss) return wss;
-
-    /**
-     * @type {Map<string, import('$lib/@types').Channel>}
-     */
-    const channels = new Map();
 
     /**
      * @param {string} id
      */
     function getRooms(roomId) {
         let room = rooms.get(roomId)
+
+        console.log("room", room)
+
         if (!room) {
-            const c = {
+            return null
+        }
+
+        if (room?.initialisation) {
+            const object = {
                 players: new Map(),
                 data: {
-                    cards: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+                    cards: [],
                     state: 'waiting',
-                    userStory: 'Faire un planning poker',
+                    userStory: '',
                 },
                 emit(type, data, manager) {
-                    c.players.forEach((player) => {
+                    object.players.forEach((player) => {
                         if (manager) {
                             if (player.manager) {
                                 player.socket.send(JSON.stringify({ type, data }));
@@ -53,31 +45,35 @@ export const createWSSGlobalInstance = () => {
                 emitPlayers() {
                     /** @type {any[]} */
                     const players = [];
-                    c.players.forEach((player, id) => {
+                    object.players.forEach((player, id) => {
                         if (!player.manager) {
                             players.push({ ...player, id, socket: undefined });
                         }
                     });
                     console.log("emit", players)
 
-                    c.players.forEach((player) => {
+                    object.players.forEach((player) => {
                         if (player.manager) {
                             player.socket.send(JSON.stringify({ type: "players", data: players }));
                         }
                     });
                 },
                 emitUpdateGame() {
-                    c.emit('game-update', c.data);
+                    object.emit('game-update', object.data);
                 },
                 resetChoose() {
-                    c.players.forEach((player) => {
-                        c.players.set(player.socket.userId, { ...player, selectedCard: null })
+                    object.players.forEach((player) => {
+                        object.players.set(player.socket.userId, { ...player, selectedCard: null })
                     })
                     this.emitPlayers()
                 }
             };
 
-            rooms.set(roomId, (room = c));
+            if (object.data) {
+                object.data = { ...object.data, ...room.data }
+            }
+
+            rooms.set(roomId, (room = object));
         }
 
         return room;
@@ -92,17 +88,20 @@ export const createWSSGlobalInstance = () => {
 			/** @type {string} */ name,
             /** @type {boolean} */ manager,
         ) => {
-            if (manager) {
+            console.log("CONNECTION ROOMS", rooms)
+            const room = getRooms(roomId)
+            console.log("room", room)
 
+            if (!room) {
+                console.warn("Want to join room doesn't exist")
+                return ws.close(1000, "Room doesn't exist");
             }
 
             const userId = uuidv4();
             console.log('New connection with ID:', userId);
 
-            // Assigner l'ID à l'objet `socket` pour une référence future
             ws.userId = userId;
 
-            const room = getRooms(roomId)
             ws.send(JSON.stringify({ type: "game-update", data: room.data }));
 
             const player = {
@@ -167,6 +166,57 @@ export const createWSSGlobalInstance = () => {
             });
         }
     );
+
+    wss.on(
+        'create',
+        (
+			/** @type {WebSocket} */ ws,
+            /** @type {string} */ type,
+        ) => {
+            if (type && !["TSHIRT", "FIBONACCI", "POWEROF2"].includes(type)) {
+                console.warn(`Want to create room with type: ${type}`)
+                return ws.close(1000, "Type doesn't exist");
+            }
+
+            const roomId = createRoomId()
+            console.log("ROOM ID CREATE", roomId)
+            rooms.set(roomId, { reserved: true });
+
+            console.log("rooms", rooms)
+
+            let object = {
+                team: 'NFS',
+                cards: [],
+                state: 'waiting',
+                userStory: 'Faire un planning poker'
+            }
+
+            switch (type) {
+                case "TSHIRT":
+                    object.cards = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                    break;
+
+                case "FIBONACCI":
+                    object.cards = ["1", "2", "3", "5", "8", "13", "21"];
+                    break;
+
+                case "POWEROF2":
+                    object.cards = ["1", "2", "4", "8", "16", "32"];
+                    break;
+
+                default:
+                    console.warn(`Unknown type: ${type}`);
+                    break;
+            }
+
+            console.log("OBEJCT CREATE", object)
+
+
+            rooms.set(roomId, { initialisation: true, data: object });
+            console.log(rooms)
+
+            ws.send(JSON.stringify({ type: "created", data: { roomId } }));
+        })
 
     return wss;
 };
