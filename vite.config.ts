@@ -25,7 +25,8 @@ export default defineConfig({
 					wss.handleUpgrade(req, socket, headers, (client, req) => {
 						const params = new URLSearchParams(query);
 						const type = params.get('type')
-						wss.emit('create', client, type);
+						const team = params.get('team')
+						wss.emit('create', client, type, team);
 					});
 				}
 			});

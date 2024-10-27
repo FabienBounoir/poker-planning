@@ -55,8 +55,50 @@ export const createWSSGlobalInstance = (rooms) => {
                         }
                     });
                 },
-                emitUpdateGame() {
-                    object.emit('game-update', object.data);
+                emitUpdateGame(state) {
+                    let element = { ...object.data }
+
+
+                    if (state == "result") {
+                        let results = new Map()
+                        let itemsName = []
+                        object.players.forEach((player, id) => {
+                            if (!player.manager && player.selectedCard) {
+                                let item = results.get(player?.selectedCard?.toUpperCase?.())
+
+                                if (!item) {
+                                    itemsName.push(player?.selectedCard?.toUpperCase?.())
+                                    item = []
+                                }
+
+                                item.push(player.name)
+
+                                results.set(player?.selectedCard?.toUpperCase?.(), item)
+                            }
+                        });
+
+                        if (itemsName.length > 0) {
+                            try {
+                                const item = itemsName[Math.floor(Math.random() * itemsName.length)]
+                                const itemUsers = results.get(item)
+                                const userSelected = itemUsers[Math.floor(Math.random() * itemUsers.length)]
+
+                                element.defender = {
+                                    name: userSelected,
+                                    item
+                                }
+
+                                let resultArray = Array.from(results).sort((a, b) => b[1].length - a[1].length)
+
+                                element.result = resultArray
+                            }
+                            catch (e) {
+                                console.error("ERROR WHEN PROCESS RESULT", e)
+                            }
+                        }
+                    }
+
+                    object.emit('game-update', element);
                 },
                 resetChoose() {
                     object.players.forEach((player) => {
@@ -76,6 +118,12 @@ export const createWSSGlobalInstance = (rooms) => {
         return room;
     }
 
+    function formatName(name) {
+        const trimmedName = name.trim();
+        return trimmedName.charAt(0).toUpperCase() + trimmedName.slice(1).toLowerCase();
+    }
+
+
     wss = new WebSocketServer({ noServer: true });
     wss.on(
         'connection',
@@ -93,6 +141,11 @@ export const createWSSGlobalInstance = (rooms) => {
                 return ws.close(1000, "Room doesn't exist");
             }
 
+            if (!name) {
+                console.warn("User without name")
+                return ws.close(1000, "Can't join without name");
+            }
+
             const userId = uuidv4();
             console.log('New connection with ID:', userId);
 
@@ -102,12 +155,10 @@ export const createWSSGlobalInstance = (rooms) => {
 
             const player = {
                 socket: ws,
-                name,
-                status: 'playing',
+                name: formatName(name),
                 selectedCard: null,
                 manager
             };
-
 
             room.players.set(userId, player);
             room.emitPlayers();
@@ -128,6 +179,10 @@ export const createWSSGlobalInstance = (rooms) => {
                 switch (type) {
                     case 'vote': {
                         const player = room.players.get(userId);
+                        if (!room?.data?.cards?.includes?.(data.card)) {
+                            return
+                        }
+
                         player.selectedCard = data.card
                         room.players.set(userId, player)
                         room.emitPlayers()
@@ -145,7 +200,7 @@ export const createWSSGlobalInstance = (rooms) => {
                             room.resetChoose()
                         }
 
-                        room.emitUpdateGame()
+                        room.emitUpdateGame(data.state)
                     }
                         break;
 
@@ -162,6 +217,7 @@ export const createWSSGlobalInstance = (rooms) => {
         (
 			/** @type {WebSocket} */ ws,
             /** @type {string} */ type,
+            /** @type {string} */ team,
         ) => {
             if (type && !["TSHIRT", "FIBONACCI", "POWEROF2"].includes(type)) {
                 console.warn(`Error: want to create room with type: ${type}`)
@@ -172,7 +228,7 @@ export const createWSSGlobalInstance = (rooms) => {
             rooms.set(roomId, { reserved: true });
 
             let object = {
-                team: 'NFS',
+                team: formatName(team || 'NFS'),
                 cards: [],
                 state: 'waiting',
                 userStory: ''

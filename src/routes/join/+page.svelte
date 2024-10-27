@@ -11,7 +11,7 @@
 		try {
 			await goto(`/rooms/${roomId}`);
 		} catch (error) {
-			toast.warning("This Room doesn't exist");
+			toast.warning("Ce poker planning n'existe pas.");
 		} finally {
 			submitting = false;
 		}
@@ -27,7 +27,10 @@
 </script>
 
 <main>
-	<h1>Hummm, <br />Tu souhaites rejoindre quel poker planning ?<br />🕵️</h1>
+	<h1>
+		Hummm <span class="animateDetective">🕵️</span>,<br />Quel poker planning souhaites-tu rejoindre
+		?
+	</h1>
 	<form on:submit|preventDefault={join}>
 		<input
 			type="text"
@@ -72,11 +75,47 @@
 		justify-content: center;
 		height: 100vh;
 		text-align: center;
+		scale: 0;
+		animation: scale 0.5s forwards 0.2s;
+
+		@keyframes scale {
+			0% {
+				scale: 0;
+			}
+
+			100% {
+				scale: 1;
+			}
+		}
 	}
 
 	h1 {
 		font-weight: 900;
 		font-size: 2em;
 		padding-bottom: 1em;
+		color: var(--primary-950);
+
+		.animateDetective {
+			display: inline-block;
+			animation: bounceRotate 2s infinite;
+
+			@keyframes bounceRotate {
+				0% {
+					transform: translateY(0) rotate(0deg); /* Position initiale */
+				}
+				25% {
+					transform: translateY(-10px) rotate(5deg); /* Légère élévation et rotation vers la droite */
+				}
+				50% {
+					transform: translateY(0) rotate(-5deg); /* Retour à la position normale avec rotation vers la gauche */
+				}
+				75% {
+					transform: translateY(2px) rotate(4deg); /* Élément un peu plus bas avec rotation vers la droite */
+				}
+				100% {
+					transform: translateY(0) rotate(0deg); /* Retour à la position initiale */
+				}
+			}
+		}
 	}
 </style>

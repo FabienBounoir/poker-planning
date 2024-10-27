@@ -1,9 +1,11 @@
 <script lang="ts">
 	import Card from '$lib/components/Card.svelte';
-	import { scale } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition';
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { elasticInOut, quintInOut, quintOut } from 'svelte/easing';
 
 	let roomId = $page.params.id;
 
@@ -18,9 +20,23 @@
 	let submitting = $state(false);
 	let submittedLetter = $state('');
 
+	let resultsItem = $state(null);
+	let resultDefender = $state(null);
+
+	onMount(() => {
+		if (window.localStorage.getItem('username')) {
+			username = window.localStorage.getItem('username');
+		}
+	});
+
+	$effect(() => {
+		console.log("username update")
+		window.localStorage.setItem('username', username);
+	});
+
 	const connect = () => {
 		if (username.trim() == '') {
-			return toast.error("J'aimerai savoir comment tu t'appelles");
+			return toast.info("J'aimerai savoir comment tu t'appelles !");
 		}
 
 		try {
@@ -39,9 +55,22 @@
 
 				switch (payload.type) {
 					case 'game-update':
+						resultsItem = null;
+						resultDefender = null;
+
 						if (payload.data.state == 'playing' && payload.data.state != pokerManager?.state) {
 							selectedLetter = null;
+							submittedLetter = null;
+						} else if (payload.data.state == 'result') {
+							if (payload.data.result) {
+								resultsItem = payload.data.result;
+							}
+
+							if (payload.data.defender) {
+								resultDefender = payload.data.defender;
+							}
 						}
+
 						pokerManager = payload.data;
 						break;
 					case 'success':
@@ -57,7 +86,7 @@
 
 			ws.onclose = (e) => {
 				if (e.reason == "Room doesn't exist") {
-					toast.error("This Rooms doesn't exist");
+					toast.error("Ce poker planning n'existe pas.");
 					goto('/join');
 				}
 			};
@@ -70,7 +99,7 @@
 
 	const sendVote = () => {
 		timeout = setTimeout(() => {
-			toast.error('Error when send your vote');
+			toast.error("Une erreur s'est produite lors de l'envoi de votre vote.");
 			submittedLetter = null;
 			selectedLetter = null;
 		}, 2000);
@@ -87,7 +116,9 @@
 
 {#if pokerManager == null}
 	<div class="init-page">
-		<h1>Bienvenue, <br />Comment tu t'appelles déjà ?<br /></h1>
+		<h1>
+			Bienvenue <span class="rotateAnimation">👋</span> <br />Comment tu t'appelles déjà ?<br />
+		</h1>
 		<form on:submit|preventDefault={connect}>
 			<input type="text" bind:value={username} placeholder="Jean Bon" disabled={submitting} />
 			<button type="submit" disabled={submitting}>Valider</button>
@@ -96,7 +127,7 @@
 {:else}
 	<main>
 		{#if pokerManager.state === 'waiting'}
-			<p>En attente du lancement des votes</p>
+			<h1>En attente du lancement des votes...</h1>
 		{:else if pokerManager.state === 'playing'}
 			{#if pokerManager?.userStory}
 				<div class="user-story" transition:scale={{ duration: 500 }}>
@@ -109,7 +140,7 @@
 				</div>
 			{/if}
 
-			<div class="flex">
+			<div class="flex" in:fade={{ duration: 500, easing: quintOut }}>
 				{#each pokerManager.cards as card}
 					<Card content={card} bind:cardSelected={selectedLetter} bind:submittedLetter />
 				{/each}
@@ -125,12 +156,112 @@
 				Je pense que c'est {selectedLetter}
 			</button>
 		{:else if pokerManager.state === 'result'}
-			<h1>OMG les resultats</h1>
+			<div class="result-container" in:fade={{ duration: 700, easing: quintInOut }}>
+				<h1>Voici Les Resultats</h1>
+
+				{#if resultDefender}
+					{#key resultDefender}
+						<h3 transition:scale={{ delay: 2000, duration: 500, easing: quintInOut }}>
+							<div>
+								<img src="https://api.dicebear.com/9.x/dylan/svg?seed={resultDefender.name}" />
+								<span>{resultDefender.name}</span>
+							</div>
+							Pourquoi as-tu choisi
+							<span> {resultDefender.item}</span> ?
+						</h3>
+					{/key}
+				{/if}
+
+				<div class="result" style="--item:{resultsItem?.length > 4 ? 4 : resultsItem?.length}">
+					{#if resultsItem}
+						{#each resultsItem as [item, players]}
+							<div class="result-item">
+								<h1>{item}</h1>
+								{#if players?.length}
+									{#each players as player}
+										<p>{player}</p>
+									{/each}
+								{:else}
+									<p>Aucun Vote</p>
+								{/if}
+							</div>
+						{/each}
+					{:else}
+						<p>Aucun Vote à Afficher....</p>
+					{/if}
+				</div>
+			</div>
 		{/if}
 	</main>
 {/if}
 
 <style lang="scss">
+	.result-container {
+		display: flex;
+		flex-direction: column;
+		gap: 3em;
+		justify-content: center;
+		align-items: center;
+		padding: 2em 0;
+
+		> h1 {
+			font-size: 1.2em;
+			// font-weight: 700;
+			color: var(--primary-800);
+		}
+
+		> h3 {
+			font-size: 2em;
+
+			& > div {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			img {
+				width: 40px;
+				height: 40px;
+				margin-right: 12px;
+				border-radius: 100%;
+				border: 2px solid var(--primary-800);
+			}
+
+			span {
+				font-weight: 600;
+				color: var(--primary-700);
+			}
+		}
+
+		.result {
+			gap: 5dvh;
+			display: grid;
+			grid-template-columns: repeat(var(--item, 3), 1fr);
+
+			.result-item {
+				border: 3px solid var(--primary-600);
+				background-color: var(--primary-200);
+				display: flex;
+				flex-direction: column;
+				text-align: center;
+				padding: 0.5em 0;
+				border-radius: 5px;
+				min-width: 18vw;
+
+				h1 {
+					font-weight: 900;
+					font-size: 3em;
+					margin-bottom: 2vh;
+					color: var(--primary-600);
+				}
+
+				p {
+					color: var(--primary-950);
+				}
+			}
+		}
+	}
+
 	.init-page {
 		display: flex;
 		flex-direction: column;
@@ -138,6 +269,21 @@
 		justify-content: center;
 		height: 100vh;
 		text-align: center;
+
+		.rotateAnimation {
+			display: inline-block;
+			animation: coucou 1s infinite;
+
+			@keyframes coucou {
+				0%,
+				100% {
+					transform: rotate(0deg);
+				}
+				50% {
+					transform: rotate(20deg);
+				}
+			}
+		}
 
 		h1 {
 			font-weight: 900;
@@ -162,7 +308,7 @@
 		align-items: center;
 		justify-content: center;
 		width: 100%;
-		height: 100dvh;
+		min-height: 100dvh;
 		gap: 5dvh;
 
 		button:disabled {
@@ -253,6 +399,7 @@
 			button {
 				position: sticky;
 				bottom: 1em;
+				width: 80%;
 			}
 		}
 	}

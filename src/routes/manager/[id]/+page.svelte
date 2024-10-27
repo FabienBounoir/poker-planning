@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Code from '$lib/components/Code.svelte';
 	import TextArea from '$lib/components/Textarea.svelte';
@@ -15,21 +16,21 @@
 	let timeout = null;
 
 	let pokerManager = $state({
-		team: 'NFS',
+		team: '',
 		cards: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
 		state: 'waiting',
-		userStory: 'Faire un planning poker'
+		userStory: ''
 	});
 
 	let users = $state([]);
 
 	const canStarVote = () => {
 		if (pokerManager.userStory == '') {
-			return toast.error('No User Story Write');
+			return toast.error("Aucune User Story n'a été définie.");
 		}
 
 		if (users?.length < 1) {
-			return toast.error('No User Found');
+			return toast.error('Aucune participant trouvé.');
 		}
 
 		changeState('playing');
@@ -44,6 +45,13 @@
 				manager: true
 			})}`
 		);
+
+		ws.onclose = (e) => {
+			if (e.reason == "Room doesn't exist") {
+				toast.error("Ce poker planning n'existe pas !");
+				goto('/create');
+			}
+		};
 
 		ws.onmessage = (e) => {
 			const payload = JSON.parse(e.data);
@@ -67,6 +75,7 @@
 
 	onMount(() => {
 		url = `${window.location.protocol}//${window.location.host}/rooms/${roomId}`;
+
 		connect();
 	});
 
@@ -90,12 +99,12 @@
 				<span in:fly|local={{ easing: backOut, x: -25 }}> Poker Planning </span>
 			</h1>
 
-			<div class="me">Bienvenue NFS!</div>
+			<div class="me">Bienvenue {pokerManager.team}!</div>
 
 			<Code code={roomId} {url} />
 		</div>
 
-		<label>Define here your user story:</label>
+		<label>Définissez ici votre user story:</label>
 		<TextArea
 			bind:value={pokerManager.userStory}
 			disabled={pokerManager.state == 'result' || pokerManager.state == 'waiting'}
@@ -108,10 +117,10 @@
 				<button
 					on:click={() => {
 						changeState('result');
-					}}>Finish Voting</button
+					}}>Terminer Le Vote</button
 				>
 			{:else if pokerManager.state == 'result' || pokerManager.state == 'waiting'}
-				<button on:click={canStarVote}>Star Voting</button>
+				<button on:click={canStarVote}>Commencer Le Vote</button>
 			{/if}
 		</div>
 	</div>
@@ -135,7 +144,7 @@
 
 		{#if users?.length < 1}
 			<div>
-				<p>No participants for the poker planning.</p>
+				<p>Pas de participants pour la planification du poker.</p>
 			</div>
 		{/if}
 	</div>
@@ -209,10 +218,12 @@
 				flex-direction: row;
 				justify-content: space-between;
 				align-items: center;
-				height: 3em;
+				height: 3.5em;
 				padding: 0 1em;
 				border-radius: 5px;
 				background-color: var(--primary-200);
+				font-weight: 600;
+				color: var(--primary-950);
 
 				.profile {
 					display: flex;
@@ -222,8 +233,8 @@
 					img {
 						border-radius: 100%;
 						border: 2px solid var(--primary-700);
-						width: 30px;
-						height: 30px;
+						width: 40px;
+						height: 40px;
 					}
 				}
 

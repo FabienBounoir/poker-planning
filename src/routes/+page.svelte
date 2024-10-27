@@ -10,7 +10,7 @@
 				goto('/create');
 			}}
 		>
-			Crée
+			Créer
 		</button>
 
 		<button
