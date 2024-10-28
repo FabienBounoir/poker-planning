@@ -4,12 +4,15 @@
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { elasticInOut, quintInOut, quintOut } from 'svelte/easing';
+	import { onDestroy, onMount } from 'svelte';
+	import { quintInOut, quintOut } from 'svelte/easing';
+	import { Confetti } from 'svelte-confetti';
+	import myshades from '$lib/myshades';
 
 	let roomId = $page.params.id;
 
 	let pokerManager = $state(null);
+	let hexcode = $state('');
 
 	let ws;
 
@@ -29,8 +32,14 @@
 		}
 	});
 
+	onDestroy(() => {
+		if (ws) {
+			ws.close();
+		}
+	});
+
 	$effect(() => {
-		console.log("username update")
+		console.log('username update');
 		window.localStorage.setItem('username', username);
 	});
 
@@ -61,16 +70,21 @@
 						if (payload.data.state == 'playing' && payload.data.state != pokerManager?.state) {
 							selectedLetter = null;
 							submittedLetter = null;
-						} else if (payload.data.state == 'result') {
-							if (payload.data.result) {
+						} else if (payload?.data?.state == 'result') {
+							if (payload?.data?.result) {
 								resultsItem = payload.data.result;
 							}
 
-							if (payload.data.defender) {
+							if (payload?.data?.defender) {
 								resultDefender = payload.data.defender;
 							}
 						}
 
+						if (pokerManager?.hexcode != payload?.data?.hexcode) {
+							myshades({
+								primary: payload.data.hexcode
+							});
+						}
 						pokerManager = payload.data;
 						break;
 					case 'success':
@@ -80,6 +94,12 @@
 								timeout = null;
 							}
 						}
+						break;
+
+					case 'hexcode':
+						myshades({
+							primary: payload.data.hexcode
+						});
 						break;
 				}
 			};
@@ -112,6 +132,20 @@
 		const match = userStory.match(/NFS-\d+/i);
 		return match ? `https://portail.agir.orange.com/browse/${match[0]}` : false;
 	};
+
+	const sendHexa = () => {
+		if (hexcode.toLowerCase() == 'random') {
+			hexcode = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+			if (hexcode.length < 7) hexcode = hexcode.padEnd(7, '0');
+		}
+
+		const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+		if (!hexColorRegex.test(hexcode)) {
+			return toast.error(`Le code hexa '${hexcode}' n'est pas valide`);
+		}
+
+		ws.send(JSON.stringify({ type: 'hexcode', data: { hexcode } }));
+	};
 </script>
 
 {#if pokerManager == null}
@@ -126,6 +160,10 @@
 	</div>
 {:else}
 	<main>
+		<form on:submit|preventDefault={sendHexa} style="display: none;">
+			<input type="text" bind:value={hexcode} placeholder="#FF00EE" disabled={submitting} />
+		</form>
+
 		{#if pokerManager.state === 'waiting'}
 			<h1>En attente du lancement des votes...</h1>
 		{:else if pokerManager.state === 'playing'}
@@ -133,7 +171,11 @@
 				<div class="user-story" transition:scale={{ duration: 500 }}>
 					<h3>User story</h3>
 					{#if includeUS_ID(pokerManager.userStory)}
-						<h1><a href={includeUS_ID(pokerManager.userStory)}>{pokerManager.userStory}</a></h1>
+						<h1>
+							<a target="_blank" href={includeUS_ID(pokerManager.userStory)}
+								>{pokerManager.userStory}</a
+							>
+						</h1>
 					{:else}
 						<h1>{pokerManager.userStory}</h1>
 					{/if}
@@ -174,6 +216,31 @@
 
 				<div class="result" style="--item:{resultsItem?.length > 4 ? 4 : resultsItem?.length}">
 					{#if resultsItem}
+						{#if resultsItem.length == 1 && resultsItem?.[0]?.[1]?.length > 1}
+							<div
+								style="
+							position: fixed;
+							top: -50px;
+							left: 0;
+							height: 100vh;
+							width: 100vw;
+							display: flex;
+							justify-content: center;
+							overflow: hidden;
+							pointer-events: none;"
+							>
+								<Confetti
+									x={[-5, 5]}
+									y={[0, 0.1]}
+									delay={[500, 2000]}
+									infinite
+									duration="5000"
+									amount="200"
+									fallDistance="100vh"
+								/>
+							</div>
+						{/if}
+
 						{#each resultsItem as [item, players]}
 							<div class="result-item">
 								<h1>{item}</h1>
@@ -187,7 +254,7 @@
 							</div>
 						{/each}
 					{:else}
-						<p>Aucun Vote à Afficher....</p>
+						<p class="no-vote">Aucun vote à afficher 🥲</p>
 					{/if}
 				</div>
 			</div>
@@ -203,6 +270,12 @@
 		justify-content: center;
 		align-items: center;
 		padding: 2em 0;
+
+		.no-vote {
+			font-size: 1.5em;
+			font-weight: 800;
+			color: var(--primary-600);
+		}
 
 		> h1 {
 			font-size: 1.2em;
@@ -313,6 +386,7 @@
 
 		button:disabled {
 			opacity: 0.5;
+			cursor: not-allowed;
 		}
 
 		.user-story {
@@ -337,22 +411,6 @@
 			gap: 2vw;
 			flex-wrap: wrap;
 			justify-content: center;
-
-			& > * {
-				transition: filter 0.3s;
-			}
-
-			& > *:hover {
-				/* Annule le grisage pour la carte survolée */
-				filter: none;
-				background-color: red !important;
-			}
-
-			& > *:not(:hover) {
-				/* Grise les autres cartes */
-				filter: grayscale(1) !important;
-				pointer-events: none; /* Empêche les autres cartes d'être sélectionnées lors du survol */
-			}
 		}
 
 		.hidden {

@@ -79,23 +79,28 @@ export const createWSSGlobalInstance = (rooms) => {
 
                         if (itemsName.length > 0) {
                             try {
-                                const item = itemsName[Math.floor(Math.random() * itemsName.length)]
-                                const itemUsers = results.get(item)
-                                const userSelected = itemUsers[Math.floor(Math.random() * itemUsers.length)]
+                                if (itemsName.length > 1) {
+                                    const item = itemsName[Math.floor(Math.random() * itemsName.length)]
+                                    const itemUsers = results.get(item)
+                                    const userSelected = itemUsers[Math.floor(Math.random() * itemUsers.length)]
 
-                                element.defender = {
-                                    name: userSelected,
-                                    item
+                                    object.data.defender = element.defender = {
+                                        name: userSelected,
+                                        item
+                                    }
                                 }
 
                                 let resultArray = Array.from(results).sort((a, b) => b[1].length - a[1].length)
 
-                                element.result = resultArray
+                                object.data.result = element.result = resultArray
                             }
                             catch (e) {
                                 console.error("ERROR WHEN PROCESS RESULT", e)
                             }
                         }
+                    }
+                    else {
+                        object.data.result = object.data.defender = null
                     }
 
                     object.emit('game-update', element);
@@ -149,8 +154,15 @@ export const createWSSGlobalInstance = (rooms) => {
             const userId = uuidv4();
             console.log('New connection with ID:', userId);
 
-            ws.userId = userId;
+            //check if room as timeout setup
+            if (room.timeout) {
+                clearTimeout(room.timeout);
+                delete room.timeout;
+                console.log("Timeout removed for room", roomId, "because user", userId, "reconnected.");
+            }
 
+            ws.userId = userId;
+            //send to user actual state of game
             ws.send(JSON.stringify({ type: "game-update", data: room.data }));
 
             const player = {
@@ -164,11 +176,18 @@ export const createWSSGlobalInstance = (rooms) => {
             room.emitPlayers();
 
             ws.on('close', () => {
+                console.log(`User ${userId} disconnected`)
                 room.players.delete(userId);
+
                 if (room.players.size) {
                     room.emitPlayers();
                 } else {
-                    rooms.delete(roomId);
+                    room.timeout = setTimeout(() => {
+                        if (!room.players.size) {
+                            rooms.delete(roomId);
+                            console.log(`Room ${roomId} supprimée après inactivité.`);
+                        }
+                    }, 3600000);
                 }
             });
 
@@ -203,6 +222,10 @@ export const createWSSGlobalInstance = (rooms) => {
                         room.emitUpdateGame(data.state)
                     }
                         break;
+                    case 'hexcode':
+                        room.data.hexcode = data.hexcode
+                        room.emit("hexcode", { hexcode: data.hexcode }, false)
+                        break;
 
                     default: {
                         console.log(`EVENT ${type} doesn't exist`)
@@ -219,7 +242,7 @@ export const createWSSGlobalInstance = (rooms) => {
             /** @type {string} */ type,
             /** @type {string} */ team,
         ) => {
-            if (type && !["TSHIRT", "FIBONACCI", "POWEROF2"].includes(type)) {
+            if (type && !["TSHIRT", "FIBONACCI", "POWEROF2", "SEQUENTIAL", "TSHIRT_HALF"].includes(type)) {
                 console.warn(`Error: want to create room with type: ${type}`)
                 return ws.close(1000, "Type doesn't exist");
             }
@@ -247,11 +270,26 @@ export const createWSSGlobalInstance = (rooms) => {
                     object.cards = ["1", "2", "4", "8", "16", "32"];
                     break;
 
+                case "SEQUENTIAL":
+                    object.cards = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+                    break;
+
+                case "TSHIRT_HALF":
+                    object.cards = ['XS', 'S', 'M', 'M/L', 'L', 'XL'];
+                    break;
+
                 default:
                     console.warn(`Unknown type: ${type}`);
                     break;
             }
 
+
+            let hexcode = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+            if (hexcode.length < 7) hexcode = hexcode.padEnd(7, '0');
+
+            if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hexcode)) {
+                object.hexcode = hexcode
+            }
 
             rooms.set(roomId, { initialisation: true, data: object });
             console.log("NEW ROOM CREATE", rooms)

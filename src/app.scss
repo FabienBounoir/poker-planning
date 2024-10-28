@@ -30,6 +30,10 @@
     transition: none cubic-bezier(0.1, 1.25, 0.25, 1) 600ms;
 }
 
+* {
+    transition: background-color 3s, color 3s !important;
+}
+
 *::selection {
     background-color: var(--primary-300);
     color: var(--on-primary-700);

@@ -35,7 +35,8 @@
 		cursor: pointer;
 		transition:
 			filter 0.3s,
-			scale 0.3s;
+			scale 0.3s,
+			background-color 3s !important;
 
 		&:hover {
 			scale: 1.05;

@@ -38,7 +38,9 @@
 		}
 
 		h3 {
-			transition: filter 0.3s;
+			transition:
+				filter 0.3s,
+				color 3s !important;
 			filter: blur(7px);
 			font-size: 2em;
 			color: var(--primary-600);

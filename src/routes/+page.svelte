@@ -44,10 +44,32 @@
 		.button-container {
 			display: flex;
 			flex-direction: row;
-			gap: 1em;
+			gap: 2em;
 			width: 40%;
 			button {
 				width: 100%;
+				transition: scale 0.3s !important;
+
+				&:hover {
+					scale: 1.05;
+				}
+			}
+		}
+	}
+
+	@media screen and (max-width: 950px) {
+		main {
+			h1 {
+				font-size: 7vw;
+			}
+			.button-container {
+				display: flex;
+				flex-direction: column;
+				width: 80%;
+				gap: 1em;
+				button {
+					width: 100%;
+				}
 			}
 		}
 	}

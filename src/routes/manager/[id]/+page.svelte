@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import Code from '$lib/components/Code.svelte';
 	import TextArea from '$lib/components/Textarea.svelte';
+	import myshades from '$lib/myshades';
 	import { onDestroy, onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { backOut } from 'svelte/easing';
@@ -12,8 +13,6 @@
 	let url = $state('');
 
 	let ws: WebSocket;
-
-	let timeout = null;
 
 	let pokerManager = $state({
 		team: '',
@@ -63,12 +62,28 @@
 						users = payload.data;
 					}
 					break;
-				case 'state': {
-					pokerManager.state = payload.data.state;
-				}
-				case 'game-update': {
-					pokerManager = payload.data;
-				}
+				case 'state':
+					{
+						pokerManager.state = payload.data.state;
+					}
+					break;
+				case 'game-update':
+					{
+						if (pokerManager?.hexcode != payload?.data?.hexcode) {
+							myshades({
+								primary: payload.data.hexcode
+							});
+						}
+						pokerManager = payload.data;
+					}
+					break;
+				case 'hexcode':
+					{
+						myshades({
+							primary: payload.data.hexcode
+						});
+					}
+					break;
 			}
 		};
 	};
@@ -248,7 +263,7 @@
 					aspect-ratio: 1;
 					background-color: red;
 					border-radius: 999999px;
-					transition: background-color 0.3s;
+					transition: background-color 0.3s !important;
 
 					&.selectedLetter {
 						background-color: green;

@@ -1,7 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { onDestroy, onMount } from 'svelte';
-	import { bounceInOut, elasticInOut, quintOut } from 'svelte/easing';
+	import { quintOut } from 'svelte/easing';
 	import { scale } from 'svelte/transition';
 
 	let type = $state();
@@ -41,7 +41,9 @@
 	let choices = [
 		{ id: 'TSHIRT', text: `T-shirts (XS, S, M, L, XL)` },
 		{ id: 'FIBONACCI', text: `Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21 )` },
-		{ id: 'POWEROF2', text: `Powers of 2 ( 0, 1, 2, 4, 8, 16, 32 )` }
+		{ id: 'POWEROF2', text: `Powers of 2 ( 0, 1, 2, 4, 8, 16, 32 )` },
+		{ id: 'SEQUENTIAL', text: `Sequential (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)` },
+		{ id: 'TSHIRT_HALF', text: `T-shirts (XS, S, M, M/L, L, XL)` }
 	];
 
 	onMount(() => {
@@ -69,7 +71,7 @@
 </script>
 
 <main in:scale={{ duration: 300, easing: quintOut }}>
-	<h1>Create un nouveau poker planning <span class="animateJoker">🃏</span></h1>
+	<h1>Créer un nouveau poker planning <span class="animateJoker">🃏</span></h1>
 	<form on:submit|preventDefault={create}>
 		<input bind:value={team} placeholder="Nom De La Team" />
 		<select bind:value={type}>
@@ -79,7 +81,7 @@
 				</option>
 			{/each}
 		</select>
-		<button type="submit" disabled={submitting || !team}>Crée</button>
+		<button type="submit" disabled={submitting || !team}>Créer</button>
 	</form>
 </main>
 
