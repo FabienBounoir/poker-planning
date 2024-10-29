@@ -6,8 +6,7 @@
 
 	let type = $state();
 	let team = $state('');
-
-	let submitting = false;
+	let submitting = $state(false);
 
 	let ws;
 

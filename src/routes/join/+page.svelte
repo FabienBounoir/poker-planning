@@ -3,8 +3,7 @@
 	import { toast } from 'svelte-sonner';
 
 	let roomId = '';
-
-	let submitting = false;
+	let submitting = $state(false);
 
 	const join = async () => {
 		submitting = true;
@@ -35,7 +34,7 @@
 		<input
 			type="text"
 			bind:value={roomId}
-			on:input={handleInput}
+			oninput={handleInput}
 			placeholder="XXX-XXX"
 			disabled={submitting}
 		/>
