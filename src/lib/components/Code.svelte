@@ -17,7 +17,7 @@
 	};
 </script>
 
-<p>Your room code:</p>
+<p>Le code de votre salle :</p>
 <div class="code-container" onclick={displayCopyToClipboard}>
 	<h3>{displayText}</h3>
 </div>

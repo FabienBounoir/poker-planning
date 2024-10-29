@@ -27,6 +27,10 @@
 	let resultsItem = $state(null);
 	let resultDefender = $state(null);
 
+	let players = $state(null);
+
+	let existingPositions = [];
+
 	onMount(() => {
 		if (window.localStorage.getItem('username')) {
 			username = window.localStorage.getItem('username');
@@ -43,6 +47,10 @@
 		if (ws) {
 			ws.close();
 		}
+	});
+
+	$effect(() => {
+		existingPositions = players ? [] : [];
 	});
 
 	$effect(() => {
@@ -110,6 +118,9 @@
 							}
 						}
 						break;
+					case 'players':
+						players = payload.data;
+						break;
 
 					case 'hexcode':
 						myshades({
@@ -165,6 +176,30 @@
 
 		ws.send(JSON.stringify({ type: 'hexcode', data: { hexcode } }));
 	};
+
+	const isPositionFree = (top, left) => {
+		// Vérifie que la position ne chevauche pas un autre élément existant
+		return !existingPositions.some(
+			(pos) => Math.abs(pos.top - top) < 10 && Math.abs(pos.left - left) < 10 // Ajuster pour tolérance de chevauchement
+		);
+	};
+
+	const getRandomPosition = () => {
+		let top, left;
+		let tries = 0;
+		const maxTries = 10; // Nombre maximum de tentatives pour trouver une position libre
+
+		do {
+			top = Math.random() < 0.5 ? Math.random() * 20 + 20 : Math.random() * 20 + 60;
+			left = Math.random() < 0.5 ? Math.random() * 20 + 20 : Math.random() * 20 + 60;
+			tries++;
+		} while (!isPositionFree(top, left) && tries < maxTries);
+
+		// Enregistre la position trouvée si elle est libre
+		if (tries < maxTries) existingPositions.push({ top, left });
+
+		return `--top: ${top}vh; --left: ${left}vw;`; // transform: scale(1); opacity: 1;
+	};
 </script>
 
 {#if pokerManager == null}
@@ -184,7 +219,23 @@
 		</form>
 
 		{#if pokerManager.state === 'waiting'}
+			<h3 class="player-count-display">
+				{players?.length || 0} player{players?.length > 1 ? 's' : ''}
+			</h3>
+
 			<h1>En attente du lancement des votes...</h1>
+			{#if players}
+				{#each players as player}
+					<div
+						class="player-display"
+						style={getRandomPosition()}
+						transition:scale={{ duration: 500 }}
+					>
+						<img src="https://api.dicebear.com/9.x/dylan/svg?seed={player.name}" />
+						<span>{player.name}</span>
+					</div>
+				{/each}
+			{/if}
 		{:else if pokerManager.state === 'playing'}
 			{#if pokerManager?.userStory}
 				<div class="user-story" transition:scale={{ duration: 500 }}>
@@ -402,6 +453,37 @@
 		width: 100%;
 		min-height: 100dvh;
 		gap: 5dvh;
+
+		.player-count-display {
+			position: fixed;
+			transform: translate(-50%, 0);
+			padding: 1em;
+			top: 0;
+			left: 50%;
+			color: var(--primary-700);
+			font-weight: 800;
+			font-size: 1.5em;
+			border-radius: 5px;
+			background-color: var();
+		}
+
+		.player-display {
+			position: fixed;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 0.5em;
+			transform: translate(-50%, -50%);
+			top: var(--top, 30);
+			left: var(--left, 50);
+
+			img {
+				border-radius: 100%;
+				border: 2px solid var(--primary-700);
+				width: 50px;
+				height: 50px;
+			}
+		}
 
 		button:disabled {
 			opacity: 0.5;

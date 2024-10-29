@@ -50,9 +50,9 @@ export const createWSSGlobalInstance = (rooms) => {
                     });
 
                     object.players.forEach((player) => {
-                        if (player.manager) {
-                            player.socket.send(JSON.stringify({ type: "players", data: players }));
-                        }
+                        // if (player.manager) {
+                        player.socket.send(JSON.stringify({ type: "players", data: players }));
+                        // }
                     });
                 },
                 emitUpdateGame(state) {

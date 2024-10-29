@@ -159,6 +159,14 @@
 	</div>
 
 	<div class="information">
+		{#if users?.length < 1}
+			<div>
+				<p>Pas de participants pour la planification du poker.</p>
+			</div>
+		{:else}
+			<p style="text-align: end;">{users.length} player{users.length > 1 ? 's' : ''}</p>
+		{/if}
+
 		{#each users as user}
 			<div class="user">
 				<div class="profile">
@@ -174,12 +182,6 @@
 				{/if}
 			</div>
 		{/each}
-
-		{#if users?.length < 1}
-			<div>
-				<p>Pas de participants pour la planification du poker.</p>
-			</div>
-		{/if}
 	</div>
 </main>
 

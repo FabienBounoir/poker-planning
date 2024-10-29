@@ -17,7 +17,7 @@
 	<pre aria-hidden="true" style="min-height: {minHeight}; max-height: {maxHeight}">{value +
 			'\n'}</pre>
 
-	<textarea disabled={!disabled} bind:value></textarea>
+	<textarea disabled={!disabled} bind:value placeholder="Description de votre US"></textarea>
 </div>
 
 <style lang="scss">
