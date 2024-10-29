@@ -14,9 +14,10 @@
 	let pokerManager = $state(null);
 	let hexcode = $state('');
 
-	let ws;
+	let ws: WebSocket;
 
 	let timeout: number | null;
+	let interval: number | null;
 
 	let selectedLetter = $state(null);
 	let username = $state('');
@@ -30,18 +31,32 @@
 		if (window.localStorage.getItem('username')) {
 			username = window.localStorage.getItem('username');
 		}
+
+		interval = heartbeat();
 	});
 
 	onDestroy(() => {
+		if (interval) {
+			clearInterval(interval);
+		}
+
 		if (ws) {
 			ws.close();
 		}
 	});
 
 	$effect(() => {
-		console.log('username update');
 		window.localStorage.setItem('username', username);
 	});
+
+	const heartbeat = () => {
+		return setInterval(() => {
+			if (ws && ws.readyState === WebSocket.OPEN) {
+				console.log('SEND PING', ws);
+				ws.send(JSON.stringify({ type: 'ping', data: { message: 'ping' } }));
+			}
+		}, 10000);
+	};
 
 	const connect = () => {
 		if (username.trim() == '') {
@@ -110,6 +125,10 @@
 					goto('/join');
 				}
 			};
+
+			ws.onerror = (e) => {
+				console.error('WEBSOCKET ERROR', e);
+			};
 		} catch (e) {
 			console.error('Websocket error', e);
 		} finally {
@@ -153,14 +172,14 @@
 		<h1>
 			Bienvenue <span class="rotateAnimation">👋</span> <br />Comment tu t'appelles déjà ?<br />
 		</h1>
-		<form on:submit|preventDefault={connect}>
+		<form onsubmit={connect}>
 			<input type="text" bind:value={username} placeholder="Jean Bon" disabled={submitting} />
 			<button type="submit" disabled={submitting}>Valider</button>
 		</form>
 	</div>
 {:else}
 	<main>
-		<form on:submit|preventDefault={sendHexa} style="display: none;">
+		<form onsubmit={sendHexa} style="display: none;">
 			<input type="text" bind:value={hexcode} placeholder="#FF00EE" disabled={submitting} />
 		</form>
 
@@ -191,7 +210,7 @@
 			<button
 				class:hidden={selectedLetter === null}
 				disabled={submittedLetter != null && selectedLetter == submittedLetter}
-				on:click={() => {
+				onclick={() => {
 					sendVote();
 				}}
 			>

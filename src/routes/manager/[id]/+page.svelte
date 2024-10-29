@@ -13,6 +13,7 @@
 	let url = $state('');
 
 	let ws: WebSocket;
+	let interval: number | null;
 
 	let pokerManager = $state({
 		team: '',
@@ -69,7 +70,7 @@
 					break;
 				case 'game-update':
 					{
-						if (pokerManager?.hexcode != payload?.data?.hexcode) {
+						if (payload?.data?.hexcode && pokerManager?.hexcode != payload?.data?.hexcode) {
 							myshades({
 								primary: payload.data.hexcode
 							});
@@ -86,15 +87,23 @@
 					break;
 			}
 		};
+
+		ws.onerror = (e) => {
+			console.error('WEBSOCKET ERROR', e);
+		};
 	};
 
 	onMount(() => {
 		url = `${window.location.protocol}//${window.location.host}/rooms/${roomId}`;
-
 		connect();
+		interval = heartbeat();
 	});
 
 	onDestroy(() => {
+		if (interval) {
+			clearInterval(interval);
+		}
+
 		if (ws) {
 			ws.close();
 		}
@@ -102,6 +111,15 @@
 
 	const changeState = (state) => {
 		ws.send(JSON.stringify({ type: 'state', data: { state, userStory: pokerManager.userStory } }));
+	};
+
+	const heartbeat = () => {
+		return setInterval(() => {
+			if (ws && ws.readyState === WebSocket.OPEN) {
+				console.log('SEND PING', ws);
+				ws.send(JSON.stringify({ type: 'ping', data: { message: 'ping' } }));
+			}
+		}, 10000);
 	};
 </script>
 
@@ -130,12 +148,12 @@
 		<div class="buttons">
 			{#if pokerManager.state == 'playing'}
 				<button
-					on:click={() => {
+					onclick={() => {
 						changeState('result');
 					}}>Terminer Le Vote</button
 				>
 			{:else if pokerManager.state == 'result' || pokerManager.state == 'waiting'}
-				<button on:click={canStarVote}>Commencer Le Vote</button>
+				<button onclick={canStarVote}>Commencer Le Vote</button>
 			{/if}
 		</div>
 	</div>

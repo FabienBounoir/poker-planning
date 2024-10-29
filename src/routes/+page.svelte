@@ -6,7 +6,7 @@
 	<h1>Another Poker Planning</h1>
 	<div class="button-container">
 		<button
-			on:click={() => {
+			onclick={() => {
 				goto('/create');
 			}}
 		>
@@ -14,7 +14,7 @@
 		</button>
 
 		<button
-			on:click={() => {
+			onclick={() => {
 				goto('/join');
 			}}>Rejoindre</button
 		>

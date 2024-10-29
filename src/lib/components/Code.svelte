@@ -18,7 +18,7 @@
 </script>
 
 <p>Your room code:</p>
-<div class="code-container" on:click={displayCopyToClipboard}>
+<div class="code-container" onclick={displayCopyToClipboard}>
 	<h3>{displayText}</h3>
 </div>
 

@@ -31,7 +31,7 @@
 		Hummm <span class="animateDetective">🕵️</span>,<br />Quel poker planning souhaites-tu rejoindre
 		?
 	</h1>
-	<form on:submit|preventDefault={join}>
+	<form onsubmit={join}>
 		<input
 			type="text"
 			bind:value={roomId}
@@ -41,7 +41,7 @@
 		/>
 		<button type="submit" disabled={submitting}>Rejoindre</button>
 		<span
-			on:click={() => {
+			onclick={() => {
 				goto('/create');
 			}}>Pas de code ?</span
 		>

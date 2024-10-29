@@ -196,6 +196,7 @@ export const createWSSGlobalInstance = (rooms) => {
                 const { type, data } = JSON.parse(raw.toString());
 
                 switch (type) {
+                    //Game event
                     case 'vote': {
                         const player = room.players.get(userId);
                         if (!room?.data?.cards?.includes?.(data.card)) {
@@ -222,6 +223,11 @@ export const createWSSGlobalInstance = (rooms) => {
                         room.emitUpdateGame(data.state)
                     }
                         break;
+                    case 'ping':
+                        ws.send(JSON.stringify({ type: "pong", success: true }));
+                        break;
+
+                    //Fun Event
                     case 'hexcode':
                         room.data.hexcode = data.hexcode
                         room.emit("hexcode", { hexcode: data.hexcode }, false)
@@ -281,14 +287,6 @@ export const createWSSGlobalInstance = (rooms) => {
                 default:
                     console.warn(`Unknown type: ${type}`);
                     break;
-            }
-
-
-            let hexcode = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-            if (hexcode.length < 7) hexcode = hexcode.padEnd(7, '0');
-
-            if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hexcode)) {
-                object.hexcode = hexcode
             }
 
             rooms.set(roomId, { initialisation: true, data: object });

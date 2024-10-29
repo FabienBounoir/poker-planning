@@ -7,7 +7,7 @@
 	class:gray={cardSelected && cardSelected != content}
 	class:selected={cardSelected === content}
 	class:submit={submittedLetter === content}
-	on:click={() => {
+	onclick={() => {
 		if (cardSelected === content) {
 			cardSelected = null;
 		} else {

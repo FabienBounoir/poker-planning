@@ -72,7 +72,7 @@
 
 <main in:scale={{ duration: 300, easing: quintOut }}>
 	<h1>Créer un nouveau poker planning <span class="animateJoker">🃏</span></h1>
-	<form on:submit|preventDefault={create}>
+	<form onsubmit={create}>
 		<input bind:value={team} placeholder="Nom De La Team" />
 		<select bind:value={type}>
 			{#each choices as choice}
