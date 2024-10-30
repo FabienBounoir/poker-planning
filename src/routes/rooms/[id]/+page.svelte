@@ -34,8 +34,6 @@
 		if (window.localStorage.getItem('username')) {
 			username = window.localStorage.getItem('username');
 		}
-
-		// interval = heartbeat();
 	});
 
 	onDestroy(() => {
@@ -44,7 +42,7 @@
 		}
 
 		if (io) {
-			io.disconnect();
+			io.emit('leave-room', { roomId });
 		}
 	});
 

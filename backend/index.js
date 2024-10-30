@@ -4,15 +4,13 @@ const { createRoomId, rooms } = require('./rooms');
 const { createSocketIOServer } = require('./server');
 const cors = require('cors')
 
-// Créez une instance Express pour les routes API
 const app = express();
 
-// Middleware pour interpréter le JSON dans les requêtes
 app.use(express.json());
 
 app.use(cors({
     origin: "*",
-    methods: ["GET", "POST", "PATCH", "OPTIONS", "PUT"]
+    methods: ["GET", "POST", "PATCH", "OPTIONS", "PUT", "OPTIONS"]
 }))
 
 app.use((req, res, next) => {
@@ -33,7 +31,6 @@ app.get("/room", (req, res) => {
     return res.status(400).json({ error: "Room doesn't exist." });
 })
 
-// Route API pour créer une nouvelle salle
 app.post('/room', (req, res) => {
     const { type, team } = req.body;
 
@@ -44,7 +41,6 @@ app.post('/room', (req, res) => {
     const roomId = createRoomId();
     const formattedTeam = (team || 'NFS').trim().charAt(0).toUpperCase() + (team || 'NFS').slice(1).toLowerCase();
 
-    // Initialisation des données de la salle
     const roomData = {
         team: formattedTeam,
         cards: [],
@@ -52,7 +48,6 @@ app.post('/room', (req, res) => {
         userStory: ''
     };
 
-    // Associer les cartes en fonction du type de salle
     switch (type) {
         case "TSHIRT":
             roomData.cards = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
@@ -73,21 +68,16 @@ app.post('/room', (req, res) => {
             return res.status(400).json({ error: "Unknown room type" });
     }
 
-    // Ajouter la nouvelle salle à la liste des salles
     rooms.set(roomId, { initialisation: true, data: roomData });
     console.log("NEW ROOM CREATED", rooms);
 
-    // Répondre avec l'ID de la salle
     res.json({ roomId });
 });
 
-// Création du serveur HTTP et intégration d'Express
 const server = http.createServer(app);
 
-// Créez le serveur Socket.IO en l'associant au serveur HTTP
 createSocketIOServer(server, rooms);
 
-// Démarrez le serveur
 const PORT = 5876;
 server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
