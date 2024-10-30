@@ -4,16 +4,17 @@
 	import Code from '$lib/components/Code.svelte';
 	import TextArea from '$lib/components/Textarea.svelte';
 	import myshades from '$lib/myshades';
-	import { io } from '$lib/webSocketConnection';
+	import type { Socket } from 'socket.io-client';
 	import { onDestroy, onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { backOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
+	import ioClient from 'socket.io-client';
 
 	let roomId = $page.params.id;
 	let url = $state('');
 
-	let ws: WebSocket;
+	let io: Socket;
 	let interval: number | null;
 
 	let pokerManager = $state({
@@ -38,7 +39,7 @@
 	};
 
 	const connect = () => {
-		const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+		const io = ioClient(import.meta.env.VITE_BACKEND_URL);
 		io.emit('join', { roomId, name: 'ADMIN', manager: true });
 		// 858-616
 
@@ -80,7 +81,7 @@
 
 	onDestroy(() => {
 		if (io) {
-			io.emit('leave-room', { roomId });
+			io.disconnect();
 		}
 	});
 

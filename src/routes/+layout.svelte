@@ -1,8 +1,6 @@
 <script>
 	import { Toaster } from 'svelte-sonner';
 	import '../app.scss';
-
-	import { io } from '$lib/webSocketConnection.js';
 </script>
 
 <Toaster position="bottom-left" richColors />

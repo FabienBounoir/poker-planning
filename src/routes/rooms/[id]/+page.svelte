@@ -8,14 +8,15 @@
 	import { quintInOut, quintOut } from 'svelte/easing';
 	import { Confetti } from 'svelte-confetti';
 	import myshades from '$lib/myshades';
-	import { io } from '$lib/webSocketConnection';
+	import type { Socket } from 'socket.io-client';
+	import ioClient from 'socket.io-client';
 
 	let roomId = $page.params.id;
 
 	let pokerManager = $state(null);
 	let hexcode = $state('');
 
-	let ws: WebSocket;
+	let io: Socket;
 
 	let timeout: number | null;
 	let interval: number | null;
@@ -46,7 +47,7 @@
 		}
 
 		if (io) {
-			io.emit('leave-room', { roomId, name: username });
+			io.disconnect();
 		}
 	});
 
@@ -65,13 +66,7 @@
 
 		try {
 			submitting = true;
-			const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-			// ws = new WebSocket(
-			// 	`${protocol}//${window.location.host}/websocket?${new URLSearchParams({
-			// 		roomId,
-			// 		username
-			// 	})}`
-			// );
+			const io = ioClient(import.meta.env.VITE_BACKEND_URL);
 
 			io.emit('join', { roomId, name: username });
 

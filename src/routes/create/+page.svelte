@@ -1,9 +1,8 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { quintOut } from 'svelte/easing';
 	import { scale } from 'svelte/transition';
-	import { io } from '$lib/webSocketConnection.js';
 
 	let type = $state();
 	let team = $state('');
