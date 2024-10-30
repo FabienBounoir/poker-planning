@@ -2,18 +2,29 @@
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 
-	let roomId = '';
+	let roomId = $state('');
 	let submitting = $state(false);
 
 	const join = async () => {
 		submitting = true;
-		try {
-			await goto(`/rooms/${roomId}`);
-		} catch (error) {
-			toast.warning("Ce poker planning n'existe pas.");
-		} finally {
-			submitting = false;
+
+		const myHeaders = new Headers();
+		myHeaders.append('Content-Type', 'application/json');
+
+		const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/room?roomId=${roomId}`, {
+			method: 'GET',
+			headers: myHeaders
+		})
+			.then((response) => response.json())
+			.catch((error) => console.error(error));
+
+		if (res && res.roomId) {
+			return goto(`/rooms/${res.roomId}`);
 		}
+
+		toast.error("La room n'existe pas...");
+
+		submitting = false;
 	};
 
 	function handleInput(event) {

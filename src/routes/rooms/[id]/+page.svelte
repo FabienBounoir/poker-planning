@@ -8,6 +8,7 @@
 	import { quintInOut, quintOut } from 'svelte/easing';
 	import { Confetti } from 'svelte-confetti';
 	import myshades from '$lib/myshades';
+	import { io } from '$lib/webSocketConnection';
 
 	let roomId = $page.params.id;
 
@@ -36,7 +37,7 @@
 			username = window.localStorage.getItem('username');
 		}
 
-		interval = heartbeat();
+		// interval = heartbeat();
 	});
 
 	onDestroy(() => {
@@ -44,8 +45,8 @@
 			clearInterval(interval);
 		}
 
-		if (ws) {
-			ws.close();
+		if (io) {
+			io.emit('leave-room', { roomId, name: username });
 		}
 	});
 
@@ -57,15 +58,6 @@
 		window.localStorage.setItem('username', username);
 	});
 
-	const heartbeat = () => {
-		return setInterval(() => {
-			if (ws && ws.readyState === WebSocket.OPEN) {
-				console.log('SEND PING', ws);
-				ws.send(JSON.stringify({ type: 'ping', data: { message: 'ping' } }));
-			}
-		}, 10000);
-	};
-
 	const connect = () => {
 		if (username.trim() == '') {
 			return toast.info("J'aimerai savoir comment tu t'appelles !");
@@ -74,72 +66,76 @@
 		try {
 			submitting = true;
 			const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-			ws = new WebSocket(
-				`${protocol}//${window.location.host}/websocket?${new URLSearchParams({
-					roomId,
-					username
-				})}`
-			);
+			// ws = new WebSocket(
+			// 	`${protocol}//${window.location.host}/websocket?${new URLSearchParams({
+			// 		roomId,
+			// 		username
+			// 	})}`
+			// );
 
-			ws.onmessage = (e) => {
-				const payload = JSON.parse(e.data);
-				console.log('Event Payload', payload);
+			io.emit('join', { roomId, name: username });
 
-				switch (payload.type) {
-					case 'game-update':
-						resultsItem = null;
-						resultDefender = null;
+			io.on('game-update', (payload) => {
+				console.log('payload', payload);
+				resultsItem = null;
+				resultDefender = null;
 
-						if (payload.data.state == 'playing' && payload.data.state != pokerManager?.state) {
-							selectedLetter = null;
-							submittedLetter = null;
-						} else if (payload?.data?.state == 'result') {
-							if (payload?.data?.result) {
-								resultsItem = payload.data.result;
-							}
+				if (payload.state == 'playing' && payload.state != pokerManager?.state) {
+					selectedLetter = null;
+					submittedLetter = null;
+				} else if (payload?.state == 'result') {
+					if (payload?.result) {
+						resultsItem = payload.result;
+					}
 
-							if (payload?.data?.defender) {
-								resultDefender = payload.data.defender;
-							}
-						}
-
-						if (pokerManager?.hexcode != payload?.data?.hexcode) {
-							myshades({
-								primary: payload.data.hexcode
-							});
-						}
-						pokerManager = payload.data;
-						break;
-					case 'success':
-						if (payload?.success) {
-							if (timeout) {
-								clearTimeout(timeout);
-								timeout = null;
-							}
-						}
-						break;
-					case 'players':
-						players = payload.data;
-						break;
-
-					case 'hexcode':
-						myshades({
-							primary: payload.data.hexcode
-						});
-						break;
+					if (payload?.defender) {
+						resultDefender = payload.defender;
+					}
 				}
-			};
 
-			ws.onclose = (e) => {
+				if (pokerManager?.hexcode != payload?.hexcode) {
+					myshades({
+						primary: payload.hexcode
+					});
+				}
+				pokerManager = payload;
+			});
+
+			io.on('success', (payload) => {
+				console.log('payload sucess', payload);
+				if (payload?.success) {
+					if (timeout) {
+						clearTimeout(timeout);
+						timeout = null;
+					}
+				}
+			});
+
+			io.on('players', (payload) => {
+				players = payload;
+			});
+
+			io.on('hexcode', (payload) => {
+				myshades({
+					primary: payload.hexcode
+				});
+			});
+
+			io.on('error', (e) => {
+				console.error('WEBSOCKET ERROR', e);
+
 				if (e.reason == "Room doesn't exist") {
 					toast.error("Ce poker planning n'existe pas.");
 					goto('/join');
 				}
-			};
+			});
 
-			ws.onerror = (e) => {
-				console.error('WEBSOCKET ERROR', e);
-			};
+			io.on('reconnect', (attempt) => {
+				console.info(`Reconnecté après ${attempt} tentatives.`);
+				toast.success('Reconnecté au serveur !');
+				// Réémission des informations d'identification
+				io.emit('join', { roomId, name: username });
+			});
 		} catch (e) {
 			console.error('Websocket error', e);
 		} finally {
@@ -154,7 +150,7 @@
 			selectedLetter = null;
 		}, 2000);
 
-		ws.send(JSON.stringify({ type: 'vote', data: { card: selectedLetter } }));
+		io.send({ type: 'vote', data: { card: selectedLetter } });
 		submittedLetter = selectedLetter;
 	};
 
@@ -174,7 +170,7 @@
 			return toast.error(`Le code hexa '${hexcode}' n'est pas valide`);
 		}
 
-		ws.send(JSON.stringify({ type: 'hexcode', data: { hexcode } }));
+		io.send({ type: 'hexcode', data: { hexcode } });
 	};
 
 	const isPositionFree = (top, left) => {

@@ -3,33 +3,32 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { quintOut } from 'svelte/easing';
 	import { scale } from 'svelte/transition';
+	import { io } from '$lib/webSocketConnection.js';
 
 	let type = $state();
 	let team = $state('');
 	let submitting = $state(false);
 
-	let ws;
-
 	const create = async () => {
 		submitting = true;
 		try {
-			const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-			ws = new WebSocket(
-				`${protocol}//${window.location.host}/create-room?${new URLSearchParams({
+			const myHeaders = new Headers();
+			myHeaders.append('Content-Type', 'application/json');
+
+			const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/room`, {
+				method: 'POST',
+				headers: myHeaders,
+				body: JSON.stringify({
 					type,
 					team
-				})}`
-			);
+				})
+			})
+				.then((response) => response.json())
+				.catch((error) => console.error(error));
 
-			ws.onmessage = (e) => {
-				const payload = JSON.parse(e.data);
-				console.log('Event Payload', payload);
-				switch (payload.type) {
-					case 'created':
-						goto(`/manager/${payload?.data.roomId}`);
-						break;
-				}
-			};
+			if (res && res.roomId) {
+				goto(`/manager/${res.roomId}`);
+			}
 		} catch (error) {
 			console.log('Create Error', error);
 		}
@@ -50,16 +49,6 @@
 		team = window.localStorage.getItem('team') || '';
 	});
 
-	onDestroy(() => {
-		try {
-			if (ws) {
-				ws.close();
-			}
-		} catch (error) {
-			console.log('Destroy Error', error);
-		}
-	});
-
 	$effect(() => {
 		window.localStorage.setItem('type', type);
 	});
@@ -71,7 +60,7 @@
 
 <main in:scale={{ duration: 300, easing: quintOut }}>
 	<h1>Créer un nouveau poker planning <span class="animateJoker">🃏</span></h1>
-	<form onsubmit={create}>
+	<form on:submit|preventDefault={create}>
 		<input bind:value={team} placeholder="Nom De La Team" />
 		<select bind:value={type}>
 			{#each choices as choice}

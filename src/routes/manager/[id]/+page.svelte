@@ -4,6 +4,7 @@
 	import Code from '$lib/components/Code.svelte';
 	import TextArea from '$lib/components/Textarea.svelte';
 	import myshades from '$lib/myshades';
+	import { io } from '$lib/webSocketConnection';
 	import { onDestroy, onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { backOut } from 'svelte/easing';
@@ -38,88 +39,66 @@
 
 	const connect = () => {
 		const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-		ws = new WebSocket(
-			`${protocol}//${window.location.host}/websocket?${new URLSearchParams({
-				roomId,
-				username: 'ADMIN',
-				manager: true
-			})}`
-		);
+		io.emit('join', { roomId, name: 'ADMIN', manager: true });
+		// 858-616
 
-		ws.onclose = (e) => {
+		io.on('error', (e) => {
 			if (e.reason == "Room doesn't exist") {
 				toast.error("Ce poker planning n'existe pas !");
 				goto('/create');
 			}
-		};
+		});
 
-		ws.onmessage = (e) => {
-			const payload = JSON.parse(e.data);
-			console.log('Event Payload', payload);
+		io.on('players', (payload) => {
+			users = payload;
+		});
 
-			switch (payload.type) {
-				case 'players':
-					{
-						users = payload.data;
-					}
-					break;
-				case 'state':
-					{
-						pokerManager.state = payload.data.state;
-					}
-					break;
-				case 'game-update':
-					{
-						if (payload?.data?.hexcode && pokerManager?.hexcode != payload?.data?.hexcode) {
-							myshades({
-								primary: payload.data.hexcode
-							});
-						}
-						pokerManager = payload.data;
-					}
-					break;
-				case 'hexcode':
-					{
-						myshades({
-							primary: payload.data.hexcode
-						});
-					}
-					break;
+		io.on('state', (payload) => {
+			pokerManager.state = payload.state;
+		});
+
+		io.on('game-update', (payload) => {
+			if (payload?.hexcode && pokerManager?.hexcode != payload?.hexcode) {
+				myshades({
+					primary: payload.hexcode
+				});
 			}
-		};
+			pokerManager = payload;
+		});
 
-		ws.onerror = (e) => {
-			console.error('WEBSOCKET ERROR', e);
-		};
+		io.on('hexcode', (payload) => {
+			myshades({
+				primary: payload.hexcode
+			});
+		});
 	};
 
 	onMount(() => {
 		url = `${window.location.protocol}//${window.location.host}/rooms/${roomId}`;
 		connect();
-		interval = heartbeat();
 	});
 
 	onDestroy(() => {
-		if (interval) {
-			clearInterval(interval);
-		}
-
-		if (ws) {
-			ws.close();
+		if (io) {
+			io.emit('leave-room', { roomId });
 		}
 	});
 
 	const changeState = (state) => {
-		ws.send(JSON.stringify({ type: 'state', data: { state, userStory: pokerManager.userStory } }));
+		if (checkSocketConnected()) {
+			io.send({ type: 'state', data: { state, userStory: pokerManager.userStory } });
+		}
 	};
 
-	const heartbeat = () => {
-		return setInterval(() => {
-			if (ws && ws.readyState === WebSocket.OPEN) {
-				console.log('SEND PING', ws);
-				ws.send(JSON.stringify({ type: 'ping', data: { message: 'ping' } }));
-			}
-		}, 10000);
+	const checkSocketConnected = () => {
+		console.log('io.connected', io.connected);
+
+		if (!io.connected) {
+			toast.error('Websocket not connected...');
+			return false;
+		}
+
+		return true;
 	};
 </script>
 

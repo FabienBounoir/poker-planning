@@ -3,6 +3,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
+		"startserv": "node server.js",
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
@@ -32,6 +33,7 @@
 	"dependencies": {
 		"chroma-js": "^3.1.2",
 		"preprocess": "^3.2.0",
+		"socket.io-client": "^4.8.1",
 		"svelte-confetti": "^2.1.2",
 		"svelte-sonner": "^0.3.28",
 		"uuid": "^10.0.0",

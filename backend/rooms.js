@@ -1,8 +1,6 @@
-import { writable } from "svelte/store";
+const rooms = new Map()
 
-export const rooms = new Map()
-
-export const createRoomId = () => {
+const createRoomId = () => {
     let newId;
     do {
         const part1 = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
@@ -13,6 +11,12 @@ export const createRoomId = () => {
     return newId;
 };
 
-export const roomExist = (roomId) => {
+const roomExist = (roomId) => {
     return rooms.has(roomId)
+}
+
+module.exports = {
+    rooms,
+    roomExist,
+    createRoomId
 }
