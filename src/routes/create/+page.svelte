@@ -15,7 +15,7 @@
 			const myHeaders = new Headers();
 			myHeaders.append('Content-Type', 'application/json');
 
-			const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/room`, {
+			const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/room`, {
 				method: 'POST',
 				headers: myHeaders,
 				body: JSON.stringify({

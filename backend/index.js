@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.use(cors())
 
-app.get("/api/room", (req, res) => {
+app.get("/room", (req, res) => {
     console.log("req.query;", req.query)
     const { roomId } = req.query;
 
@@ -24,7 +24,7 @@ app.get("/api/room", (req, res) => {
 })
 
 // Route API pour créer une nouvelle salle
-app.post('/api/room', (req, res) => {
+app.post('/room', (req, res) => {
     const { type, team } = req.body;
 
     if (!["TSHIRT", "FIBONACCI", "POWEROF2", "SEQUENTIAL", "TSHIRT_HALF"].includes(type)) {

@@ -11,7 +11,7 @@
 		const myHeaders = new Headers();
 		myHeaders.append('Content-Type', 'application/json');
 
-		const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/room?roomId=${roomId}`, {
+		const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/room?roomId=${roomId}`, {
 			method: 'GET',
 			headers: myHeaders
 		})
