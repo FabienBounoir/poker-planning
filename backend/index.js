@@ -10,7 +10,10 @@ const app = express();
 // Middleware pour interpréter le JSON dans les requêtes
 app.use(express.json());
 
-app.use(cors())
+app.use(cors({
+    origin: "*",
+    methods: ["GET", "POST", "PATCH", "OPTIONS", "PUT"]
+}))
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
