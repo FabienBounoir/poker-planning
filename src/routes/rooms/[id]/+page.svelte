@@ -8,15 +8,12 @@
 	import { quintInOut, quintOut } from 'svelte/easing';
 	import { Confetti } from 'svelte-confetti';
 	import myshades from '$lib/myshades';
-	import type { Socket } from 'socket.io-client';
-	import ioClient from 'socket.io-client';
+	import { io } from '$lib/websocketConnection';
 
 	let roomId = $page.params.id;
 
 	let pokerManager = $state(null);
 	let hexcode = $state('');
-
-	let io: Socket;
 
 	let timeout: number | null;
 	let interval: number | null;
@@ -66,7 +63,6 @@
 
 		try {
 			submitting = true;
-			io = ioClient(import.meta.env.VITE_BACKEND_URL);
 
 			io.emit('join', { roomId, name: username });
 

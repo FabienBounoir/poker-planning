@@ -9,12 +9,11 @@
 	import { toast } from 'svelte-sonner';
 	import { backOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
-	import ioClient from 'socket.io-client';
+	import { io } from '$lib/websocketConnection';
 
 	let roomId = $page.params.id;
 	let url = $state('');
 
-	let io: Socket;
 	let interval: number | null;
 
 	let pokerManager = $state({
@@ -39,8 +38,6 @@
 	};
 
 	const connect = () => {
-		io = ioClient(import.meta.env.VITE_BACKEND_URL);
-		io.connect();
 		io.emit('join', { roomId, name: 'ADMIN', manager: true });
 		// 858-616
 
