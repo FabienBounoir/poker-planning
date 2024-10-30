@@ -66,7 +66,7 @@
 
 		try {
 			submitting = true;
-			const io = ioClient(import.meta.env.VITE_BACKEND_URL);
+			io = ioClient(import.meta.env.VITE_BACKEND_URL);
 
 			io.emit('join', { roomId, name: username });
 
@@ -198,14 +198,14 @@
 		<h1>
 			Bienvenue <span class="rotateAnimation">👋</span> <br />Comment tu t'appelles déjà ?<br />
 		</h1>
-		<form onsubmit={connect}>
+		<form on:submit|preventDefault={connect}>
 			<input type="text" bind:value={username} placeholder="Jean Bon" disabled={submitting} />
 			<button type="submit" disabled={submitting}>Valider</button>
 		</form>
 	</div>
 {:else}
 	<main>
-		<form onsubmit={sendHexa} style="display: none;">
+		<form on:submit|preventDefault={sendHexa} style="display: none;">
 			<input type="text" bind:value={hexcode} placeholder="#FF00EE" disabled={submitting} />
 		</form>
 
@@ -252,7 +252,7 @@
 			<button
 				class:hidden={selectedLetter === null}
 				disabled={submittedLetter != null && selectedLetter == submittedLetter}
-				onclick={() => {
+				on:click={() => {
 					sendVote();
 				}}
 			>

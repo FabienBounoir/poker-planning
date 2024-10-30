@@ -39,7 +39,8 @@
 	};
 
 	const connect = () => {
-		const io = ioClient(import.meta.env.VITE_BACKEND_URL);
+		io = ioClient(import.meta.env.VITE_BACKEND_URL);
+		io.connect();
 		io.emit('join', { roomId, name: 'ADMIN', manager: true });
 		// 858-616
 
@@ -92,8 +93,6 @@
 	};
 
 	const checkSocketConnected = () => {
-		console.log('io.connected', io.connected);
-
 		if (!io.connected) {
 			toast.error('Websocket not connected...');
 			return false;
@@ -128,12 +127,12 @@
 		<div class="buttons">
 			{#if pokerManager.state == 'playing'}
 				<button
-					onclick={() => {
+					on:click={() => {
 						changeState('result');
 					}}>Terminer Le Vote</button
 				>
 			{:else if pokerManager.state == 'result' || pokerManager.state == 'waiting'}
-				<button onclick={canStarVote}>Commencer Le Vote</button>
+				<button on:click={canStarVote}>Commencer Le Vote</button>
 			{/if}
 		</div>
 	</div>

@@ -18,7 +18,7 @@
 </script>
 
 <p>Le code de votre salle :</p>
-<div class="code-container" onclick={displayCopyToClipboard}>
+<div class="code-container" on:click={displayCopyToClipboard}>
 	<h3>{displayText}</h3>
 </div>
 
