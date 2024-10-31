@@ -1,6 +1,5 @@
 const { Server } = require('socket.io');
 const { v4: uuidv4 } = require('uuid');
-const { createRoomId } = require('./rooms');
 
 /**
  * @type {Server}
@@ -102,7 +101,7 @@ const createSocketIOServer = (server, rooms) => {
                 },
                 resetChoose() {
                     object.players.forEach((player) => {
-                        object.players.set(player.socket.userId, { ...player, selectedCard: null });
+                        object.players.set(player.socket.id, { ...player, selectedCard: null });
                     });
                     this.emitPlayers();
                 },
@@ -141,16 +140,13 @@ const createSocketIOServer = (server, rooms) => {
                 return socket.disconnect(true);
             }
 
-            const userId = uuidv4();
-            console.log('New connection with ID:', userId);
+            console.log('New connection with ID:', socket.id);
 
             if (room.timeout) {
                 clearTimeout(room.timeout);
                 delete room.timeout;
-                console.log("Timeout removed for room", roomId, "because user", userId, "reconnected.");
+                console.log("Timeout removed for room", roomId, "because user", socket.id, "reconnected.");
             }
-
-            socket.userId = userId;
             socket.emit("game-update", room.data);
 
             const player = {
@@ -160,12 +156,12 @@ const createSocketIOServer = (server, rooms) => {
                 manager,
             };
 
-            room.players.set(userId, player);
+            room.players.set(socket.id, player);
             room.emitPlayers(room.data.state != "waiting");
 
             socket.on("leave-room", () => {
-                console.log(`User leave room ${userId}`);
-                room.players.delete(userId);
+                console.log(`User leave room ${socket.id}`);
+                room.players.delete(socket.id);
 
                 if (room.players.size) {
                     room.emitPlayers(room.data.state != "waiting");
@@ -180,8 +176,8 @@ const createSocketIOServer = (server, rooms) => {
             })
 
             socket.on('disconnect', () => {
-                console.log(`User ${userId} disconnected`);
-                room.players.delete(userId);
+                console.log(`User ${socket.id} disconnected`);
+                room.players.delete(socket.id);
 
                 if (room.players.size) {
                     room.emitPlayers(room.data.state != "waiting");
@@ -198,11 +194,11 @@ const createSocketIOServer = (server, rooms) => {
             socket.on('message', ({ type, data }) => {
                 switch (type) {
                     case 'vote': {
-                        const player = room.players.get(userId);
+                        const player = room.players.get(socket.id);
                         if (!room?.data?.cards?.includes?.(data.card)) return;
 
                         player.selectedCard = data.card;
-                        room.players.set(userId, player);
+                        room.players.set(socket.id, player);
                         room.emitPlayers(true);
                         socket.emit("success", { success: true });
                         break;
@@ -220,9 +216,6 @@ const createSocketIOServer = (server, rooms) => {
                         room.emitUpdateGame(data.state);
                         break;
                     }
-                    case 'ping':
-                        socket.emit("pong", { success: true });
-                        break;
                     case 'hexcode':
                         room.data.hexcode = data.hexcode;
                         room.emit("hexcode", { hexcode: data.hexcode }, false);
@@ -231,49 +224,6 @@ const createSocketIOServer = (server, rooms) => {
                         console.log(`EVENT ${type} doesn't exist`);
                 }
             });
-        });
-
-        socket.on('create', ({ type, team }) => {
-            if (!["TSHIRT", "FIBONACCI", "POWEROF2", "SEQUENTIAL", "TSHIRT_HALF"].includes(type)) {
-                console.warn(`Invalid room type: ${type}`);
-                return socket.disconnect(true);
-            }
-
-            const roomId = createRoomId();
-            rooms.set(roomId, { reserved: true });
-
-            let object = {
-                team: formatName(team || 'NFS'),
-                cards: [],
-                state: 'waiting',
-                userStory: '',
-            };
-
-            switch (type) {
-                case "TSHIRT":
-                    object.cards = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-                    break;
-                case "FIBONACCI":
-                    object.cards = ["1", "2", "3", "5", "8", "13", "21"];
-                    break;
-                case "POWEROF2":
-                    object.cards = ["1", "2", "4", "8", "16", "32"];
-                    break;
-                case "SEQUENTIAL":
-                    object.cards = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-                    break;
-                case "TSHIRT_HALF":
-                    object.cards = ['XS', 'S', 'M', 'M/L', 'L', 'XL'];
-                    break;
-                default:
-                    console.warn(`Unknown type: ${type}`);
-                    break;
-            }
-
-            rooms.set(roomId, { initialisation: true, data: object });
-            console.log("NEW ROOM CREATED", rooms);
-
-            socket.emit("created", { roomId });
         });
     });
 

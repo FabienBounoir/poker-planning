@@ -90,7 +90,6 @@
 	onDestroy(() => {
 		if (io) {
 			io.disconnect();
-			// io.emit('leave-room', { roomId });
 		}
 	});
 
