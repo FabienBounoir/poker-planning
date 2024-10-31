@@ -23,7 +23,7 @@
 	let selectedLetter = $state(null);
 	let username = $state('');
 	let submitting = $state(false);
-	let submittedLetter = $state('');
+	let submittedLetter = $state(null);
 
 	let resultsItem = $state(null);
 	let resultDefender = $state(null);
