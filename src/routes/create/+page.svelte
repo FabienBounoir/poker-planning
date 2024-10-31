@@ -103,19 +103,19 @@
 
 			@keyframes scaleShake {
 				0% {
-					transform: scale(1) rotate(0deg); /* Taille normale, pas de rotation */
+					transform: scale(1) rotate(0deg);
 				}
 				25% {
-					transform: scale(1.2) rotate(15deg); /* Zoom avant et rotation vers la droite */
+					transform: scale(1.2) rotate(15deg);
 				}
 				50% {
-					transform: scale(1) rotate(-15deg); /* Retour à la taille normale, rotation vers la gauche */
+					transform: scale(1) rotate(-15deg);
 				}
 				75% {
-					transform: scale(1.2) rotate(10deg); /* Zoom avant et légère rotation vers la droite */
+					transform: scale(1.2) rotate(10deg);
 				}
 				100% {
-					transform: scale(1) rotate(0deg); /* Retour à la taille normale et à la position initiale */
+					transform: scale(1) rotate(0deg);
 				}
 			}
 		}

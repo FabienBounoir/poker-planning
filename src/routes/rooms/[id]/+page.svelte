@@ -31,6 +31,7 @@
 	let players = $state(null);
 
 	let existingPositions = [];
+	let alreadyConnected = false;
 
 	onMount(() => {
 		if (window.localStorage.getItem('username')) {
@@ -68,6 +69,7 @@
 
 			io.on('connect', () => {
 				io.emit('join', { roomId, name: username });
+				alreadyConnected = true;
 			});
 
 			io.on('game-update', (payload) => {
@@ -131,10 +133,7 @@
 
 				//rejoint room
 				io.emit('join', { roomId, name: username });
-
-				//Reset selected card
-				selectedLetter = null;
-				submittedLetter = '';
+				sendVote();
 			});
 		} catch (e) {
 			console.error('Websocket error', e);
@@ -176,14 +175,14 @@
 	const isPositionFree = (top, left) => {
 		// Vérifie que la position ne chevauche pas un autre élément existant
 		return !existingPositions.some(
-			(pos) => Math.abs(pos.top - top) < 10 && Math.abs(pos.left - left) < 10 // Ajuster pour tolérance de chevauchement
+			(pos) => Math.abs(pos.top - top) < 15 && Math.abs(pos.left - left) < 15
 		);
 	};
 
 	const getRandomPosition = () => {
 		let top, left;
 		let tries = 0;
-		const maxTries = 10; // Nombre maximum de tentatives pour trouver une position libre
+		const maxTries = 30;
 
 		do {
 			top = Math.random() < 0.5 ? Math.random() * 20 + 20 : Math.random() * 20 + 60;
@@ -194,7 +193,7 @@
 		// Enregistre la position trouvée si elle est libre
 		if (tries < maxTries) existingPositions.push({ top, left });
 
-		return `--top: ${top}vh; --left: ${left}vw;`; // transform: scale(1); opacity: 1;
+		return `--top: ${top}vh; --left: ${left}vw;`;
 	};
 </script>
 
@@ -345,7 +344,6 @@
 
 		> h1 {
 			font-size: 1.2em;
-			// font-weight: 700;
 			color: var(--primary-800);
 		}
 

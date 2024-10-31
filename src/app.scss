@@ -30,7 +30,15 @@
     transition: none cubic-bezier(0.1, 1.25, 0.25, 1) 600ms;
 }
 
-* {
+div,
+button,
+a,
+p,
+h1,
+h3,
+textarea,
+input,
+img {
     transition: background-color 3s, color 3s !important;
 }
 

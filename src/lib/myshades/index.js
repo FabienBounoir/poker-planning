@@ -1,5 +1,3 @@
-// const { join } = require("path");
-// const { writeFile } = require("fs").promises;
 import generateTailwindColorFamily from "./generateTailwindColorFamily";
 import tailwindColors3 from "./tailwind3";
 
@@ -19,10 +17,6 @@ const myshades = async (args = {}) => {
         shades.forEach((shade) => {
             document.documentElement.style.setProperty(`--${key}-${shade.number}`, shade.hexcode);
         });
-
-        // shades.forEach((shade) => {
-        //     document.documentElement.style.setProperty(`--on-${key}-${shade.number}`, shade.luminance < 40 ? `var(--${key}-100)` : `var(--${key}-900)`);
-        // });
     }
 };
 
