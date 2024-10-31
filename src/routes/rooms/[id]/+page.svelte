@@ -8,9 +8,11 @@
 	import { quintInOut, quintOut } from 'svelte/easing';
 	import { Confetti } from 'svelte-confetti';
 	import myshades from '$lib/myshades';
-	import { io } from '$lib/websocketConnection';
+	import type { Socket } from 'socket.io-client';
+	import ioClient from 'socket.io-client';
 
 	let roomId = $page.params.id;
+	let io: Socket;
 
 	let pokerManager = $state(null);
 	let hexcode = $state('');
@@ -42,7 +44,8 @@
 		}
 
 		if (io) {
-			io.emit('leave-room', { roomId });
+			io.disconnect();
+			// io.emit('leave-room', { roomId });
 		}
 	});
 
@@ -61,8 +64,11 @@
 
 		try {
 			submitting = true;
+			io = ioClient(import.meta.env.VITE_BACKEND_URL);
 
-			io.emit('join', { roomId, name: username });
+			io.on('connect', () => {
+				io.emit('join', { roomId, name: username });
+			});
 
 			io.on('game-update', (payload) => {
 				console.log('payload', payload);
@@ -122,7 +128,7 @@
 			io.on('reconnect', (attempt) => {
 				console.info(`Reconnecté après ${attempt} tentatives.`);
 				toast.success('Reconnecté au serveur !');
-				// Réémission des informations d'identification
+
 				io.emit('join', { roomId, name: username });
 			});
 		} catch (e) {

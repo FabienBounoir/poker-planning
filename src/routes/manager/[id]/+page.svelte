@@ -9,12 +9,12 @@
 	import { toast } from 'svelte-sonner';
 	import { backOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
-	import { io } from '$lib/websocketConnection';
+	import ioClient from 'socket.io-client';
 
 	let roomId = $page.params.id;
 	let url = $state('');
 
-	let interval: number | null;
+	let io: Socket;
 
 	let pokerManager = $state({
 		team: '',
@@ -38,8 +38,11 @@
 	};
 
 	const connect = () => {
-		io.emit('join', { roomId, name: 'ADMIN', manager: true });
-		// 858-616
+		io = ioClient(import.meta.env.VITE_BACKEND_URL);
+
+		io.on('connect', () => {
+			io.emit('join', { roomId, name: 'ADMIN', manager: true });
+		});
 
 		io.on('error', (e) => {
 			if (e.reason == "Room doesn't exist") {
@@ -70,6 +73,13 @@
 				primary: payload.hexcode
 			});
 		});
+
+		io.on('reconnect', (attempt) => {
+			console.info(`Reconnecté après ${attempt} tentatives.`);
+			toast.success('Reconnecté au serveur !');
+
+			io.emit('join', { roomId, name: 'ADMIN' });
+		});
 	};
 
 	onMount(() => {
@@ -79,7 +89,8 @@
 
 	onDestroy(() => {
 		if (io) {
-			io.emit('leave-room', { roomId });
+			io.disconnect();
+			// io.emit('leave-room', { roomId });
 		}
 	});
 
