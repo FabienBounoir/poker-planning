@@ -148,7 +148,7 @@
 	<div class="information">
 		{#if users?.length < 1}
 			<div>
-				<p>Pas de participants pour la planification du poker.</p>
+				<p style="text-align: center;">Pas de participants pour la planification du poker.</p>
 			</div>
 		{:else}
 			<p style="text-align: end;">{users.length} player{users.length > 1 ? 's' : ''}</p>

@@ -69,7 +69,9 @@
 
 			io.on('connect', () => {
 				io.emit('join', { roomId, name: username });
-				alreadyConnected = true;
+				if (submittedLetter != null) {
+					sendVote(submittedLetter);
+				}
 			});
 
 			io.on('game-update', (payload) => {
@@ -131,9 +133,10 @@
 				console.info(`Reconnecté après ${attempt} tentatives.`);
 				toast.success('Reconnecté au serveur !');
 
-				//rejoint room
 				io.emit('join', { roomId, name: username });
-				sendVote();
+				if (submittedLetter != null) {
+					sendVote(submittedLetter);
+				}
 			});
 		} catch (e) {
 			console.error('Websocket error', e);
@@ -142,15 +145,15 @@
 		}
 	};
 
-	const sendVote = () => {
+	const sendVote = (forceValue = selectedLetter) => {
 		timeout = setTimeout(() => {
 			toast.error("Une erreur s'est produite lors de l'envoi de votre vote.");
 			submittedLetter = null;
 			selectedLetter = null;
 		}, 2000);
 
-		io.send({ type: 'vote', data: { card: selectedLetter } });
-		submittedLetter = selectedLetter;
+		io.send({ type: 'vote', data: { card: forceValue } });
+		submittedLetter = forceValue;
 	};
 
 	const includeUS_ID = (userStory) => {
