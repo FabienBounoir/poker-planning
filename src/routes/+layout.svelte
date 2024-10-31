@@ -30,4 +30,10 @@
 			background-position: 100% 50%;
 		}
 	}
+
+	@media screen and (max-width: 500px) {
+		.beta {
+			display: none;
+		}
+	}
 </style>
