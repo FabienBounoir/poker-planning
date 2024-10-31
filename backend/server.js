@@ -36,7 +36,7 @@ const createSocketIOServer = (server, rooms) => {
                         }
                     });
                 },
-                emitPlayers() {
+                emitPlayers(manager = false) {
                     const players = [];
                     object.players.forEach((player, id) => {
                         if (!player.manager) {
@@ -45,7 +45,14 @@ const createSocketIOServer = (server, rooms) => {
                     });
 
                     object.players.forEach((player) => {
-                        player.socket.emit("players", players);
+                        if (manager) {
+                            if (player.manager) {
+                                player.socket.emit("players", players);
+                            }
+                        }
+                        else {
+                            player.socket.emit("players", players);
+                        }
                     });
                 },
                 emitUpdateGame(state) {
@@ -154,14 +161,14 @@ const createSocketIOServer = (server, rooms) => {
             };
 
             room.players.set(userId, player);
-            room.emitPlayers();
+            room.emitPlayers(room.data.state != "waiting");
 
             socket.on("leave-room", () => {
                 console.log(`User leave room ${userId}`);
                 room.players.delete(userId);
 
                 if (room.players.size) {
-                    room.emitPlayers();
+                    room.emitPlayers(room.data.state != "waiting");
                 } else {
                     room.timeout = setTimeout(() => {
                         if (!room.players.size) {
@@ -177,7 +184,7 @@ const createSocketIOServer = (server, rooms) => {
                 room.players.delete(userId);
 
                 if (room.players.size) {
-                    room.emitPlayers();
+                    room.emitPlayers(room.data.state != "waiting");
                 } else {
                     room.timeout = setTimeout(() => {
                         if (!room.players.size) {
@@ -196,7 +203,7 @@ const createSocketIOServer = (server, rooms) => {
 
                         player.selectedCard = data.card;
                         room.players.set(userId, player);
-                        room.emitPlayers();
+                        room.emitPlayers(true);
                         socket.emit("success", { success: true });
                         break;
                     }
