@@ -44,6 +44,7 @@
 		}
 
 		if (io) {
+			io.removeAllListeners();
 			io.disconnect();
 		}
 	});
@@ -128,7 +129,12 @@
 				console.info(`Reconnecté après ${attempt} tentatives.`);
 				toast.success('Reconnecté au serveur !');
 
+				//rejoint room
 				io.emit('join', { roomId, name: username });
+
+				//Reset selected card
+				selectedLetter = null;
+				submittedLetter = '';
 			});
 		} catch (e) {
 			console.error('Websocket error', e);

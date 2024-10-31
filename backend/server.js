@@ -182,6 +182,7 @@ const createSocketIOServer = (server, rooms) => {
                 if (room.players.size) {
                     room.emitPlayers(room.data.state != "waiting");
                 } else {
+                    console.log("Setup Timeout 1 hour to delete inactive room")
                     room.timeout = setTimeout(() => {
                         if (!room.players.size) {
                             rooms.delete(roomId);

@@ -89,6 +89,7 @@
 
 	onDestroy(() => {
 		if (io) {
+			io.removeAllListeners();
 			io.disconnect();
 		}
 	});
