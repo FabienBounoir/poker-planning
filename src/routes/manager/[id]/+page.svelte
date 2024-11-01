@@ -10,11 +10,15 @@
 	import { backOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
 	import ioClient from 'socket.io-client';
+	import Confetti from 'svelte-confetti';
 
 	let roomId = $page.params.id;
 	let url = $state('');
 
 	let io: Socket;
+
+	let resultsItem = $state(null);
+	let resultDefender = $state(null);
 
 	let pokerManager = $state({
 		team: '',
@@ -23,7 +27,7 @@
 		userStory: ''
 	});
 
-	let users = $state([]);
+	let users = $state(null);
 
 	const canStarVote = () => {
 		if (pokerManager.userStory == '') {
@@ -65,6 +69,22 @@
 					primary: payload.hexcode
 				});
 			}
+			resultsItem = null;
+			resultDefender = null;
+
+			if (payload?.state == 'result') {
+				if (payload?.result) {
+					resultsItem = payload.result;
+				}
+
+				if (payload?.defender) {
+					resultDefender = payload.defender;
+				}
+
+				console.log('resultsItem', resultsItem);
+				console.log('resultDefender', resultDefender);
+			}
+
 			pokerManager = payload;
 		});
 
@@ -72,13 +92,6 @@
 			myshades({
 				primary: payload.hexcode
 			});
-		});
-
-		io.on('reconnect', (attempt) => {
-			console.info(`Reconnecté après ${attempt} tentatives.`);
-			toast.success('Reconnecté au serveur !');
-
-			io.emit('join', { roomId, name: 'ADMIN' });
 		});
 	};
 
@@ -111,6 +124,33 @@
 </script>
 
 <svelte:head><title>Poker Planning: {pokerManager.team}</title></svelte:head>
+
+{#if resultsItem}
+	{#if resultsItem?.length == 1 && resultsItem?.[0]?.[1]?.length > 1}
+		<div
+			style="
+				position: fixed;
+				top: -50px;
+				left: 0;
+				height: 100vh;
+				width: 100vw;
+				display: flex;
+				justify-content: center;
+				overflow: hidden;
+				pointer-events: none;"
+		>
+			<Confetti
+				x={[-5, 5]}
+				y={[0, 0.1]}
+				delay={[500, 2000]}
+				infinite
+				duration={5000}
+				amount={200}
+				fallDistance="100vh"
+			/>
+		</div>
+	{/if}
+{/if}
 
 <main>
 	<div class="manager">
@@ -146,29 +186,44 @@
 	</div>
 
 	<div class="information">
-		{#if users?.length < 1}
-			<div>
-				<p style="text-align: center;">Pas de participants pour la planification du poker.</p>
-			</div>
-		{:else}
-			<p style="text-align: end;">{users.length} player{users.length > 1 ? 's' : ''}</p>
-		{/if}
-
-		{#each users as user}
-			<div class="user">
-				<div class="profile">
-					<img src="https://api.dicebear.com/9.x/dylan/svg?seed={user.name}" />
-					<h2>{user.name}</h2>
+		{#if users != null}
+			{#if users?.length < 1}
+				<div>
+					<p style="text-align: center;">Pas de participants pour la planification du poker.</p>
 				</div>
-				{#if pokerManager.state === 'playing'}
-					<p class="skeleton" class:selectedLetter={user.selectedCard != null}></p>
-				{:else if pokerManager.state === 'result'}
-					<p>{user.selectedCard}</p>
-				{:else}
-					<h3 class="no-vote">-</h3>
-				{/if}
-			</div>
-		{/each}
+			{:else}
+				<p style="text-align: end;">{users.length} player{users.length > 1 ? 's' : ''}</p>
+			{/if}
+
+			{#each users as user}
+				<div
+					class="user"
+					class:defender={resultDefender?.name == user?.name &&
+						resultDefender?.item == user?.selectedCard}
+				>
+					<div class="profile">
+						<img src="https://api.dicebear.com/9.x/dylan/svg?seed={user.name}" />
+						<h2>{user.name}</h2>
+					</div>
+					{#if pokerManager.state === 'playing'}
+						<p class="skeleton" class:selectedLetter={user.selectedCard != null}></p>
+					{:else if pokerManager.state === 'result'}
+						<p>{user.selectedCard}</p>
+					{:else}
+						<h3 class="no-vote">-</h3>
+					{/if}
+				</div>
+			{/each}
+		{:else}
+			{#each Array(Math.floor(Math.random() * 5) + 3).fill(0) as _}
+				<div class="user">
+					<div class="profile">
+						<div class="img-skeleton"></div>
+						<span class="name-skeleton"></span>
+					</div>
+				</div>
+			{/each}
+		{/if}
 	</div>
 </main>
 
@@ -246,6 +301,11 @@
 				background-color: var(--primary-200);
 				font-weight: 600;
 				color: var(--primary-950);
+				box-sizing: border-box;
+
+				&.defender {
+					border: 3px solid var(--primary-800);
+				}
 
 				.profile {
 					display: flex;
@@ -257,6 +317,38 @@
 						border: 2px solid var(--primary-700);
 						width: 40px;
 						height: 40px;
+					}
+
+					.img-skeleton {
+						border: 2px solid var(--primary-700);
+						width: 40px;
+						height: 40px;
+						background-color: var(--primary-500);
+						border-radius: 100%;
+					}
+
+					.name-skeleton {
+						background-color: var(--primary-500);
+						width: 100px;
+						height: 20px;
+						border-radius: 5px;
+						background: linear-gradient(
+							120deg,
+							var(--primary-300),
+							var(--primary-500),
+							var(--primary-700)
+						);
+						background-size: 200% 200%;
+						animation: shimmer 1s infinite alternate;
+
+						@keyframes shimmer {
+							0% {
+								background-position: 0% 50%;
+							}
+							100% {
+								background-position: 100% 50%;
+							}
+						}
 					}
 				}
 

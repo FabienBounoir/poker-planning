@@ -75,7 +75,7 @@
 			});
 
 			io.on('game-update', (payload) => {
-				console.log('payload', payload);
+				console.log('Payload', payload);
 				resultsItem = null;
 				resultDefender = null;
 
@@ -101,7 +101,7 @@
 			});
 
 			io.on('success', (payload) => {
-				console.log('payload sucess', payload);
+				console.log('Payload success', payload);
 				if (payload?.success) {
 					if (timeout) {
 						clearTimeout(timeout);
@@ -126,16 +126,6 @@
 				if (e.reason == "Room doesn't exist") {
 					toast.error("Ce poker planning n'existe pas.");
 					goto('/join');
-				}
-			});
-
-			io.on('reconnect', (attempt) => {
-				console.info(`Reconnecté après ${attempt} tentatives.`);
-				toast.success('Reconnecté au serveur !');
-
-				io.emit('join', { roomId, name: username });
-				if (submittedLetter != null) {
-					sendVote(submittedLetter);
 				}
 			});
 		} catch (e) {
@@ -302,8 +292,8 @@
 									y={[0, 0.1]}
 									delay={[500, 2000]}
 									infinite
-									duration="5000"
-									amount="200"
+									duration={5000}
+									amount={200}
 									fallDistance="100vh"
 								/>
 							</div>

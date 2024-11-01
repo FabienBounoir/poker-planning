@@ -11,7 +11,7 @@
 	.beta {
 		position: fixed;
 		top: 0;
-		right: 0;
+		left: 0;
 		margin: 1em 1.5em;
 		border-radius: 9999px;
 		background: linear-gradient(120deg, var(--primary-200), var(--primary-500), var(--primary-800));
