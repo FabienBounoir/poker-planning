@@ -31,6 +31,14 @@
 		}
 	}
 
+	@media screen and (max-width: 960px) {
+		.beta {
+			top: 0;
+			right: 0;
+			left: auto;
+		}
+	}
+
 	@media screen and (max-width: 500px) {
 		.beta {
 			display: none;

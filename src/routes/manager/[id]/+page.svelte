@@ -8,7 +8,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { backOut } from 'svelte/easing';
-	import { fly } from 'svelte/transition';
+	import { fade, fly, scale } from 'svelte/transition';
 	import ioClient from 'socket.io-client';
 	import Confetti from 'svelte-confetti';
 
@@ -126,7 +126,7 @@
 <svelte:head><title>Poker Planning: {pokerManager.team}</title></svelte:head>
 
 {#if resultsItem}
-	{#if resultsItem?.length == 1 && resultsItem?.[0]?.[1]?.length > 1}
+	{#if resultsItem?.length == 1 && resultsItem?.[0]?.players?.length > 1}
 		<div
 			style="
 				position: fixed;
@@ -183,6 +183,17 @@
 				<button on:click={canStarVote}>Commencer Le Vote</button>
 			{/if}
 		</div>
+
+		{#if resultsItem}
+			<div class="resultDescription" transition:fade>
+				{#each resultsItem as { item, pourcentage }}
+					<span
+						><h3>{item}</h3>
+						{pourcentage}%</span
+					>
+				{/each}
+			</div>
+		{/if}
 	</div>
 
 	<div class="information">
@@ -237,6 +248,33 @@
 		width: 100%;
 		height: 100dvh;
 		gap: 5dvh;
+
+		.resultDescription {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 2em;
+
+			margin-top: 2em;
+
+			span {
+				display: flex;
+				flex-direction: row;
+				gap: 0.7em;
+				color: var(--primary-50);
+				align-items: center;
+				justify-content: center;
+				background-color: var(--primary-800);
+				padding: 0.5em 1em;
+				border-radius: 99999px;
+				font-size: 1em;
+				h3 {
+					font-size: 1.3em;
+					color: var(--primary-50);
+					font-weight: 800;
+				}
+			}
+		}
 
 		.manager {
 			padding: 5vw;

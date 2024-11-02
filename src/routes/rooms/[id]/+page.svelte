@@ -31,7 +31,6 @@
 	let players = $state(null);
 
 	let existingPositions = [];
-	let alreadyConnected = false;
 
 	onMount(() => {
 		if (window.localStorage.getItem('username')) {
@@ -51,10 +50,6 @@
 	});
 
 	$effect(() => {
-		existingPositions = players ? [] : [];
-	});
-
-	$effect(() => {
 		window.localStorage.setItem('username', username);
 	});
 
@@ -69,6 +64,7 @@
 
 			io.on('connect', () => {
 				io.emit('join', { roomId, name: username });
+
 				if (submittedLetter != null) {
 					sendVote(submittedLetter);
 				}
@@ -130,6 +126,7 @@
 			});
 		} catch (e) {
 			console.error('Websocket error', e);
+			toast.error("Une erreur c'est produite lors de la connection...");
 		} finally {
 			submitting = false;
 		}
@@ -166,7 +163,6 @@
 	};
 
 	const isPositionFree = (top, left) => {
-		// Vérifie que la position ne chevauche pas un autre élément existant
 		return !existingPositions.some(
 			(pos) => Math.abs(pos.top - top) < 15 && Math.abs(pos.left - left) < 15
 		);
@@ -175,7 +171,7 @@
 	const getRandomPosition = () => {
 		let top, left;
 		let tries = 0;
-		const maxTries = 30;
+		const maxTries = 15;
 
 		do {
 			top = Math.random() < 0.5 ? Math.random() * 20 + 20 : Math.random() * 20 + 60;
@@ -183,7 +179,6 @@
 			tries++;
 		} while (!isPositionFree(top, left) && tries < maxTries);
 
-		// Enregistre la position trouvée si elle est libre
 		if (tries < maxTries) existingPositions.push({ top, left });
 
 		return `--top: ${top}vh; --left: ${left}vw;`;
@@ -274,7 +269,7 @@
 
 				<div class="result" style="--item:{resultsItem?.length > 4 ? 4 : resultsItem?.length}">
 					{#if resultsItem}
-						{#if resultsItem.length == 1 && resultsItem?.[0]?.[1]?.length > 1}
+						{#if resultsItem.length == 1 && resultsItem?.[0]?.players?.length > 1}
 							<div
 								style="
 							position: fixed;
@@ -299,8 +294,9 @@
 							</div>
 						{/if}
 
-						{#each resultsItem as [item, players]}
+						{#each resultsItem as { item, players, pourcentage }}
 							<div class="result-item">
+								<p class="pourcentage">{pourcentage}%</p>
 								<h1>{item}</h1>
 								{#if players?.length}
 									{#each players as player}
@@ -377,6 +373,14 @@
 				padding: 0.5em 0;
 				border-radius: 5px;
 				min-width: 18vw;
+				position: relative;
+
+				.pourcentage {
+					position: absolute;
+					top: -1.5em;
+					right: 0;
+					color: var(--primary-950);
+				}
 
 				h1 {
 					font-weight: 900;

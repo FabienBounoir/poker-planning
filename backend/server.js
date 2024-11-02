@@ -58,39 +58,37 @@ const createSocketIOServer = (server, rooms) => {
                     let element = { ...object.data };
 
                     if (state == "result") {
-                        let results = new Map();
-                        let itemsName = [];
-                        object.players.forEach((player, id) => {
-                            if (!player.manager && player.selectedCard) {
-                                let item = results.get(player?.selectedCard?.toUpperCase?.());
+                        let resultsByItem = new Map();
+                        let totalPlayers = 0;
 
-                                if (!item) {
-                                    itemsName.push(player?.selectedCard?.toUpperCase?.());
-                                    item = [];
+                        object.players.forEach((player) => {
+                            const selectedCard = player?.selectedCard?.toUpperCase();
+                            if (!player.manager && selectedCard) {
+                                totalPlayers++;
+                                if (!resultsByItem.has(selectedCard)) {
+                                    resultsByItem.set(selectedCard, []);
                                 }
-
-                                item.push(player.name);
-                                results.set(player?.selectedCard?.toUpperCase?.(), item);
+                                resultsByItem.get(selectedCard).push(player.name);
                             }
                         });
 
-                        if (itemsName.length > 0) {
+                        if (resultsByItem.size > 0) {
                             try {
-                                if (itemsName.length > 1) {
-                                    const item = itemsName[Math.floor(Math.random() * itemsName.length)];
-                                    const itemUsers = results.get(item);
-                                    const userSelected = itemUsers[Math.floor(Math.random() * itemUsers.length)];
+                                const result = Array.from(resultsByItem).map(([item, players]) => ({
+                                    item,
+                                    players,
+                                    pourcentage: Math.round((players.length / totalPlayers) * 100).toFixed(0)
+                                })).sort((a, b) => b.players.length - a.players.length);
 
-                                    object.data.defender = element.defender = {
-                                        name: userSelected,
-                                        item,
-                                    };
+                                object.data.result = element.result = result;
+
+                                if (resultsByItem.size > 1) {
+                                    const lastItem = result[result.length - 1];
+                                    const userSelected = lastItem.players[Math.floor(Math.random() * lastItem.players.length)];
+                                    object.data.defender = element.defender = { name: userSelected, item: lastItem.item };
                                 }
-
-                                let resultArray = Array.from(results).sort((a, b) => b[1].length - a[1].length);
-                                object.data.result = element.result = resultArray;
                             } catch (e) {
-                                console.error("ERROR WHEN PROCESS RESULT", e);
+                                console.error("ERROR WHEN PROCESSING RESULT", e);
                             }
                         }
                     } else {
