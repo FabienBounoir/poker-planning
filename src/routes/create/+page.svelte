@@ -57,6 +57,11 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Crée un Poker planning - Another Poker Planning</title>
+	<meta name="description" content="Crée un poker planning" />
+</svelte:head>
+
 <main in:scale={{ duration: 300, easing: quintOut }}>
 	<h1>Créer un nouveau poker planning <span class="animateJoker">🃏</span></h1>
 	<form on:submit|preventDefault={create}>
@@ -68,7 +73,9 @@
 				</option>
 			{/each}
 		</select>
-		<button type="submit" disabled={submitting || !team}>Créer</button>
+		<button aria-label="Crée un nouveau poker planning" type="submit" disabled={submitting || !team}
+			>Créer</button
+		>
 	</form>
 </main>
 

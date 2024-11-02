@@ -6,6 +6,7 @@
 	<h1>Another Poker Planning</h1>
 	<div class="button-container">
 		<button
+			aria-label="Go to Create Page"
 			on:click={() => {
 				goto('/create');
 			}}
@@ -14,6 +15,7 @@
 		</button>
 
 		<button
+			aria-label="Go to Join page"
 			on:click={() => {
 				goto('/join');
 			}}>Rejoindre</button

@@ -185,6 +185,11 @@
 	};
 </script>
 
+<svelte:head>
+	<title>{pokerManager?.team || ''} Another Poker Planning</title>
+	<meta name="description" content="Partie de poker planning" />
+</svelte:head>
+
 {#if pokerManager == null}
 	<div class="init-page">
 		<h1>
@@ -192,7 +197,7 @@
 		</h1>
 		<form on:submit|preventDefault={connect}>
 			<input type="text" bind:value={username} placeholder="Jean Bon" disabled={submitting} />
-			<button type="submit" disabled={submitting}>Valider</button>
+			<button aria-label="Valider son nom" type="submit" disabled={submitting}>Valider</button>
 		</form>
 	</div>
 {:else}
@@ -242,6 +247,7 @@
 			</div>
 
 			<button
+				aria-label="Send vote"
 				class:hidden={selectedLetter === null}
 				disabled={submittedLetter != null && selectedLetter == submittedLetter}
 				on:click={() => {

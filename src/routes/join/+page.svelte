@@ -36,6 +36,11 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Rejoindre un Poker planning - Another Poker Planning</title>
+	<meta name="description" content="Rejoindre un poker planning" />
+</svelte:head>
+
 <main>
 	<h1>
 		Hummm <span class="animateDetective">🕵️</span>,<br />Quel poker planning souhaites-tu rejoindre
@@ -49,7 +54,9 @@
 			placeholder="XXX-XXX"
 			disabled={submitting}
 		/>
-		<button type="submit" disabled={submitting}>Rejoindre</button>
+		<button aria-label="Rejoindre un poker planning" type="submit" disabled={submitting}
+			>Rejoindre</button
+		>
 		<span
 			on:click={() => {
 				goto('/create');

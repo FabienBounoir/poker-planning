@@ -123,7 +123,10 @@
 	};
 </script>
 
-<svelte:head><title>Poker Planning: {pokerManager.team}</title></svelte:head>
+<svelte:head>
+	<title>Poker Planning: {pokerManager.team}</title>
+	<meta name="description" content="Manager votre poker planning comme un chef" />
+</svelte:head>
 
 {#if resultsItem}
 	{#if resultsItem?.length == 1 && resultsItem?.[0]?.players?.length > 1}
@@ -175,12 +178,13 @@
 		<div class="buttons">
 			{#if pokerManager.state == 'playing'}
 				<button
+					aria-label="Terminer les votes"
 					on:click={() => {
 						changeState('result');
 					}}>Terminer Le Vote</button
 				>
 			{:else if pokerManager.state == 'result' || pokerManager.state == 'waiting'}
-				<button on:click={canStarVote}>Commencer Le Vote</button>
+				<button aria-label="Commencer les votes" on:click={canStarVote}>Commencer Le Vote</button>
 			{/if}
 		</div>
 

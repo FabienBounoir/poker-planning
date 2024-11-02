@@ -33,6 +33,7 @@
 		<h3>{displayText}</h3>
 	</div>
 	<button
+		aria-label="Display QrCode"
 		on:click={() => {
 			displayQrCode = true;
 		}}
