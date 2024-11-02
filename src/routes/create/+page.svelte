@@ -38,9 +38,9 @@
 	let choices = [
 		{ id: 'TSHIRT', text: `T-shirts (XS, S, M, L, XL)` },
 		{ id: 'FIBONACCI', text: `Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21 )` },
-		{ id: 'POWEROF2', text: `Powers of 2 ( 0, 1, 2, 4, 8, 16, 32 )` },
-		{ id: 'SEQUENTIAL', text: `Sequential (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)` },
-		{ id: 'TSHIRT_HALF', text: `T-shirts (XS, S, M, M/L, L, XL)` }
+		{ id: 'POWEROF2', text: `Puissance de 2 ( 0, 1, 2, 4, 8, 16, 32 )` },
+		{ id: 'SEQUENTIAL', text: `SequentSéquentiel (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)` },
+		{ id: 'TSHIRT_HALF', text: `T-shirts Half (XS, S, M, M/L, L, XL)` }
 	];
 
 	onMount(() => {
