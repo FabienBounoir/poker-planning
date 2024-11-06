@@ -8,5 +8,5 @@ register('fr', () => import('./locales/fr.json'))
 
 init({
     fallbackLocale: defaultLocale,
-    initialLocale: "en",// || browser ? window.navigator.language : defaultLocale,
+    initialLocale: (browser ? window?.navigator?.language : defaultLocale) || defaultLocale,
 })
