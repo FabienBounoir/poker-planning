@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { quintOut } from 'svelte/easing';
 	import { scale } from 'svelte/transition';
+	import { _ } from 'svelte-i18n';
 
 	let type = $state();
 	let team = $state('');
@@ -58,23 +59,23 @@
 </script>
 
 <svelte:head>
-	<title>Crée un Poker planning - Another Poker Planning</title>
+	<title>{$_('CreatePage.title')} - Another Poker Planning</title>
 	<meta name="description" content="Crée un poker planning" />
 </svelte:head>
 
 <main in:scale={{ duration: 300, easing: quintOut }}>
-	<h1>Créer un nouveau poker planning <span class="animateJoker">🃏</span></h1>
+	<h1>{$_('CreatePage.title')} <span class="animateJoker">🃏</span></h1>
 	<form on:submit|preventDefault={create}>
-		<input bind:value={team} placeholder="Nom De La Team" />
-		<select bind:value={type}>
+		<input bind:value={team} placeholder={$_('CreatePage.teamInputPlaceholder')} />
+		<select bind:value={type} placeholder={$_('CreatePage.selectLabel')}>
 			{#each choices as choice}
 				<option value={choice.id}>
 					{choice.text}
 				</option>
 			{/each}
 		</select>
-		<button aria-label="Crée un nouveau poker planning" type="submit" disabled={submitting || !team}
-			>Créer</button
+		<button aria-label={$_('CreatePage.title')} type="submit" disabled={submitting || !team}
+			>{$_('CreatePage.createButton')}</button
 		>
 	</form>
 </main>

@@ -1,8 +1,8 @@
 <script>
 	import '@fortawesome/fontawesome-free/css/all.min.css';
-	import { toast } from 'svelte-sonner';
 	import { fade, scale } from 'svelte/transition';
 	let { code, url = 'https://coucou.com' } = $props();
+	import { _ } from 'svelte-i18n';
 
 	let displayText = $state(code);
 	let displayQrCode = $state(false);
@@ -10,11 +10,11 @@
 	const displayCopyToClipboard = async () => {
 		try {
 			await navigator.clipboard.writeText(url);
-			displayText = 'Copied!';
+			displayText = $_('ManagerPage.copied');
 
 			setTimeout(() => {
 				displayText = code;
-			}, 300);
+			}, 700);
 		} catch (error) {
 			console.error('Failed to copy!', error);
 		}
@@ -27,7 +27,7 @@
 	};
 </script>
 
-<p>Le code de votre salle :</p>
+<p>{$_('ManagerPage.roomCode')}</p>
 <div class="code-element">
 	<div class="code-container" on:click={displayCopyToClipboard}>
 		<h3>{displayText}</h3>
@@ -39,7 +39,6 @@
 		}}
 	>
 		<i class="fa-solid fa-qrcode"></i>
-		<!-- <i class="fa-solid fa-mobile-screen-button"></i> -->
 	</button>
 </div>
 {#if displayQrCode}

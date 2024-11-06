@@ -1,0 +1,43 @@
+{
+    "HomePage": {
+        "title": "Another Poker Planning",
+        "buttons": {
+            "create": "Créer",
+            "join": "Rejoindre"
+        }
+    },
+    "RoomPage": {
+        "welcome": "Bienvenue",
+        "whatIsYourName": "Comment tu t'appelles déjà ?",
+        "validateButton": "Valider",
+        "waitingForVotes": "En attente du lancement des votes...",
+        "playersCount": "{players} player{players > 1 ? 's' : ''}",
+        "voteButton": "Je pense que c'est {LETTER}",
+        "resultsTitle": "Voici Les Resultats",
+        "resultDefenderQuestion": "Pourquoi as-tu choisi",
+        "noVotesMessage": "Aucun vote à afficher 🥲",
+        "noVote": "Aucun Vote"
+    },
+    "ManagerPage": {
+        "welcomeMessage": "Bienvenue {USER}!",
+        "userStoryLabel": "Définissez ici votre user story :",
+        "roomCode": "Le code de votre salle :",
+        "copied": "Copié",
+        "endVoteButton": "Terminer le vote",
+        "startVoteButton": "Commencer le vote",
+        "resultDescriptionTitle": "Résultats de la planification",
+        "noParticipantsMessage": "Pas de participants pour la planification du poker."
+    },
+    "JoinPage": {
+        "windowsTitle": "Rejoindre un poker planning",
+        "title": "Quel poker planning souhaites-tu rejoindre ?",
+        "joinButton": "Rejoindre",
+        "noCodeLink": "Pas de code ?"
+    },
+    "CreatePage": {
+        "title": "Créer un nouveau poker planning",
+        "teamInputPlaceholder": "Nom De La Team",
+        "selectLabel": "Choisissez un type",
+        "createButton": "Créer"
+    }
+}

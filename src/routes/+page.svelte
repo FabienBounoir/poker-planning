@@ -1,5 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { _ } from 'svelte-i18n';
 </script>
 
 <main>
@@ -11,14 +12,14 @@
 				goto('/create');
 			}}
 		>
-			Créer
+			{$_('HomePage.buttons.create')}
 		</button>
 
 		<button
 			aria-label="Go to Join page"
 			on:click={() => {
 				goto('/join');
-			}}>Rejoindre</button
+			}}>{$_('HomePage.buttons.join')}</button
 		>
 	</div>
 </main>

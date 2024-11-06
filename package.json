@@ -36,6 +36,7 @@
 		"preprocess": "^3.2.0",
 		"socket.io-client": "^4.8.1",
 		"svelte-confetti": "^2.1.2",
+		"svelte-i18n": "^4.0.1",
 		"svelte-sonner": "^0.3.28",
 		"uuid": "^10.0.0",
 		"ws": "^8.18.0"
