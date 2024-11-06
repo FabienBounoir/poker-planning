@@ -235,7 +235,7 @@
 				</div>
 			{/each}
 		{:else}
-			{#each Array(Math.floor(Math.random() * 5) + 3).fill(0) as _}
+			{#each Array(5).fill(0) as _}
 				<div class="user">
 					<div class="profile">
 						<div class="img-skeleton"></div>

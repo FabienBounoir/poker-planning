@@ -8,12 +8,12 @@
     },
     "RoomPage": {
         "welcome": "Bienvenue",
-        "whatIsYourName": "Comment tu t'appelles déjà ?",
+        "whatIsYourName": "Comment tu t'appelles ?",
         "validateButton": "Valider",
         "waitingForVotes": "En attente du lancement des votes...",
         "playersCount": "{players} player{players > 1 ? 's' : ''}",
         "voteButton": "Je pense que c'est {LETTER}",
-        "resultsTitle": "Voici Les Resultats",
+        "resultsTitle": "Voici les résultats",
         "resultDefenderQuestion": "Pourquoi as-tu choisi",
         "noVotesMessage": "Aucun vote à afficher 🥲",
         "noVote": "Aucun Vote"
@@ -25,8 +25,18 @@
         "copied": "Copié",
         "endVoteButton": "Terminer le vote",
         "startVoteButton": "Commencer le vote",
+        "textareaPlaceholder": "Description de votre US",
         "resultDescriptionTitle": "Résultats de la planification",
         "noParticipantsMessage": "Pas de participants pour la planification du poker."
+    },
+    "selectCategories": {
+        "types": {
+            "TSHIRT": "T-shirts (XS, S, M, L, XL)",
+            "FIBONACCI": "Fibonacci (0, 1, 2, 3, 5, 8, 13, 21)",
+            "POWEROF2": "Puissances de 2 (0, 1, 2, 4, 8, 16, 32)",
+            "SEQUENTIAL": "Séquentiel (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)",
+            "TSHIRT_HALF": "T-shirts moitié (XS, S, M, M/L, L, XL)"
+        }
     },
     "JoinPage": {
         "windowsTitle": "Rejoindre un poker planning",
@@ -36,7 +46,7 @@
     },
     "CreatePage": {
         "title": "Créer un nouveau poker planning",
-        "teamInputPlaceholder": "Nom De La Team",
+        "teamInputPlaceholder": "Nom de l'équipe",
         "selectLabel": "Choisissez un type",
         "createButton": "Créer"
     }

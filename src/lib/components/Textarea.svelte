@@ -1,4 +1,6 @@
 <script>
+	import { _ } from 'svelte-i18n';
+
 	let { value = $bindable(), minRows = 3, maxRows = 3, disabled } = $props();
 
 	let minHeight = $state(`${1 + minRows * 1.2}em`);
@@ -17,7 +19,8 @@
 	<pre aria-hidden="true" style="min-height: {minHeight}; max-height: {maxHeight}">{value +
 			'\n'}</pre>
 
-	<textarea disabled={!disabled} bind:value placeholder="Description de votre US"></textarea>
+	<textarea disabled={!disabled} bind:value placeholder={$_('ManagerPage.textareaPlaceholder')}
+	></textarea>
 </div>
 
 <style lang="scss">

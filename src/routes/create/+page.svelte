@@ -37,11 +37,11 @@
 	};
 
 	let choices = [
-		{ id: 'TSHIRT', text: `T-shirts (XS, S, M, L, XL)` },
-		{ id: 'FIBONACCI', text: `Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21 )` },
-		{ id: 'POWEROF2', text: `Puissance de 2 ( 0, 1, 2, 4, 8, 16, 32 )` },
-		{ id: 'SEQUENTIAL', text: `SequentSéquentiel (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)` },
-		{ id: 'TSHIRT_HALF', text: `T-shirts Half (XS, S, M, M/L, L, XL)` }
+		{ id: 'TSHIRT', text: $_('selectCategories.types.TSHIRT') },
+		{ id: 'FIBONACCI', text: $_('selectCategories.types.FIBONACCI') },
+		{ id: 'POWEROF2', text: $_('selectCategories.types.POWEROF2') },
+		{ id: 'SEQUENTIAL', text: $_('selectCategories.types.SEQUENTIAL') },
+		{ id: 'TSHIRT_HALF', text: $_('selectCategories.types.TSHIRT_HALF') }
 	];
 
 	onMount(() => {
