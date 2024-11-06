@@ -1,0 +1,53 @@
+{
+    "HomePage": {
+        "title": "Otro Poker Planning",
+        "buttons": {
+            "create": "Crear",
+            "join": "Unirse"
+        }
+    },
+    "RoomPage": {
+        "welcome": "Bienvenido",
+        "whatIsYourName": "¿Cómo te llamas?",
+        "validateButton": "Validar",
+        "waitingForVotes": "Esperando a que comiencen los votos...",
+        "playersCount": "{players} jugador{players > 1 ? 'es' : ''}",
+        "voteButton": "Creo que es la opción {LETTER}",
+        "resultsTitle": "Aquí están los resultados",
+        "resultDefenderQuestion": "¿Por qué elegiste",
+        "noVotesMessage": "No hay votos para mostrar 🥲",
+        "noVote": "Sin voto"
+    },
+    "ManagerPage": {
+        "welcomeMessage": "¡Bienvenido {USER}!",
+        "userStoryLabel": "Define tu historia de usuario aquí:",
+        "roomCode": "El código de tu sala:",
+        "copied": "Copiado",
+        "endVoteButton": "Finalizar el voto",
+        "startVoteButton": "Comenzar el voto",
+        "textareaPlaceholder": "Descripción de tu historia de usuario",
+        "resultDescriptionTitle": "Resultados de la planificación",
+        "noParticipantsMessage": "No hay participantes para la planificación del poker."
+    },
+    "selectCategories": {
+        "types": {
+            "TSHIRT": "Camisetas (XS, S, M, L, XL)",
+            "FIBONACCI": "Fibonacci (0, 1, 2, 3, 5, 8, 13, 21)",
+            "POWEROF2": "Potencias de 2 (0, 1, 2, 4, 8, 16, 32)",
+            "SEQUENTIAL": "Secuencial (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)",
+            "TSHIRT_HALF": "Camisetas Media (XS, S, M, M/L, L, XL)"
+        }
+    },
+    "JoinPage": {
+        "windowsTitle": "Unirse a un poker planning",
+        "title": "¿A qué poker planning te gustaría unirte?",
+        "joinButton": "Unirse",
+        "noCodeLink": "¿Sin código?"
+    },
+    "CreatePage": {
+        "title": "Crear un nuevo poker planning",
+        "teamInputPlaceholder": "Nombre del equipo",
+        "selectLabel": "Elegir un tipo",
+        "createButton": "Crear"
+    }
+}

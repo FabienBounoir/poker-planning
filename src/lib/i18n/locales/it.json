@@ -1,0 +1,53 @@
+{
+    "HomePage": {
+        "title": "Un altro Poker Planning",
+        "buttons": {
+            "create": "Crea",
+            "join": "Unisciti"
+        }
+    },
+    "RoomPage": {
+        "welcome": "Benvenuto",
+        "whatIsYourName": "Come ti chiami?",
+        "validateButton": "Convalida",
+        "waitingForVotes": "In attesa che inizino i voti...",
+        "playersCount": "{players} giocatore{players > 1 ? 'i' : ''}",
+        "voteButton": "Penso che sia l'opzione {LETTER}",
+        "resultsTitle": "Ecco i risultati",
+        "resultDefenderQuestion": "Perché hai scelto",
+        "noVotesMessage": "Nessun voto da visualizzare 🥲",
+        "noVote": "Nessun voto"
+    },
+    "ManagerPage": {
+        "welcomeMessage": "Benvenuto {USER}!",
+        "userStoryLabel": "Definisci la tua user story qui:",
+        "roomCode": "Il codice della tua stanza:",
+        "copied": "Copiato",
+        "endVoteButton": "Concludi il voto",
+        "startVoteButton": "Inizia il voto",
+        "textareaPlaceholder": "Descrizione della tua storia utente",
+        "resultDescriptionTitle": "Risultati della pianificazione",
+        "noParticipantsMessage": "Nessun partecipante per la pianificazione del poker."
+    },
+    "selectCategories": {
+        "types": {
+            "TSHIRT": "T-shirt (XS, S, M, L, XL)",
+            "FIBONACCI": "Fibonacci (0, 1, 2, 3, 5, 8, 13, 21)",
+            "POWEROF2": "Potenze di 2 (0, 1, 2, 4, 8, 16, 32)",
+            "SEQUENTIAL": "Sequenziale (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)",
+            "TSHIRT_HALF": "T-shirt Mezzo (XS, S, M, M/L, L, XL)"
+        }
+    },
+    "JoinPage": {
+        "windowsTitle": "Unisciti a un poker planning",
+        "title": "A quale poker planning desideri unirti?",
+        "joinButton": "Unisciti",
+        "noCodeLink": "Nessun codice?"
+    },
+    "CreatePage": {
+        "title": "Crea un nuovo poker planning",
+        "teamInputPlaceholder": "Nome del team",
+        "selectLabel": "Scegli un tipo",
+        "createButton": "Crea"
+    }
+}

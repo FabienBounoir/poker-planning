@@ -1,6 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
+	import { _ } from 'svelte-i18n';
 
 	let roomId = $state('');
 	let submitting = $state(false);
@@ -37,14 +38,13 @@
 </script>
 
 <svelte:head>
-	<title>Rejoindre un Poker planning - Another Poker Planning</title>
-	<meta name="description" content="Rejoindre un poker planning" />
+	<title>{$_('JoinPage.windowsTitle')} - Another Poker Planning</title>
+	<meta name="description" content="Join a poker planning" />
 </svelte:head>
 
 <main>
 	<h1>
-		Hummm <span class="animateDetective">🕵️</span>,<br />Quel poker planning souhaites-tu rejoindre
-		?
+		Hummm <span class="animateDetective">🕵️</span>,<br />{$_('JoinPage.title')}
 	</h1>
 	<form on:submit|preventDefault={join}>
 		<input
@@ -55,12 +55,12 @@
 			disabled={submitting}
 		/>
 		<button aria-label="Rejoindre un poker planning" type="submit" disabled={submitting}
-			>Rejoindre</button
+			>{$_('JoinPage.joinButton')}</button
 		>
 		<span
 			on:click={() => {
 				goto('/create');
-			}}>Pas de code ?</span
+			}}>{$_('JoinPage.noCodeLink')}</span
 		>
 	</form>
 </main>

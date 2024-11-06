@@ -11,6 +11,7 @@
 	import { fade, fly, scale } from 'svelte/transition';
 	import ioClient from 'socket.io-client';
 	import Confetti from 'svelte-confetti';
+	import { _ } from 'svelte-i18n';
 
 	let roomId = $page.params.id;
 	let url = $state('');
@@ -162,12 +163,14 @@
 				<span in:fly|local={{ easing: backOut, x: -25 }}> Poker Planning </span>
 			</h1>
 
-			<div class="me">Bienvenue {pokerManager.team}!</div>
+			<div class="me">
+				{$_('ManagerPage.welcomeMessage', { values: { USER: pokerManager.team || '' } })}
+			</div>
 
 			<Code code={roomId} {url} />
 		</div>
 
-		<label>Définissez ici votre user story:</label>
+		<label>{$_('ManagerPage.userStoryLabel')}</label>
 		<TextArea
 			bind:value={pokerManager.userStory}
 			disabled={pokerManager.state == 'result' || pokerManager.state == 'waiting'}
@@ -181,10 +184,12 @@
 					aria-label="Terminer les votes"
 					on:click={() => {
 						changeState('result');
-					}}>Terminer Le Vote</button
+					}}>{$_('ManagerPage.endVoteButton')}</button
 				>
 			{:else if pokerManager.state == 'result' || pokerManager.state == 'waiting'}
-				<button aria-label="Commencer les votes" on:click={canStarVote}>Commencer Le Vote</button>
+				<button aria-label="Commencer les votes" on:click={canStarVote}
+					>{$_('ManagerPage.startVoteButton')}</button
+				>
 			{/if}
 		</div>
 
@@ -204,7 +209,7 @@
 		{#if users != null}
 			{#if users?.length < 1}
 				<div>
-					<p style="text-align: center;">Pas de participants pour la planification du poker.</p>
+					<p style="text-align: center;">{$_('ManagerPage.noParticipantsMessage')}</p>
 				</div>
 			{:else}
 				<p style="text-align: end;">{users.length} player{users.length > 1 ? 's' : ''}</p>
@@ -230,7 +235,7 @@
 				</div>
 			{/each}
 		{:else}
-			{#each Array(Math.floor(Math.random() * 5) + 3).fill(0) as _}
+			{#each Array(5).fill(0) as _}
 				<div class="user">
 					<div class="profile">
 						<div class="img-skeleton"></div>

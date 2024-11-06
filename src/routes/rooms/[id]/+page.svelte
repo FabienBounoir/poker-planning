@@ -10,6 +10,7 @@
 	import myshades from '$lib/myshades';
 	import type { Socket } from 'socket.io-client';
 	import ioClient from 'socket.io-client';
+	import { _ } from 'svelte-i18n';
 
 	let roomId = $page.params.id;
 	let io: Socket;
@@ -193,11 +194,15 @@
 {#if pokerManager == null}
 	<div class="init-page">
 		<h1>
-			Bienvenue <span class="rotateAnimation">👋</span> <br />Comment tu t'appelles déjà ?<br />
+			{$_('RoomPage.welcome')} <span class="rotateAnimation">👋</span> <br />{$_(
+				'RoomPage.whatIsYourName'
+			)}<br />
 		</h1>
 		<form on:submit|preventDefault={connect}>
 			<input type="text" bind:value={username} placeholder="Jean Bon" disabled={submitting} />
-			<button aria-label="Valider son nom" type="submit" disabled={submitting}>Valider</button>
+			<button aria-label="Valider son nom" type="submit" disabled={submitting}
+				>{$_('RoomPage.validateButton')}</button
+			>
 		</form>
 	</div>
 {:else}
@@ -211,7 +216,7 @@
 				{players?.length || 0} player{players?.length > 1 ? 's' : ''}
 			</h3>
 
-			<h1>En attente du lancement des votes...</h1>
+			<h1>{$_('RoomPage.waitingForVotes')}</h1>
 			{#if players}
 				{#each players as player}
 					<div
@@ -254,11 +259,11 @@
 					sendVote();
 				}}
 			>
-				Je pense que c'est {selectedLetter}
+				{$_('RoomPage.voteButton', { values: { LETTER: selectedLetter } })}
 			</button>
 		{:else if pokerManager.state === 'result'}
 			<div class="result-container" in:fade={{ duration: 700, easing: quintInOut }}>
-				<h1>Voici Les Resultats</h1>
+				<h1>{$_('RoomPage.resultsTitle')}</h1>
 
 				{#if resultDefender}
 					{#key resultDefender}
@@ -267,7 +272,7 @@
 								<img src="https://api.dicebear.com/9.x/dylan/svg?seed={resultDefender.name}" />
 								<span>{resultDefender.name}</span>
 							</div>
-							Pourquoi as-tu choisi
+							{$_('RoomPage.resultDefenderQuestion')}
 							<span> {resultDefender.item}</span> ?
 						</h3>
 					{/key}
@@ -309,12 +314,12 @@
 										<p>{player}</p>
 									{/each}
 								{:else}
-									<p>Aucun Vote</p>
+									<p>{$_('RoomPage.noVote')}</p>
 								{/if}
 							</div>
 						{/each}
 					{:else}
-						<p class="no-vote">Aucun vote à afficher 🥲</p>
+						<p class="no-vote">{$_('RoomPage.noVotesMessage')}</p>
 					{/if}
 				</div>
 			</div>

@@ -1,0 +1,53 @@
+{
+    "HomePage": {
+        "title": "Another Poker Planning",
+        "buttons": {
+            "create": "Create",
+            "join": "Join"
+        }
+    },
+    "RoomPage": {
+        "welcome": "Welcome",
+        "whatIsYourName": "What is your name?",
+        "validateButton": "Validate",
+        "waitingForVotes": "Waiting for the votes to start...",
+        "playersCount": "{players} player{players > 1 ? 's' : ''}",
+        "voteButton": "I think it’s {LETTER}",
+        "resultsTitle": "Here are the results",
+        "resultDefenderQuestion": "Why did you choose",
+        "noVotesMessage": "No votes to display 🥲",
+        "noVote": "No Vote"
+    },
+    "ManagerPage": {
+        "welcomeMessage": "Welcome {USER}!",
+        "userStoryLabel": "Define your user story here:",
+        "roomCode": "Your room code:",
+        "copied": "Copied",
+        "endVoteButton": "Finish the vote",
+        "startVoteButton": "Start the vote",
+        "textareaPlaceholder": "Description of your user story (US)",
+        "resultDescriptionTitle": "Planning results",
+        "noParticipantsMessage": "No participants for the poker planning."
+    },
+    "selectCategories": {
+        "types": {
+            "TSHIRT": "T-shirts (XS, S, M, L, XL)",
+            "FIBONACCI": "Fibonacci (0, 1, 2, 3, 5, 8, 13, 21)",
+            "POWEROF2": "Powers of 2 (0, 1, 2, 4, 8, 16, 32)",
+            "SEQUENTIAL": "Sequential (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)",
+            "TSHIRT_HALF": "Half T-shirts (XS, S, M, M/L, L, XL)"
+        }
+    },
+    "JoinPage": {
+        "windowsTitle": "Join a poker planning",
+        "title": "Which poker planning would you like to join?",
+        "joinButton": "Join",
+        "noCodeLink": "No code?"
+    },
+    "CreatePage": {
+        "title": "Create a new poker planning",
+        "teamInputPlaceholder": "Team Name",
+        "selectLabel": "Choose a type",
+        "createButton": "Create"
+    }
+}

@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { quintOut } from 'svelte/easing';
 	import { scale } from 'svelte/transition';
+	import { _ } from 'svelte-i18n';
 
 	let type = $state();
 	let team = $state('');
@@ -36,11 +37,11 @@
 	};
 
 	let choices = [
-		{ id: 'TSHIRT', text: `T-shirts (XS, S, M, L, XL)` },
-		{ id: 'FIBONACCI', text: `Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21 )` },
-		{ id: 'POWEROF2', text: `Puissance de 2 ( 0, 1, 2, 4, 8, 16, 32 )` },
-		{ id: 'SEQUENTIAL', text: `SequentSéquentiel (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)` },
-		{ id: 'TSHIRT_HALF', text: `T-shirts Half (XS, S, M, M/L, L, XL)` }
+		{ id: 'TSHIRT', text: $_('selectCategories.types.TSHIRT') },
+		{ id: 'FIBONACCI', text: $_('selectCategories.types.FIBONACCI') },
+		{ id: 'POWEROF2', text: $_('selectCategories.types.POWEROF2') },
+		{ id: 'SEQUENTIAL', text: $_('selectCategories.types.SEQUENTIAL') },
+		{ id: 'TSHIRT_HALF', text: $_('selectCategories.types.TSHIRT_HALF') }
 	];
 
 	onMount(() => {
@@ -58,23 +59,23 @@
 </script>
 
 <svelte:head>
-	<title>Crée un Poker planning - Another Poker Planning</title>
+	<title>{$_('CreatePage.title')} - Another Poker Planning</title>
 	<meta name="description" content="Crée un poker planning" />
 </svelte:head>
 
 <main in:scale={{ duration: 300, easing: quintOut }}>
-	<h1>Créer un nouveau poker planning <span class="animateJoker">🃏</span></h1>
+	<h1>{$_('CreatePage.title')} <span class="animateJoker">🃏</span></h1>
 	<form on:submit|preventDefault={create}>
-		<input bind:value={team} placeholder="Nom De La Team" />
-		<select bind:value={type}>
+		<input bind:value={team} placeholder={$_('CreatePage.teamInputPlaceholder')} />
+		<select bind:value={type} placeholder={$_('CreatePage.selectLabel')}>
 			{#each choices as choice}
 				<option value={choice.id}>
 					{choice.text}
 				</option>
 			{/each}
 		</select>
-		<button aria-label="Crée un nouveau poker planning" type="submit" disabled={submitting || !team}
-			>Créer</button
+		<button aria-label={$_('CreatePage.title')} type="submit" disabled={submitting || !team}
+			>{$_('CreatePage.createButton')}</button
 		>
 	</form>
 </main>
