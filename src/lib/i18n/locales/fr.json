@@ -16,7 +16,10 @@
         "resultsTitle": "Voici les résultats",
         "resultDefenderQuestion": "Pourquoi as-tu choisi",
         "noVotesMessage": "Aucun vote à afficher 🥲",
-        "noVote": "Aucun Vote"
+        "noVote": "Aucun Vote",
+        "IWantYourName": "J'aimerai savoir comment tu t'appelles !",
+        "ErrorWhenJoining": "Une erreur c'est produite lors de la connection...",
+        "ErrorWhenSendingVote": "Une erreur s'est produite lors de l'envoi de votre vote."
     },
     "ManagerPage": {
         "welcomeMessage": "Bienvenue {USER}!",
@@ -27,7 +30,9 @@
         "startVoteButton": "Commencer le vote",
         "textareaPlaceholder": "Description de votre US",
         "resultDescriptionTitle": "Résultats de la planification",
-        "noParticipantsMessage": "Pas de participants pour la planification du poker."
+        "noParticipantsMessage": "Pas de participants pour la planification du poker.",
+        "noUserStoryDefined": "Aucune User Story n'a été définie.",
+        "noParticipantsForVote": "Aucune participant trouvé pour pouvoir lancer le vote."
     },
     "selectCategories": {
         "types": {
@@ -35,19 +40,29 @@
             "FIBONACCI": "Fibonacci (0, 1, 2, 3, 5, 8, 13, 21)",
             "POWEROF2": "Puissances de 2 (0, 1, 2, 4, 8, 16, 32)",
             "SEQUENTIAL": "Séquentiel (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)",
-            "TSHIRT_HALF": "T-shirts moitié (XS, S, M, M/L, L, XL)"
+            "TSHIRT_HALF": "T-shirts moitié (XS, S, M, M/L, L, XL)",
+            "CUSTOM": "Personnalisé"
         }
     },
     "JoinPage": {
         "windowsTitle": "Rejoindre un poker planning",
         "title": "Quel poker planning souhaites-tu rejoindre ?",
         "joinButton": "Rejoindre",
-        "noCodeLink": "Pas de code ?"
+        "noCodeLink": "Pas de code ?",
+        "roomDoesntExist": "La room n'existe pas..."
     },
     "CreatePage": {
         "title": "Créer un nouveau poker planning",
         "teamInputPlaceholder": "Nom de l'équipe",
         "selectLabel": "Choisissez un type",
-        "createButton": "Créer"
+        "createButton": "Créer",
+        "createNewSetOfCards": "Créer un nouveau jeu de cartes",
+        "preview": "Aperçu",
+        "deckName": "Nom du jeu de cartes",
+        "error": "Une erreur s'est produite lors de la création du poker planning."
+    },
+    "common": {
+        "pokerPlanningDoesntExist": "Ce poker planning n'existe pas.",
+        "connectionWithServerLost": "La connexion avec le serveur a été perdue."
     }
 }

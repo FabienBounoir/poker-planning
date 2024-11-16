@@ -23,7 +23,11 @@ const createSocketIOServer = (server, rooms) => {
                     cards: [],
                     state: 'waiting',
                     userStory: '',
+                    color: '#FF7F00',
+                    avatar: 'https://api.dicebear.com/9.x/dylan/svg',
+                    autoReveal: false
                 },
+                timeout: null,
                 emit(type, data, manager) {
                     object.players.forEach((player) => {
                         if (manager) {
@@ -56,6 +60,11 @@ const createSocketIOServer = (server, rooms) => {
                 },
                 emitUpdateGame(state) {
                     let element = { ...object.data };
+
+                    if (this.timeout) {
+                        clearTimeout(this.timeout);
+                        delete this.timeout;
+                    }
 
                     if (state == "result") {
                         let resultsByItem = new Map();
@@ -103,6 +112,31 @@ const createSocketIOServer = (server, rooms) => {
                     });
                     this.emitPlayers();
                 },
+                checkAllPlayersSelected() {
+                    console.log("Check all players selected");
+                    if (!this.data.autoReveal) return false;
+                    console.log("Auto reveal is enabled");
+
+                    if (this.timeout) {
+                        clearTimeout(this.timeout);
+                        delete this.timeout;
+                    }
+
+                    this.timeout = setTimeout(() => {
+                        for (let player of object.players.values()) {
+                            console.log("Check player", player.name, player.selectedCard);
+                            if (!player.manager && !player.selectedCard) {
+                                console.log("Not all players have selected a card");
+                                return; // 
+                            }
+                        }
+
+                        console.log("All players have selected a card");
+                        console.log("Timeout to reveal result");
+                        this.data.state = "result";
+                        this.emitUpdateGame("result");
+                    }, 3000);
+                }
             };
 
             if (object.data) {
@@ -206,6 +240,7 @@ const createSocketIOServer = (server, rooms) => {
                         room.players.set(socket.id, player);
                         room.emitPlayers(true);
                         socket.emit("success", { success: true });
+                        room.checkAllPlayersSelected();
                         break;
                     }
                     case 'state': {

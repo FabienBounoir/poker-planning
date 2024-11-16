@@ -23,7 +23,7 @@
 			return goto(`/rooms/${res.roomId}`);
 		}
 
-		toast.error("La room n'existe pas...");
+		toast.error($_('JoinPage.roomDoesntExist'));
 
 		submitting = false;
 	};

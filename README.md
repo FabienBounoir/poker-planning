@@ -1,10 +1,10 @@
-# Another Poker Planning
+# Another Planning Poker
 
-Welcome to **Another Poker Planning**! This site is designed to make your poker planning sessions more efficient, fun, and engaging. With our tool, you can get instant, clear results and benefit from detailed, high-quality analysis.
+Welcome to **Another Planning Poker**! This site is designed to make your Planning Poker sessions more efficient, fun, and engaging. With our tool, you can get instant, clear results and benefit from detailed, high-quality analysis.
 
 ## Features
 
-- **Session Creation**: Easily create new poker planning sessions for your team.
+- **Session Creation**: Easily create new Planning Poker sessions for your team.
 - **Join Sessions**: Join existing sessions with a unique code.
 - **User Management**: Manage participants and track their votes in real-time.
 - **Instant Results**: Get immediate results and visualize vote percentages.
@@ -17,9 +17,9 @@ Welcome to **Another Poker Planning**! This site is designed to make your poker 
 3. **Vote**: Each participant can vote to estimate the complexity of tasks.
 4. **View Results**: Results are displayed instantly, with clear percentages and engaging visualizations.
 
-## Why Use Another Poker Planning?
+## Why Use Another Planning Poker?
 
-- **Simplicity**: An intuitive user interface that makes creating and managing poker planning sessions a breeze.
+- **Simplicity**: An intuitive user interface that makes creating and managing Planning Poker sessions a breeze.
 - **Speed**: Get instant results without any waiting.
 - **Engagement**: Animations and visualizations that make the voting process more fun and engaging.
 - **Accessibility**: Accessible from any device with an internet connection.
@@ -27,17 +27,17 @@ Welcome to **Another Poker Planning**! This site is designed to make your poker 
 
 ## Try It Now!
 
-Don't waste time with complicated and inefficient tools. Try **Another Poker Planning** for your next poker planning session and see the difference!
+Don't waste time with complicated and inefficient tools. Try **Another Planning Poker** for your next Planning Poker session and see the difference!
 
-[Visit Another Poker Planning](https://anotherpp.vercel.app/)
+[Visit Another Planning Poker](https://anotherpp.vercel.app/)
 
 ## Screenshots
 
-Here are some screenshots to give you a glimpse of what Another Poker Planning looks like:
+Here are some screenshots to give you a glimpse of what Another Planning Poker looks like:
 
 ### Create Session
 ![Create Session](screenshots/create.png)
-*The interface for creating a new poker planning session.*
+*The interface for creating a new Planning Poker session.*
 
 ### Join Session
 ![Join Session](screenshots/room.png)

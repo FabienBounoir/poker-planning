@@ -1,5 +1,6 @@
 import generateTailwindColorFamily from "./generateTailwindColorFamily";
 import tailwindColors3 from "./tailwind3";
+import chroma from "chroma-js";
 
 const generate = (hex = "#ffffff", referenceColors = tailwindColors3) =>
     generateTailwindColorFamily(hex, referenceColors);
@@ -16,6 +17,11 @@ const myshades = async (args = {}) => {
 
         shades.forEach((shade) => {
             document.documentElement.style.setProperty(`--${key}-${shade.number}`, shade.hexcode);
+        });
+
+        //Create darkened shades
+        shades.forEach((shade) => {
+            document.documentElement.style.setProperty(`--${key}-${shade.number}-darkened`, chroma(shade.hexcode).set('luminosity', 'dark').hex());
         });
     }
 };

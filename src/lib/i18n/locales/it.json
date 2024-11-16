@@ -16,7 +16,10 @@
         "resultsTitle": "Ecco i risultati",
         "resultDefenderQuestion": "Perché hai scelto",
         "noVotesMessage": "Nessun voto da visualizzare 🥲",
-        "noVote": "Nessun voto"
+        "noVote": "Nessun voto",
+        "IWantYourName": "Mi piacerebbe sapere come ti chiami!",
+        "ErrorWhenJoining": "Si è verificato un errore durante la connessione...",
+        "ErrorWhenSendingVote": "Si è verificato un errore durante l'invio del tuo voto."
     },
     "ManagerPage": {
         "welcomeMessage": "Benvenuto {USER}!",
@@ -27,7 +30,9 @@
         "startVoteButton": "Inizia il voto",
         "textareaPlaceholder": "Descrizione della tua storia utente",
         "resultDescriptionTitle": "Risultati della pianificazione",
-        "noParticipantsMessage": "Nessun partecipante per la pianificazione del poker."
+        "noParticipantsMessage": "Nessun partecipante per la pianificazione del poker.",
+        "noUserStoryDefined": "Non è stata definita alcuna User Story.",
+        "noParticipantsForVote": "Non sono stati trovati partecipanti per avviare il voto."
     },
     "selectCategories": {
         "types": {
@@ -35,19 +40,29 @@
             "FIBONACCI": "Fibonacci (0, 1, 2, 3, 5, 8, 13, 21)",
             "POWEROF2": "Potenze di 2 (0, 1, 2, 4, 8, 16, 32)",
             "SEQUENTIAL": "Sequenziale (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)",
-            "TSHIRT_HALF": "T-shirt Mezzo (XS, S, M, M/L, L, XL)"
+            "TSHIRT_HALF": "T-shirt Mezzo (XS, S, M, M/L, L, XL)",
+            "CUSTOM": "Personalizzato"
         }
     },
     "JoinPage": {
         "windowsTitle": "Unisciti a un poker planning",
         "title": "A quale poker planning desideri unirti?",
         "joinButton": "Unisciti",
-        "noCodeLink": "Nessun codice?"
+        "noCodeLink": "Nessun codice?",
+        "roomDoesntExist": "La stanza non esiste..."
     },
     "CreatePage": {
         "title": "Crea un nuovo poker planning",
         "teamInputPlaceholder": "Nome del team",
         "selectLabel": "Scegli un tipo",
-        "createButton": "Crea"
+        "createButton": "Crea",
+        "createNewSetOfCards": "Crea un nuovo mazzo di carte",
+        "preview": "Anteprima",
+        "deckName": "Nome del mazzo",
+        "error": "Si è verificato un errore durante la creazione del poker planning."
+    },
+    "common": {
+        "pokerPlanningDoesntExist": "Questo poker planning non esiste.",
+        "connectionWithServerLost": "La connessione con il server è stata persa."
     }
 }
