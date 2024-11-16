@@ -260,7 +260,7 @@
 		/>
 
 		<div>
-			<label>{$_('CreatePage.preview')}:</label>
+			<label>{$_('CreatePage.preview')}</label>
 			<div class="card-preview">
 				{#each customCard.cards as card}
 					<div
@@ -303,7 +303,6 @@
 	.create-new-set {
 		display: flex;
 		gap: 0.5em;
-		text-align: left;
 
 		input {
 			width: 300px;
