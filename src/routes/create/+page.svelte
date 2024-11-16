@@ -7,6 +7,7 @@
 	import { accordion } from '$lib/animations/accordion';
 	import Switch from '$lib/components/Switch.svelte';
 	import myshades from '$lib/myshades';
+	import { toast } from 'svelte-sonner';
 
 	let type = $state();
 	let team = $state('');
@@ -16,7 +17,6 @@
 	let advancedSettingsObject = $state({
 		hexcode: '#FF7F00',
 		avatar: 'https://api.dicebear.com/9.x/dylan/svg',
-		jiraUrl: '',
 		autoReveal: false
 	});
 
@@ -64,7 +64,10 @@
 				body: JSON.stringify(bodyBuilder)
 			})
 				.then((response) => response.json())
-				.catch((error) => console.error(error));
+				.catch((error) => {
+					toast.error($_('CreatePage.error'));
+					console.error(error);
+				});
 
 			if (res && res.roomId) {
 				goto(`/manager/${res.roomId}`);
@@ -222,13 +225,6 @@
 					{/each}
 				</div>
 
-				<!-- <div>Jira US url</div>
-			<input
-				type="text"
-				placeholder="https://votre-instance-jira/browse/PROJET-ID"
-				bind:value={advancedSettingsObject.jiraUrl}
-			/> -->
-
 				<div class="color-container">
 					<p>Poker planning color</p>
 					<label style="background-color: {advancedSettingsObject.hexcode}">
@@ -251,12 +247,9 @@
 	</main>
 {:else if status == 'new-card'}
 	<main class="create-new-set">
-		<h1>Create a new set of cards</h1>
+		<h1>{$_('CreatePage.createNewSetOfCards')} <span class="animateJoker">🃏</span></h1>
 
-		<!-- <label>Deck name</label> -->
-		<input bind:value={customCard.name} placeholder="Deck name" />
-
-		<!-- <label>Card values</label> -->
+		<input bind:value={customCard.name} placeholder={$_('CreatePage.deckName')} />
 		<input
 			value={customCard.cards ? customCard.cards.join(',') : ''}
 			placeholder="XS,S,M,L,XL"
@@ -267,7 +260,7 @@
 		/>
 
 		<div>
-			<label>Preview:</label>
+			<label>{$_('CreatePage.preview')}:</label>
 			<div class="card-preview">
 				{#each customCard.cards as card}
 					<div class="card" in:fade>

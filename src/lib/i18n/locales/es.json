@@ -55,7 +55,11 @@
         "title": "Crear un nuevo poker planning",
         "teamInputPlaceholder": "Nombre del equipo",
         "selectLabel": "Elegir un tipo",
-        "createButton": "Crear"
+        "createButton": "Crear",
+        "createNewSetOfCards": "Crear un nuevo mazo de cartas",
+        "preview": "Vista previa",
+        "deckName": "Nombre del mazo",
+        "error": "Se produjo un error al crear el poker planning."
     },
     "common": {
         "pokerPlanningDoesntExist": "Este poker planning no existe.",
