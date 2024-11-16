@@ -19,7 +19,6 @@
 	let hexcode = $state('');
 
 	let timeout: number | null;
-	let interval: number | null;
 
 	let selectedLetter = $state(null);
 	let username = $state('');
@@ -40,10 +39,6 @@
 	});
 
 	onDestroy(() => {
-		if (interval) {
-			clearInterval(interval);
-		}
-
 		if (io) {
 			io.removeAllListeners();
 			io.disconnect();
@@ -56,7 +51,7 @@
 
 	const connect = () => {
 		if (username.trim() == '') {
-			return toast.info("J'aimerai savoir comment tu t'appelles !");
+			return toast.info($_('RoomPage.IWantYourName'));
 		}
 
 		try {
@@ -121,13 +116,13 @@
 				console.error('WEBSOCKET ERROR', e);
 
 				if (e.reason == "Room doesn't exist") {
-					toast.error("Ce poker planning n'existe pas.");
+					toast.error($_('common.pokerPlanningDoesntExist'));
 					goto('/join');
 				}
 			});
 		} catch (e) {
 			console.error('Websocket error', e);
-			toast.error("Une erreur c'est produite lors de la connection...");
+			toast.error($_('RoomPage.ErrorWhenJoining'));
 		} finally {
 			submitting = false;
 		}
@@ -135,7 +130,7 @@
 
 	const sendVote = (forceValue = selectedLetter) => {
 		timeout = setTimeout(() => {
-			toast.error("Une erreur s'est produite lors de l'envoi de votre vote.");
+			toast.error($_('RoomPage.ErrorWhenSendingVote'));
 			submittedLetter = null;
 			selectedLetter = null;
 		}, 2000);
@@ -157,7 +152,7 @@
 
 		const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
 		if (!hexColorRegex.test(hexcode)) {
-			return toast.error(`Le code hexa '${hexcode}' n'est pas valide`);
+			return toast.error(`HexaCode '${hexcode}' not valid`);
 		}
 
 		io.send({ type: 'hexcode', data: { hexcode } });
@@ -224,7 +219,10 @@
 						style={getRandomPosition()}
 						transition:scale={{ duration: 500 }}
 					>
-						<img src="https://api.dicebear.com/9.x/dylan/svg?seed={player.name}" />
+						<img
+							src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
+								`?seed=${player.name}`}
+						/>
 						<span>{player.name}</span>
 					</div>
 				{/each}
@@ -269,7 +267,10 @@
 					{#key resultDefender}
 						<h3 transition:scale={{ delay: 2000, duration: 500, easing: quintInOut }}>
 							<div>
-								<img src="https://api.dicebear.com/9.x/dylan/svg?seed={resultDefender.name}" />
+								<img
+									src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
+										`?seed=${resultDefender.name}`}
+								/>
 								<span>{resultDefender.name}</span>
 							</div>
 							{$_('RoomPage.resultDefenderQuestion')}

@@ -21,7 +21,6 @@ app.use((req, res, next) => {
 });
 
 app.get("/room", (req, res) => {
-    console.log("req.query;", req.query)
     const { roomId } = req.query;
 
     if (rooms.get(roomId)) {
@@ -32,11 +31,7 @@ app.get("/room", (req, res) => {
 })
 
 app.post('/room', (req, res) => {
-    const { type, team } = req.body;
-
-    if (!["TSHIRT", "FIBONACCI", "POWEROF2", "SEQUENTIAL", "TSHIRT_HALF"].includes(type)) {
-        return res.status(400).json({ error: "Invalid room type" });
-    }
+    const { type, team, hexcode, avatar, autoReveal, cards } = req.body;
 
     const roomId = createRoomId();
     const formattedTeam = (team || 'NFS').trim().charAt(0).toUpperCase() + (team || 'NFS').slice(1).toLowerCase();
@@ -65,7 +60,21 @@ app.post('/room', (req, res) => {
             roomData.cards = ['XS', 'S', 'M', 'M/L', 'L', 'XL'];
             break;
         default:
-            return res.status(400).json({ error: "Unknown room type" });
+            console.log("Unknown room type", cards);
+            if (!cards || cards?.length === 0) return res.status(400).json({ error: "Unknown room type" });
+            roomData.cards = cards;
+    }
+
+    if (hexcode) {
+        roomData.hexcode = hexcode;
+    }
+
+    if (avatar) {
+        roomData.avatar = avatar;
+    }
+
+    if (autoReveal) {
+        roomData.autoReveal = autoReveal;
     }
 
     rooms.set(roomId, { initialisation: true, data: roomData });

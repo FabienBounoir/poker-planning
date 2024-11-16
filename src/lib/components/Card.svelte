@@ -1,5 +1,11 @@
 <script>
-	let { content, cardSelected = $bindable(), submittedLetter = $bindable() } = $props();
+	let {
+		content,
+		cardSelected = $bindable(),
+		submittedLetter = $bindable(),
+		height = '20vh',
+		interact = true
+	} = $props();
 </script>
 
 <main
@@ -7,6 +13,8 @@
 	class:gray={cardSelected && cardSelected != content}
 	class:selected={cardSelected === content}
 	class:submit={submittedLetter === content}
+	class:interact
+	style="--card-height: {height};"
 	on:click={() => {
 		if (cardSelected === content) {
 			cardSelected = null;
@@ -15,13 +23,13 @@
 		}
 	}}
 >
-	<p>{content}</p>
+	<p>{`${content}`.slice(0, 3)}</p>
 </main>
 
 <style lang="scss">
 	.card {
 		user-select: none;
-		height: 20dvh;
+		height: var(--card-height, 20dvh);
 		aspect-ratio: 2.5 / 4;
 		background-color: var(--primary-200);
 		border: 1px solid #ddd;
@@ -38,12 +46,16 @@
 			scale 0.3s,
 			background-color 3s !important;
 
+		&:not(.interact) {
+			pointer-events: none;
+		}
+
 		&:hover {
 			scale: 1.05;
 		}
 
 		p {
-			font-size: 7dvh;
+			font-size: calc(var(--card-height, 20dvh) / 2.8);
 			color: var(--primary-600);
 		}
 

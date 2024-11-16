@@ -32,11 +32,11 @@
 
 	const canStarVote = () => {
 		if (pokerManager.userStory == '') {
-			return toast.error("Aucune User Story n'a été définie.");
+			return toast.error($_('ManagerPage.noUserStoryDefined'));
 		}
 
 		if (users?.length < 1) {
-			return toast.error('Aucune participant trouvé.');
+			return toast.error($_('ManagerPage.noParticipantsForVote'));
 		}
 
 		changeState('playing');
@@ -51,7 +51,7 @@
 
 		io.on('error', (e) => {
 			if (e.reason == "Room doesn't exist") {
-				toast.error("Ce poker planning n'existe pas !");
+				toast.error($_('common.pokerPlanningDoesntExist'));
 				goto('/create');
 			}
 		});
@@ -116,7 +116,7 @@
 
 	const checkSocketConnected = () => {
 		if (!io.connected) {
-			toast.error('Websocket not connected...');
+			toast.error($_('common.connectionWithServerLost'));
 			return false;
 		}
 
@@ -159,7 +159,11 @@
 <main>
 	<div class="manager">
 		<div class="container">
-			<h1>
+			<h1
+				on:click={() => {
+					goto('/');
+				}}
+			>
 				<span in:fly|local={{ easing: backOut, x: -25 }}> Poker Planning </span>
 			</h1>
 
@@ -222,7 +226,10 @@
 						resultDefender?.item == user?.selectedCard}
 				>
 					<div class="profile">
-						<img src="https://api.dicebear.com/9.x/dylan/svg?seed={user.name}" />
+						<img
+							src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
+								`?seed=${user.name}`}
+						/>
 						<h2>{user.name}</h2>
 					</div>
 					{#if pokerManager.state === 'playing'}
@@ -300,6 +307,7 @@
 					font-size: 3rem;
 					font-weight: 900;
 					line-height: 37px;
+					cursor: pointer;
 
 					span {
 						display: block;
