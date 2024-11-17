@@ -182,6 +182,7 @@ const createSocketIOServer = (server, rooms) => {
             socket.emit("game-update", room.data);
 
             const player = {
+                id: socket.id,
                 socket,
                 name: formatName(name),
                 selectedCard: null,

@@ -42,6 +42,7 @@
 		&:disabled {
 			cursor: not-allowed;
 			filter: grayscale(0.8);
+			border-color: var(--primary-500);
 		}
 	}
 

@@ -7,8 +7,8 @@
 	import type { Socket } from 'socket.io-client';
 	import { onDestroy, onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { backOut } from 'svelte/easing';
-	import { fade, fly, scale } from 'svelte/transition';
+	import { backOut, bounceInOut, cubicInOut, elasticInOut } from 'svelte/easing';
+	import { fade, fly, scale, slide } from 'svelte/transition';
 	import ioClient from 'socket.io-client';
 	import Confetti from 'svelte-confetti';
 	import { _ } from 'svelte-i18n';
@@ -136,8 +136,8 @@
 				position: fixed;
 				top: -50px;
 				left: 0;
-				height: 100vh;
-				width: 100vw;
+				height: 100dvh;
+				width: 100dvw;
 				display: flex;
 				justify-content: center;
 				overflow: hidden;
@@ -149,8 +149,8 @@
 				delay={[500, 2000]}
 				infinite
 				duration={5000}
-				amount={200}
-				fallDistance="100vh"
+				amount={100}
+				fallDistance="100dvh"
 			/>
 		</div>
 	{/if}
@@ -198,7 +198,10 @@
 		</div>
 
 		{#if resultsItem}
-			<div class="resultDescription" transition:fade>
+			<div
+				class="resultDescription"
+				transition:slide={{ axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
+			>
 				{#each resultsItem as { item, pourcentage }}
 					<span
 						><h3>{item}</h3>
@@ -219,11 +222,13 @@
 				<p style="text-align: end;">{users.length} player{users.length > 1 ? 's' : ''}</p>
 			{/if}
 
-			{#each users as user}
+			{#each users as user (user.id)}
 				<div
 					class="user"
 					class:defender={resultDefender?.name == user?.name &&
 						resultDefender?.item == user?.selectedCard}
+					out:slide={{ axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
+					in:slide={{ axis: 'x', duration: 300, delay: 0, easing: cubicInOut }}
 				>
 					<div class="profile">
 						<img
@@ -270,7 +275,6 @@
 			flex-direction: row;
 			flex-wrap: wrap;
 			gap: 2em;
-
 			margin-top: 2em;
 
 			span {
@@ -341,7 +345,6 @@
 			max-height: 100dvh;
 			padding: 0 3em;
 			overflow-y: auto;
-			gap: 1em;
 			display: flex;
 			flex-direction: column;
 
@@ -352,6 +355,7 @@
 				align-items: center;
 				height: 3.5em;
 				padding: 0 1em;
+				margin-bottom: 1em;
 				border-radius: 5px;
 				background-color: var(--primary-200);
 				font-weight: 600;

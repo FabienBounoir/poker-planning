@@ -548,7 +548,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		min-height: 100vh;
+		min-height: 100dvh;
 		text-align: center;
 		scale: 0;
 		animation: scale 0.5s forwards 0.2s;

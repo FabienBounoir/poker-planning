@@ -287,8 +287,8 @@
 							position: fixed;
 							top: -50px;
 							left: 0;
-							height: 100vh;
-							width: 100vw;
+							height: 100dvh;
+							width: 100dvw;
 							display: flex;
 							justify-content: center;
 							overflow: hidden;
@@ -301,7 +301,7 @@
 									infinite
 									duration={5000}
 									amount={200}
-									fallDistance="100vh"
+									fallDistance="100dvh"
 								/>
 							</div>
 						{/if}
@@ -413,7 +413,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		height: 100vh;
+		height: 100dvh;
 		text-align: center;
 
 		.rotateAnimation {
