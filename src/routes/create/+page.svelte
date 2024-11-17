@@ -139,14 +139,18 @@
 
 		type = `custom-${customCard.name}`.toLocaleUpperCase();
 
-		goToCreate();
+		goToCreate(false);
 	};
 
-	const goToCreate = () => {
+	const goToCreate = (resetChoice = true) => {
 		customCard = {
 			name: 'My Custom Deck',
 			cards: []
 		};
+
+		if (resetChoice) {
+			type = 'TSHIRT';
+		}
 
 		status = 'create';
 	};
