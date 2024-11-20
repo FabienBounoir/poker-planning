@@ -59,7 +59,12 @@
         "createNewSetOfCards": "Créer un nouveau jeu de cartes",
         "preview": "Aperçu",
         "deckName": "Nom du jeu de cartes",
-        "error": "Une erreur s'est produite lors de la création du poker planning."
+        "error": "Une erreur s'est produite lors de la création du poker planning.",
+        "advancedSettings": "Paramètres avancés",
+        "pokerPlanningColor": "Couleur du planning poker",
+        "autoRevealResults": "Résultats automatiques",
+        "cancel": "Annuler",
+        "save": "Sauvegarder"
     },
     "common": {
         "pokerPlanningDoesntExist": "Ce poker planning n'existe pas.",

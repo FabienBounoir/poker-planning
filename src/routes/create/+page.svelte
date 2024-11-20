@@ -210,7 +210,7 @@
 				on:click={() => (advancedSettings = !advancedSettings)}
 			>
 				<p>
-					Advanced Settings
+					{$_('CreatePage.advancedSettings')}
 					<svg width="15" viewBox="0 0 56 34" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path d="M3 31L28 6L53 31" stroke-width="6" />
 					</svg>
@@ -230,7 +230,7 @@
 				</div>
 
 				<div class="color-container">
-					<p>Poker planning color</p>
+					<p>{$_('CreatePage.pokerPlanningColor')}</p>
 					<label style="background-color: {advancedSettingsObject.hexcode}">
 						<input type="color" bind:value={advancedSettingsObject.hexcode} />
 					</label>
@@ -239,7 +239,7 @@
 				<div class="auto-reveal-container">
 					<Switch
 						bind:value={advancedSettingsObject.autoReveal}
-						label="Auto Reveal Results"
+						label={$_('CreatePage.autoRevealResults')}
 						fontSize={16}
 					/>
 				</div>
@@ -291,10 +291,9 @@
 		</div>
 
 		<div class="button-container">
-			<button on:click={goToCreate}>Cancel</button>
+			<button on:click={goToCreate}>{$_('CreatePage.cancel')}</button>
 			<button on:click={addNewDeck} disabled={!customCard.name || customCard.cards.length < 2}
-				>Save</button
-			>
+				>{$_('CreatePage.save')}</button>
 		</div>
 	</main>
 {/if}

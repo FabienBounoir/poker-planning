@@ -59,7 +59,12 @@
         "createNewSetOfCards": "Crea un nuovo mazzo di carte",
         "preview": "Anteprima",
         "deckName": "Nome del mazzo",
-        "error": "Si è verificato un errore durante la creazione del poker planning."
+        "error": "Si è verificato un errore durante la creazione del poker planning.",
+        "advancedSettings": "Impostazioni avanzate",
+        "pokerPlanningColor": "Colore del poker planning",
+        "autoRevealResults": "Rivelazione automatica dei risultati",
+        "cancel": "Annulla",
+        "save": "Salva"
     },
     "common": {
         "pokerPlanningDoesntExist": "Questo poker planning non esiste.",
