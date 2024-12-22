@@ -507,4 +507,24 @@
 			}
 		}
 	}
+
+	@media (prefers-color-scheme: dark) {
+		h1 {
+			color: var(--primary-100);
+		}
+
+		.me {
+			color: var(--primary-200);
+		}
+
+		label {
+			color: var(--primary-50);
+		}
+
+		.information {
+			p {
+				color: var(--primary-100);
+			}
+		}
+	}
 </style>

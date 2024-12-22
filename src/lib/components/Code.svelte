@@ -130,4 +130,21 @@
 			}
 		}
 	}
+
+	@media (prefers-color-scheme: dark) {
+		.code-element {
+			color: var(--primary-200) !important;
+			.code-container {
+				border-color: #333;
+				color: var(--primary-200) !important;
+				h3 {
+					color: var(--primary-200) !important;
+				}
+			}
+
+			button {
+				color: var(--primary-200) !important;
+			}
+		}
+	}
 </style>

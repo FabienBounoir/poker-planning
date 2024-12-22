@@ -175,4 +175,14 @@
 	.slider button:focus {
 		border-radius: 1.5em;
 	}
+
+	@media (prefers-color-scheme: dark) {
+		.slider button {
+			background: var(--primary-400);
+		}
+
+		span {
+			color: var(--primary-100);
+		}
+	}
 </style>

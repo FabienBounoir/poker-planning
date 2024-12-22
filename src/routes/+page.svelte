@@ -102,6 +102,12 @@
 		</div>
 	</section>
 	<section class="module">
+		<h2>Vote</h2>
+		<p>
+			With another poker planning, you can vote on the complexity of a task using a multi-point
+			scale. This approach allows you to gather the team's opinion and reach a consensus on the
+			task's complexity.
+		</p>
 		<div class="container">
 			<div>
 				<h1>How it works</h1>
@@ -115,10 +121,16 @@
 			</div>
 		</div>
 	</section>
-	<section class="module">Vote</section>
-	<section class="module">Results</section>
+	<section class="module">
+		<div class="container">Vote</div>
+	</section>
+	<section class="module">
+		<div class="container">Results</div>
+	</section>
 
-	<section class="module">Plan</section>
+	<section class="module">
+		<div class="container">Plan</div>
+	</section>
 </main>
 
 <style lang="scss">
@@ -173,13 +185,31 @@
 		background-color: var(--primary-600);
 		display: flex;
 		justify-content: center;
-		align-items: center;
+		flex-direction: column;
+		gap: 3rem;
+		text-align: left;
+		margin: auto;
+
+		p {
+			width: 50%;
+		}
+
+		h2 {
+			font-size: 3.5rem;
+			font-weight: 700;
+			line-height: 4rem;
+			margin: 0;
+			max-width: -webkit-max-content;
+			max-width: max-content;
+			text-align: left;
+		}
 
 		div.container {
 			width: 80%;
 			height: 70%;
 			background-color: var(--primary-950);
 			border-radius: 1em;
+			color: var(--primary-50);
 
 			display: grid;
 			grid-template-columns: 1fr 1fr;
@@ -273,6 +303,39 @@
 				button {
 					width: 100%;
 				}
+			}
+		}
+	}
+
+	@media (prefers-color-scheme: dark) {
+		section.head {
+			background-color: var(--primary-950);
+			h1 {
+				color: var(--primary-50);
+			}
+			p {
+				color: var(--primary-50);
+			}
+
+			mark {
+				color: var(--primary-950);
+			}
+		}
+		section.module {
+			background-color: var(--primary-800);
+			color: var(--primary-50);
+		}
+		section.banner {
+			background: linear-gradient(
+				180deg,
+				var(--primary-950) 0%,
+				var(--primary-950) 49%,
+				var(--primary-600) 51%,
+				var(--primary-600) 100%
+			);
+			div.container {
+				background-color: var(--primary-800);
+				color: var(--primary-50);
 			}
 		}
 	}

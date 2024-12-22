@@ -4,7 +4,7 @@
 </script>
 
 <Toaster position="top-center" richColors />
-{#if PACKAGE_JSON.version}
+{#if PACKAGE_JSON?.version}
 	<a
 		href="https://github.com/FabienBounoir/poker-planning"
 		class="version"
