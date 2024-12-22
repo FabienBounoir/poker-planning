@@ -21,11 +21,17 @@
 	let resultsItem = $state(null);
 	let resultDefender = $state(null);
 
+	let history: object[] = $state([]);
+
+	let displayConfetti = $state(false);
+	let displayConfettiTimeout: NodeJS.Timeout | null = null;
+
 	let pokerManager = $state({
 		team: '',
 		cards: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
 		state: 'waiting',
-		userStory: ''
+		userStory: '',
+		date: new Date().toISOString()
 	});
 
 	let users = $state(null);
@@ -65,13 +71,21 @@
 		});
 
 		io.on('game-update', (payload) => {
+			resultsItem = null;
+			resultDefender = null;
+			displayConfetti = false;
+			console.log('game-update', payload);
+
+			if (displayConfettiTimeout) {
+				clearTimeout(displayConfettiTimeout);
+				displayConfettiTimeout = null;
+			}
+
 			if (payload?.hexcode && pokerManager?.hexcode != payload?.hexcode) {
 				myshades({
 					primary: payload.hexcode
 				});
 			}
-			resultsItem = null;
-			resultDefender = null;
 
 			if (payload?.state == 'result') {
 				if (payload?.result) {
@@ -82,8 +96,20 @@
 					resultDefender = payload.defender;
 				}
 
+				if (payload?.history) {
+					history = [...payload.history];
+				}
+
 				console.log('resultsItem', resultsItem);
 				console.log('resultDefender', resultDefender);
+
+				if (resultsItem?.length == 1 && resultsItem?.[0]?.players?.length > 1) {
+					displayConfetti = true;
+
+					displayConfettiTimeout = setTimeout(() => {
+						displayConfetti = false;
+					}, 15000);
+				}
 			}
 
 			pokerManager = payload;
@@ -106,6 +132,10 @@
 			io.removeAllListeners();
 			io.disconnect();
 		}
+
+		if (displayConfettiTimeout) {
+			clearTimeout(displayConfettiTimeout);
+		}
 	});
 
 	const changeState = (state) => {
@@ -122,6 +152,25 @@
 
 		return true;
 	};
+
+	const saveHistory = (test) => {
+		window.localStorage.setItem(
+			`PP_HISTORY_${pokerManager?.date}`,
+			JSON.stringify({
+				history,
+				team: pokerManager.team,
+				cards: pokerManager.cards,
+				date: pokerManager.date
+			})
+		);
+	};
+
+	$effect(() => {
+		console.log('history', history);
+		if (history.length > 0) {
+			saveHistory(history);
+		}
+	});
 </script>
 
 <svelte:head>
@@ -130,7 +179,7 @@
 </svelte:head>
 
 {#if resultsItem}
-	{#if resultsItem?.length == 1 && resultsItem?.[0]?.players?.length > 1}
+	{#if displayConfetti}
 		<div
 			style="
 				position: fixed;

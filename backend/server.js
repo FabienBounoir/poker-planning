@@ -1,5 +1,7 @@
 const { Server } = require('socket.io');
 const { v4: uuidv4 } = require('uuid');
+const { newUserJoined, roomDeleted } = require('./utils/statistics');
+const e = require('express');
 
 /**
  * @type {Server}
@@ -25,8 +27,10 @@ const createSocketIOServer = (server, rooms) => {
                     userStory: '',
                     color: '#FF7F00',
                     avatar: 'https://api.dicebear.com/9.x/dylan/svg',
-                    autoReveal: false
+                    autoReveal: false,
+                    date: new Date().toISOString(),
                 },
+                history: [],
                 timeout: null,
                 emit(type, data, manager) {
                     object.players.forEach((player) => {
@@ -70,14 +74,26 @@ const createSocketIOServer = (server, rooms) => {
                         let resultsByItem = new Map();
                         let totalPlayers = 0;
 
+                        if (!object.history) {
+                            object.history = [];
+                        }
+
+                        let history = {
+                            story: "",
+                            winner: null,
+                            results: [],
+                        }
+
                         object.players.forEach((player) => {
-                            const selectedCard = player?.selectedCard?.toUpperCase();
+                            const selectedCard = player?.selectedCard?.toUpperCase?.();
                             if (!player.manager && selectedCard) {
                                 totalPlayers++;
                                 if (!resultsByItem.has(selectedCard)) {
                                     resultsByItem.set(selectedCard, []);
                                 }
                                 resultsByItem.get(selectedCard).push(player.name);
+
+                                history.results.push({ name: player.name, card: selectedCard });
                             }
                         });
 
@@ -91,6 +107,8 @@ const createSocketIOServer = (server, rooms) => {
 
                                 object.data.result = element.result = result;
 
+                                history.winner = result[0].item;
+
                                 if (resultsByItem.size > 1) {
                                     const lastItem = result[result.length - 1];
                                     const userSelected = lastItem.players[Math.floor(Math.random() * lastItem.players.length)];
@@ -100,6 +118,9 @@ const createSocketIOServer = (server, rooms) => {
                                 console.error("ERROR WHEN PROCESSING RESULT", e);
                             }
                         }
+
+                        object.history.push(history);
+                        element.history = object.history;
                     } else {
                         object.data.result = object.data.defender = null;
                     }
@@ -127,7 +148,7 @@ const createSocketIOServer = (server, rooms) => {
                             console.log("Check player", player.name, player.selectedCard);
                             if (!player.manager && !player.selectedCard) {
                                 console.log("Not all players have selected a card");
-                                return; // 
+                                return;
                             }
                         }
 
@@ -150,8 +171,13 @@ const createSocketIOServer = (server, rooms) => {
     }
 
     function formatName(name) {
-        const trimmedName = name.trim();
-        return trimmedName.charAt(0).toUpperCase() + trimmedName.slice(1).toLowerCase();
+        return name
+            .trim()
+            .split(/[\s.]+/)
+            .map(segment =>
+                segment.charAt(0).toUpperCase() + segment.slice(1)
+            )
+            .join(' ');
     }
 
     io = new Server(server, { cors: { origin: "*" } });
@@ -171,6 +197,8 @@ const createSocketIOServer = (server, rooms) => {
                 console.warn("User without name");
                 return socket.disconnect(true);
             }
+
+            newUserJoined(name, room.data);
 
             console.log('New connection with ID:', socket.id);
 
@@ -226,6 +254,7 @@ const createSocketIOServer = (server, rooms) => {
                         if (!room.players.size) {
                             rooms.delete(roomId);
                             console.log(`Room ${roomId} deleted after inactivity.`);
+                            roomDeleted(roomId, room.data);
                         }
                     }, 3600000);
                 }

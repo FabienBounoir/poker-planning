@@ -194,7 +194,13 @@
 			)}<br />
 		</h1>
 		<form on:submit|preventDefault={connect}>
-			<input type="text" bind:value={username} placeholder="Jean Bon" disabled={submitting} />
+			<input
+				type="text"
+				bind:value={username}
+				placeholder="Jean Bon"
+				disabled={submitting}
+				maxlength="32"
+			/>
 			<button aria-label="Valider son nom" type="submit" disabled={submitting}
 				>{$_('RoomPage.validateButton')}</button
 			>
