@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import Blob1 from '$lib/components/blob/Blob1.svelte';
 	import Blob2 from '$lib/components/blob/blob2.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 
@@ -131,6 +132,8 @@
 	<section class="module">
 		<div class="container">Plan</div>
 	</section>
+
+	<Footer />
 </main>
 
 <style lang="scss">
@@ -261,9 +264,9 @@
 					padding: 0.2em;
 					border-radius: 0.5em;
 					z-index: 1;
+					font-weight: bold;
 				}
 			}
-			// }
 		}
 
 		h1 {
@@ -286,6 +289,7 @@
 				&:hover {
 					scale: 1.05;
 				}
+				font-weight: bold;
 			}
 		}
 	}
