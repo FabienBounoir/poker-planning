@@ -132,4 +132,11 @@
 			}
 		}
 	}
+
+	@media (prefers-color-scheme: dark) {
+		section.module {
+			background-color: var(--primary-900);
+			color: var(--primary-50);
+		}
+	}
 </style>

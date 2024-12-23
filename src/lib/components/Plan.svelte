@@ -182,4 +182,13 @@
 			}
 		}
 	}
+
+	@media (prefers-color-scheme: dark) {
+		section.plan {
+			background-color: var(--primary-900);
+			h1 {
+				color: var(--primary-50);
+			}
+		}
+	}
 </style>

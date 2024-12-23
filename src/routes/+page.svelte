@@ -225,18 +225,5 @@
 			background-color: var(--primary-800);
 			color: var(--primary-50);
 		}
-		section.banner {
-			background: linear-gradient(
-				180deg,
-				var(--primary-950) 0%,
-				var(--primary-950) 49%,
-				var(--primary-600) 51%,
-				var(--primary-600) 100%
-			);
-			div.container {
-				background-color: var(--primary-800);
-				color: var(--primary-50);
-			}
-		}
 	}
 </style>

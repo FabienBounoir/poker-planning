@@ -105,4 +105,24 @@
 			}
 		}
 	}
+
+	@media (prefers-color-scheme: dark) {
+		section.banner {
+			background: linear-gradient(
+				180deg,
+				var(--primary-950) 0%,
+				var(--primary-950) 49%,
+				var(--primary-900) 51%,
+				var(--primary-900) 100%
+			);
+			div.container {
+				background-color: var(--primary-500);
+				color: var(--primary-950);
+
+				b {
+					color: var(--primary-900);
+				}
+			}
+		}
+	}
 </style>
