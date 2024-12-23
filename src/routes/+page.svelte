@@ -103,34 +103,71 @@
 		</div>
 	</section>
 	<section class="module">
-		<h2>Vote</h2>
-		<p>
-			With another poker planning, you can vote on the complexity of a task using a multi-point
-			scale. This approach allows you to gather the team's opinion and reach a consensus on the
-			task's complexity.
-		</p>
 		<div class="container">
-			<div>
-				<h1>How it works</h1>
+			<div class="description">
+				<h2>Méthodes de Chiffrage</h2>
 				<p>
-					<mark>Another Poker Planning</mark> is a simple tool that allows you to create and join poker
-					planning sessions with your team. It is designed to be intuitive, interactive, and collaborative.
+					Avec Another Poker Planning, estimez la complexité d’une tâche grâce à une échelle à
+					plusieurs niveaux. Une approche pensée pour recueillir l’avis de l’équipe et aboutir à un
+					consensus clair et précis.
 				</p>
 			</div>
-			<div>
+			<div class="preview">
 				<img src="/banner.png" alt="Team Spirit" />
 			</div>
 		</div>
 	</section>
 	<section class="module">
-		<div class="container">Vote</div>
+		<div class="container inverte">
+			<div class="preview">
+				<img src="/banner.png" alt="Team Spirit" />
+			</div>
+			<div class="description">
+				<h2>Le Vote Simplifié</h2>
+				<p>
+					Découvrez une expérience fluide et intuitive pour vos sessions de poker planning.
+					Choisissez votre estimation en un seul clic, sans complexité, sans détour. Voter n’a
+					jamais été aussi naturel.
+				</p>
+			</div>
+		</div>
 	</section>
 	<section class="module">
-		<div class="container">Results</div>
+		<div class="container">
+			<div class="description">
+				<h2>Result</h2>
+				<p>
+					Visualisez instantanément les votes de l’équipe grâce à un affichage clair et élégant.
+					Chaque estimation est mise en valeur pour faciliter la discussion et atteindre rapidement
+					un consensus.
+				</p>
+			</div>
+			<div class="preview">
+				<img src="/banner.png" alt="Team Spirit" />
+			</div>
+		</div>
 	</section>
 
 	<section class="module">
-		<div class="container">Plan</div>
+		<div class="container">
+			<div class="description">
+				<h2>Sécurité et Éphémérité</h2>
+				<p>
+					Vos données, votre sérénité. Aucune information n'est sauvegardée, tout se fait en temps
+					réel. Une fois le vote terminé, la room s’auto-détruit après quelques heures. Parce que
+					vos échanges doivent rester aussi éphémères que vos décisions.
+				</p>
+			</div>
+			<div class="preview">
+				<img src="/banner.png" alt="Team Spirit" />
+			</div>
+		</div>
+	</section>
+
+	<section class="plan">
+		<h1>Pas de Frais, Pas de Limites</h1>
+
+		<div>efze fze f zef zef ezf</div>
 	</section>
 
 	<Footer />
@@ -146,8 +183,8 @@
 			180deg,
 			var(--primary-50) 0%,
 			var(--primary-50) 49%,
-			var(--primary-600) 51%,
-			var(--primary-600) 100%
+			var(--primary-200) 51%,
+			var(--primary-200) 100%
 		);
 		div.container {
 			height: 9vh;
@@ -183,19 +220,16 @@
 	}
 
 	section.module {
-		height: 85vh;
+		height: 62vh;
 		width: 100%;
-		background-color: var(--primary-600);
+		background-color: var(--primary-200);
 		display: flex;
 		justify-content: center;
 		flex-direction: column;
+		align-items: center;
 		gap: 3rem;
 		text-align: left;
 		margin: auto;
-
-		p {
-			width: 50%;
-		}
 
 		h2 {
 			font-size: 3.5rem;
@@ -209,23 +243,52 @@
 
 		div.container {
 			width: 80%;
-			height: 70%;
-			background-color: var(--primary-950);
+			background-color: var(--primary-50);
 			border-radius: 1em;
-			color: var(--primary-50);
+			color: var(--primary-950);
 
 			display: grid;
 			grid-template-columns: 1fr 1fr;
 
-			div {
+			div.description {
+				display: flex;
+				flex-direction: column;
+				justify-content: space-evenly;
+
 				padding: 2em;
-				h1 {
+				h2 {
 					font-size: 2.5em;
 					color: var(--primary-950);
-					margin-bottom: 1em;
 				}
+
+				p {
+					font-size: 1em;
+					color: var(--primary-800);
+					margin: 0;
+					text-wrap: balance;
+				}
+			}
+
+			div.preview {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				padding: 2em;
+
 				img {
 					width: 100%;
+					transform: translate(4rem);
+					border-radius: 1em;
+					border: 5px solid var(--primary-800);
+				}
+			}
+
+			&.inverte {
+				flex-direction: row-reverse;
+				div.preview {
+					img {
+						transform: translate(-4rem);
+					}
 				}
 			}
 		}
