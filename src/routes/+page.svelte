@@ -3,56 +3,11 @@
 	import Blob1 from '$lib/components/blob/Blob1.svelte';
 	import Blob2 from '$lib/components/blob/blob2.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import Feature from '$lib/components/Feature.svelte';
+	import Plan from '$lib/components/Plan.svelte';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
-
-	const pokerPlanningKeywords = [
-		'Intuitif',
-		'Interactif',
-		'Collaboratif',
-		'Performant',
-		'Élégant',
-		'Pratique',
-		'Fiable',
-		'Rapide',
-		'Efficace',
-		'Accessible',
-		'Flexible',
-		'Moderne',
-		'Adaptable',
-		'Transparent',
-		'Convivial',
-		'Structuré',
-		'Optimisé'
-	];
-
-	let scrollValue = 0; // Position du scroll
-	let totalWidth = 0; // Largeur totale de la div contenant les mots
-
-	// Fonction appelée sur scroll
-	function handleScroll() {
-		// Récupère la valeur de scroll actuelle
-		scrollValue = window.scrollY;
-
-		// Limite le déplacement pour ne pas dépasser la fin
-		if (scrollValue > totalWidth) {
-			scrollValue = totalWidth;
-		}
-	}
-
-	// // Calcul dynamique de la largeur totale de la div
-	// function calculateWidth(node) {
-	// 	totalWidth = node.scrollWidth - window.innerWidth;
-	// }
-
-	onMount(() => {
-		window.addEventListener('scroll', handleScroll);
-
-		// Nettoyage au démontage du composant
-		return () => {
-			window.removeEventListener('scroll', handleScroll);
-		};
-	});
+	import Banner from '$lib/components/Banner.svelte';
 </script>
 
 <main>
@@ -89,88 +44,36 @@
 		<Blob1 />
 		<Blob2 />
 	</section>
-	<section class="banner">
-		<div class="container">
-			<div
-				bind:clientWidth={totalWidth}
-				style="transform: translateX(calc(-1 * {Math.min(scrollValue, totalWidth)}px));"
-			>
-				{#each pokerPlanningKeywords as keyword}
-					<span>{keyword}</span>
-					<b>#</b>
-				{/each}
-			</div>
-		</div>
-	</section>
-	<section class="module">
-		<div class="container">
-			<div class="description">
-				<h2>Méthodes de Chiffrage</h2>
-				<p>
-					Avec Another Poker Planning, estimez la complexité d’une tâche grâce à une échelle à
-					plusieurs niveaux. Une approche pensée pour recueillir l’avis de l’équipe et aboutir à un
-					consensus clair et précis.
-				</p>
-			</div>
-			<div class="preview">
-				<img src="/banner.png" alt="Team Spirit" />
-			</div>
-		</div>
-	</section>
-	<section class="module">
-		<div class="container inverte">
-			<div class="preview">
-				<img src="/banner.png" alt="Team Spirit" />
-			</div>
-			<div class="description">
-				<h2>Le Vote Simplifié</h2>
-				<p>
-					Découvrez une expérience fluide et intuitive pour vos sessions de poker planning.
-					Choisissez votre estimation en un seul clic, sans complexité, sans détour. Voter n’a
-					jamais été aussi naturel.
-				</p>
-			</div>
-		</div>
-	</section>
-	<section class="module">
-		<div class="container">
-			<div class="description">
-				<h2>Result</h2>
-				<p>
-					Visualisez instantanément les votes de l’équipe grâce à un affichage clair et élégant.
-					Chaque estimation est mise en valeur pour faciliter la discussion et atteindre rapidement
-					un consensus.
-				</p>
-			</div>
-			<div class="preview">
-				<img src="/banner.png" alt="Team Spirit" />
-			</div>
-		</div>
-	</section>
 
-	<section class="module">
-		<div class="container">
-			<div class="description">
-				<h2>Sécurité et Éphémérité</h2>
-				<p>
-					Vos données, votre sérénité. Aucune information n'est sauvegardée, tout se fait en temps
+	<Banner />
+
+	<Feature
+		title="Méthodes de Chiffrage"
+		description="Avec Another Poker Planning, estimez la complexité d’une tâche grâce à une échelle à plusieurs niveaux. Une approche pensée pour recueillir l’avis de l’équipe et aboutir à un consensus clair et précis."
+	/>
+
+	<Feature
+		title="Le Vote Simplifié"
+		description="Découvrez une expérience fluide et intuitive pour vos sessions de poker planning. Choisissez votre estimation en un seul clic, sans complexité, sans détour. Voter n’a jamais été aussi naturel."
+		invert={true}
+	/>
+
+	<Feature
+		title="Result"
+		description="Visualisez instantanément les votes de l’équipe grâce à un affichage clair et élégant. Chaque estimation est mise en valeur pour faciliter la discussion et atteindre rapidement un consensus."
+	/>
+
+	<Feature
+		title="Sécurité et Éphémérité"
+		description="Vos données, votre sérénité. Aucune information n'est sauvegardée, tout se fait en temps
 					réel. Une fois le vote terminé, la room s’auto-détruit après quelques heures. Parce que
-					vos échanges doivent rester aussi éphémères que vos décisions.
-				</p>
-			</div>
-			<div class="preview">
-				<img src="/banner.png" alt="Team Spirit" />
-			</div>
-		</div>
-	</section>
+					vos échanges doivent rester aussi éphémères que vos décisions."
+		invert={true}
+	/>
 
-	<section class="plan">
-		<h1>Pas de Frais, Pas de Limites</h1>
+	<Plan />
 
-		<div>efze fze f zef zef ezf</div>
-	</section>
-
-	<Footer />
+	<!-- <Footer /> -->
 </main>
 
 <style lang="scss">
@@ -219,84 +122,7 @@
 		}
 	}
 
-	section.module {
-		height: 62vh;
-		width: 100%;
-		background-color: var(--primary-200);
-		display: flex;
-		justify-content: center;
-		flex-direction: column;
-		align-items: center;
-		gap: 3rem;
-		text-align: left;
-		margin: auto;
-
-		h2 {
-			font-size: 3.5rem;
-			font-weight: 700;
-			line-height: 4rem;
-			margin: 0;
-			max-width: -webkit-max-content;
-			max-width: max-content;
-			text-align: left;
-		}
-
-		div.container {
-			width: 80%;
-			background-color: var(--primary-50);
-			border-radius: 1em;
-			color: var(--primary-950);
-
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-
-			div.description {
-				display: flex;
-				flex-direction: column;
-				justify-content: space-evenly;
-
-				padding: 2em;
-				h2 {
-					font-size: 2.5em;
-					color: var(--primary-950);
-				}
-
-				p {
-					font-size: 1em;
-					color: var(--primary-800);
-					margin: 0;
-					text-wrap: balance;
-				}
-			}
-
-			div.preview {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				padding: 2em;
-
-				img {
-					width: 100%;
-					transform: translate(4rem);
-					border-radius: 1em;
-					border: 5px solid var(--primary-800);
-				}
-			}
-
-			&.inverte {
-				flex-direction: row-reverse;
-				div.preview {
-					img {
-						transform: translate(-4rem);
-					}
-				}
-			}
-		}
-	}
-
 	section.head {
-		// background: radial-gradient(300% 30% at 50% 100%, var(--primary-100) 0, var(--primary-50) 100%),
-		// 	#0f0f10;
 		background-color: var(--primary-50);
 		width: 100%;
 		height: 85dvh;
@@ -359,14 +185,21 @@
 
 	@media screen and (max-width: 950px) {
 		main {
+			justify-content: space-evenly !important;
+			height: 60vh;
+
 			h1 {
-				font-size: 7vw;
+				font-size: 7vw !important;
+			}
+
+			p {
+				width: 90% !important;
 			}
 			.button-container {
 				display: flex;
-				flex-direction: column;
-				width: 80%;
-				gap: 1em;
+				flex-direction: column !important;
+				width: 80% !important;
+				gap: 1em !important;
 				button {
 					width: 100%;
 				}
