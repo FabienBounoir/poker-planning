@@ -1,9 +1,72 @@
 {
     "HomePage": {
-        "title": "Another Planning Poker",
+        "banner": {
+            "keywords": {
+                "intuitif": "Intuitive",
+                "interactif": "Interactive",
+                "collaboratif": "Collaborative",
+                "performant": "Performant",
+                "élégant": "Elegant",
+                "pratique": "Practical",
+                "fiable": "Reliable",
+                "rapide": "Fast",
+                "efficace": "Efficient",
+                "flexible": "Flexible",
+                "moderne": "Modern",
+                "adaptable": "Adaptable",
+                "transparent": "Transparent",
+                "convivial": "User-friendly",
+                "structuré": "Structured",
+                "optimisé": "Optimized"
+            }
+        },
+        "plan": {
+            "heading": "No Fees, No Limits",
+            "card": {
+                "allInclusive": {
+                    "title": "All Inclusive",
+                    "description": "Another Poker Planning is a free and ad-free tool. No account to create, no limit on participants, no hidden fees. Everything is designed to give you the best experience."
+                },
+                "readyToPlay": {
+                    "title": "Ready to play?"
+                },
+                "features": {
+                    "freeWithoutLimits": "Free without limits",
+                    "list": {
+                        "unlimitedParticipants": "Unlimited participants",
+                        "unlimitedVotes": "Unlimited Votes per session",
+                        "noAccountRequired": "No account required",
+                        "noHiddenFees": "No hidden fees"
+                    }
+                }
+            }
+        },
+        "headings": {
+            "planPokerSessions": "Plan your poker sessions.",
+            "togetherEffortlessly": "Together. Effortlessly."
+        },
+        "description": "is a straightforward tool designed to enhance teamwork, improve accuracy, and bring clarity to your estimation sessions, all in one place.",
         "buttons": {
             "create": "Create",
             "join": "Join"
+        },
+        "features": {
+            "estimationMethods": {
+                "title": "Estimation Methods",
+                "description": "With Another Poker Planning, estimate the complexity of a task using a multi-level scale. An approach designed to gather the team’s input and achieve a clear and precise consensus."
+            },
+            "simplifiedVoting": {
+                "title": "Simplified Voting",
+                "description": "Discover a smooth and intuitive experience for your poker planning sessions. Choose your estimate with a single click—simple and straightforward. Voting has never been so natural."
+            },
+            "result": {
+                "title": "Result",
+                "description": "Instantly view the team’s votes with a clear and elegant display. Each estimate is highlighted to facilitate discussion and quickly reach a consensus."
+            },
+            "securityAndEphemerality": {
+                "title": "Security and Ephemerality",
+                "description": "Your data, your peace of mind. No information is saved; everything happens in real time. Once the vote is complete, the room self-destructs after a few hours. Because your discussions should remain as ephemeral as your decisions."
+            }
         }
     },
     "RoomPage": {

@@ -1,9 +1,72 @@
 {
     "HomePage": {
-        "title": "Un altro Poker Planning",
+        "banner": {
+            "keywords": {
+                "intuitif": "Intuitivo",
+                "interactif": "Interattivo",
+                "collaboratif": "Collaborativo",
+                "performant": "Efficiente",
+                "élégant": "Elegante",
+                "pratique": "Pratico",
+                "fiable": "Affidabile",
+                "rapide": "Veloce",
+                "efficace": "Efficace",
+                "flexible": "Flessibile",
+                "moderne": "Moderno",
+                "adaptable": "Adattabile",
+                "transparent": "Trasparente",
+                "convivial": "Amichevole",
+                "structuré": "Strutturato",
+                "optimisé": "Ottimizzato"
+            }
+        },
+        "plan": {
+            "heading": "Nessun Costo, Nessun Limite",
+            "card": {
+                "allInclusive": {
+                    "title": "Tutto Incluso",
+                    "description": "Another Poker Planning è uno strumento gratuito e senza pubblicità. Nessun account da creare, nessun limite di partecipanti, nessun costo nascosto. Tutto è progettato per offrirti la migliore esperienza possibile."
+                },
+                "readyToPlay": {
+                    "title": "Pronto a giocare?"
+                },
+                "features": {
+                    "freeWithoutLimits": "Gratuito senza limiti",
+                    "list": {
+                        "unlimitedParticipants": "Partecipanti illimitati",
+                        "unlimitedVotes": "Voti illimitati per sessione",
+                        "noAccountRequired": "Nessun account richiesto",
+                        "noHiddenFees": "Nessun costo nascosto"
+                    }
+                }
+            }
+        },
+        "headings": {
+            "planPokerSessions": "Pianifica le tue sessioni di poker.",
+            "togetherEffortlessly": "Insieme. Senza sforzo."
+        },
+        "description": "è uno strumento semplice progettato per migliorare il lavoro di squadra, aumentare la precisione e portare chiarezza alle tue sessioni di stima, tutto in un unico posto.",
         "buttons": {
             "create": "Crea",
             "join": "Unisciti"
+        },
+        "features": {
+            "estimationMethods": {
+                "title": "Metodi di Stima",
+                "description": "Con Another Poker Planning, stima la complessità di un’attività utilizzando una scala a più livelli. Un approccio pensato per raccogliere i contributi del team e raggiungere un consenso chiaro e preciso."
+            },
+            "simplifiedVoting": {
+                "title": "Votazione Semplificata",
+                "description": "Scopri un’esperienza fluida e intuitiva per le tue sessioni di poker planning. Scegli la tua stima con un solo clic, senza complicazioni. Votare non è mai stato così naturale."
+            },
+            "result": {
+                "title": "Risultato",
+                "description": "Visualizza immediatamente i voti del team con una presentazione chiara ed elegante. Ogni stima è evidenziata per facilitare la discussione e raggiungere rapidamente un consenso."
+            },
+            "securityAndEphemerality": {
+                "title": "Sicurezza ed Effimerità",
+                "description": "I tuoi dati, la tua tranquillità. Nessuna informazione viene salvata; tutto avviene in tempo reale. Una volta completata la votazione, la stanza si autodistrugge dopo alcune ore. Perché le tue discussioni dovrebbero essere tanto effimere quanto le tue decisioni."
+            }
         }
     },
     "RoomPage": {

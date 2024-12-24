@@ -79,4 +79,19 @@
 			height: auto;
 		}
 	}
+
+	@media (prefers-color-scheme: dark) {
+		.card {
+			background-color: var(--primary-800);
+			border-color: #333;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			p {
+				color: var(--primary-200);
+			}
+		}
+
+		.submit {
+			border: 3px solid var(--primary-500) !important;
+		}
+	}
 </style>

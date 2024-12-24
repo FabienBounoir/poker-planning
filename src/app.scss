@@ -17,6 +17,12 @@
     background-color: var(--primary-50);
 }
 
+@media (prefers-color-scheme: dark) {
+    :root {
+        background-color: var(--primary-950);
+    }
+}
+
 
 
 *,

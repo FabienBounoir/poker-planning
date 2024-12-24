@@ -194,7 +194,13 @@
 			)}<br />
 		</h1>
 		<form on:submit|preventDefault={connect}>
-			<input type="text" bind:value={username} placeholder="Jean Bon" disabled={submitting} />
+			<input
+				type="text"
+				bind:value={username}
+				placeholder="Jean Bon"
+				disabled={submitting}
+				maxlength="32"
+			/>
 			<button aria-label="Valider son nom" type="submit" disabled={submitting}
 				>{$_('RoomPage.validateButton')}</button
 			>
@@ -562,6 +568,90 @@
 				position: sticky;
 				bottom: 1em;
 				width: 80%;
+			}
+		}
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.result-container {
+			.result-item {
+				border-color: var(--primary-800);
+				background-color: var(--primary-800);
+				color: var(--primary-200);
+
+				.pourcentage {
+					color: var(--primary-200);
+				}
+			}
+		}
+
+		main {
+			.player-count-display {
+				color: var(--primary-300);
+			}
+
+			h1 {
+				color: var(--primary-100);
+			}
+		}
+
+		.player-display {
+			color: var(--primary-400);
+
+			img {
+				background-color: var(--primary-800);
+			}
+		}
+
+		button:disabled {
+			filter: grayscale(1);
+			cursor: not-allowed;
+		}
+
+		.result-container {
+			h1 {
+				color: var(--primary-300);
+			}
+
+			h3 {
+				color: var(--primary-200);
+
+				span {
+					color: var(--primary-500);
+				}
+
+				img {
+					border-color: var(--primary-500);
+				}
+			}
+		}
+
+		.result {
+			.result-item {
+				border-color: var(--primary-500) !important;
+				background-color: var(--primary-800) !important;
+				color: var(--primary-200) !important;
+
+				.pourcentage {
+					color: var(--primary-200) !important;
+				}
+
+				h1,
+				p {
+					color: var(--primary-300) !important;
+				}
+			}
+		}
+
+		.init-page {
+			h1 {
+				color: var(--primary-100);
+			}
+
+			input {
+				color: var(--primary-950);
+				background-color: var(--primary-300);
+				border: 1px solid var(--primary-500);
 			}
 		}
 	}

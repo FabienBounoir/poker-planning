@@ -135,4 +135,22 @@
 			}
 		}
 	}
+
+	@media (prefers-color-scheme: dark) {
+		main {
+			h1 {
+				color: var(--primary-200);
+			}
+		}
+
+		input {
+			background-color: var(--primary-800);
+			color: var(--primary-200);
+			border: 1px solid var(--primary-500);
+		}
+
+		span {
+			color: var(--primary-200);
+		}
+	}
 </style>

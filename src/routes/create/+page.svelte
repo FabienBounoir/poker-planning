@@ -293,7 +293,8 @@
 		<div class="button-container">
 			<button on:click={goToCreate}>{$_('CreatePage.cancel')}</button>
 			<button on:click={addNewDeck} disabled={!customCard.name || customCard.cards.length < 2}
-				>{$_('CreatePage.save')}</button>
+				>{$_('CreatePage.save')}</button
+			>
 		</div>
 	</main>
 {/if}
@@ -591,5 +592,36 @@
 		font-size: 2em;
 		padding-bottom: 1em;
 		color: var(--primary-800);
+	}
+
+	@media (prefers-color-scheme: dark) {
+		h1 {
+			color: var(--primary-100);
+		}
+
+		.advance-setting-button {
+			&:hover {
+				p {
+					background-color: var(--primary-800) !important;
+				}
+			}
+			svg {
+				stroke: var(--primary-100) !important;
+			}
+		}
+
+		p {
+			color: var(--primary-100);
+		}
+
+		input {
+			background-color: var(--primary-800);
+			color: var(--primary-100);
+		}
+
+		select {
+			background-color: var(--primary-800);
+			color: var(--primary-100);
+		}
 	}
 </style>

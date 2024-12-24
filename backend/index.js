@@ -2,7 +2,9 @@ const express = require('express');
 const http = require('http');
 const { createRoomId, rooms } = require('./rooms');
 const { createSocketIOServer } = require('./server');
-const cors = require('cors')
+const cors = require('cors');
+const { newPokerPlanningCreated } = require('./utils/statistics');
+require('dotenv').config();
 
 const app = express();
 
@@ -79,6 +81,8 @@ app.post('/room', (req, res) => {
 
     rooms.set(roomId, { initialisation: true, data: roomData });
     console.log("NEW ROOM CREATED", rooms);
+
+    newPokerPlanningCreated(roomData)
 
     res.json({ roomId });
 });

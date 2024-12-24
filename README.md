@@ -1,4 +1,4 @@
-# Another Planning Poker
+![Create Session](screenshots/cover.png)
 
 Welcome to **Another Planning Poker**! This site is designed to make your Planning Poker sessions more efficient, fun, and engaging. With our tool, you can get instant, clear results and benefit from detailed, high-quality analysis.
 

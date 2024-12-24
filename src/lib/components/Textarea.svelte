@@ -60,4 +60,16 @@
 			max-width: 95vw;
 		}
 	}
+
+	@media (prefers-color-scheme: dark) {
+		textarea {
+			background-color: var(--primary-800);
+			color: var(--primary-50);
+			border-color: var(--primary-950);
+		}
+
+		pre {
+			border: none;
+		}
+	}
 </style>
