@@ -8,19 +8,24 @@
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import Banner from '$lib/components/Banner.svelte';
+	import Vote from '$lib/components/features/Vote.svelte';
+	import Result from '$lib/components/features/Result.svelte';
+	import Security from '$lib/components/features/Security.svelte';
+	import Estimation from '$lib/components/features/Estimation.svelte';
 </script>
 
 <main>
 	<section class="head">
+		<Blob2 />
 		<main>
 			<div>
-				<h1>Plan your poker sessions.</h1>
-				<h1>Together. Effortlessly.</h1>
+				<h1>{$_('HomePage.headings.planPokerSessions')}</h1>
+				<h1>{$_('HomePage.headings.togetherEffortlessly')}</h1>
 			</div>
 
 			<p>
-				<mark>Another Poker Planning</mark> is a straightforward tool designed to enhance teamwork, improve
-				accuracy, and bring clarity to your estimation sessions, all in one place.
+				<mark>Another Poker Planning</mark>
+				{$_('HomePage.description')}
 			</p>
 
 			<div class="button-container">
@@ -42,34 +47,39 @@
 			</div>
 		</main>
 		<Blob1 />
-		<Blob2 />
 	</section>
 
 	<Banner />
 
 	<Feature
-		title="Méthodes de Chiffrage"
-		description="Avec Another Poker Planning, estimez la complexité d’une tâche grâce à une échelle à plusieurs niveaux. Une approche pensée pour recueillir l’avis de l’équipe et aboutir à un consensus clair et précis."
-	/>
+		title={$_('HomePage.features.estimationMethods.title')}
+		description={$_('HomePage.features.estimationMethods.description')}
+	>
+		<Estimation />
+	</Feature>
 
 	<Feature
-		title="Le Vote Simplifié"
-		description="Découvrez une expérience fluide et intuitive pour vos sessions de poker planning. Choisissez votre estimation en un seul clic, sans complexité, sans détour. Voter n’a jamais été aussi naturel."
+		title={$_('HomePage.features.simplifiedVoting.title')}
+		description={$_('HomePage.features.simplifiedVoting.description')}
 		invert={true}
-	/>
+	>
+		<Vote />
+	</Feature>
 
 	<Feature
-		title="Result"
-		description="Visualisez instantanément les votes de l’équipe grâce à un affichage clair et élégant. Chaque estimation est mise en valeur pour faciliter la discussion et atteindre rapidement un consensus."
-	/>
+		title={$_('HomePage.features.result.title')}
+		description={$_('HomePage.features.result.description')}
+	>
+		<Result />
+	</Feature>
 
 	<Feature
-		title="Sécurité et Éphémérité"
-		description="Vos données, votre sérénité. Aucune information n'est sauvegardée, tout se fait en temps
-					réel. Une fois le vote terminé, la room s’auto-détruit après quelques heures. Parce que
-					vos échanges doivent rester aussi éphémères que vos décisions."
+		title={$_('HomePage.features.securityAndEphemerality.title')}
+		description={$_('HomePage.features.securityAndEphemerality.description')}
 		invert={true}
-	/>
+	>
+		<Security />
+	</Feature>
 
 	<Plan />
 
@@ -146,7 +156,8 @@
 			p {
 				text-wrap: balance;
 				text-align: center;
-				width: 70%;
+				width: 55vw;
+				line-height: 1.7em;
 
 				mark {
 					background-color: var(--primary-500);
@@ -184,24 +195,31 @@
 	}
 
 	@media screen and (max-width: 950px) {
-		main {
-			justify-content: space-evenly !important;
-			height: 60vh;
+		section.head {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
 
-			h1 {
-				font-size: 7vw !important;
-			}
+			main {
+				// justify-content: space-evenly !important;
+				height: 50vh;
 
-			p {
-				width: 90% !important;
-			}
-			.button-container {
-				display: flex;
-				flex-direction: column !important;
-				width: 80% !important;
-				gap: 1em !important;
-				button {
-					width: 100%;
+				h1 {
+					font-size: 7vw !important;
+				}
+
+				p {
+					width: 90% !important;
+				}
+				.button-container {
+					display: flex;
+					flex-direction: column !important;
+					width: 80% !important;
+					gap: 1em !important;
+					button {
+						width: 100%;
+					}
 				}
 			}
 		}

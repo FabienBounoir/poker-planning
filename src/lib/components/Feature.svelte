@@ -11,7 +11,7 @@
 			</p>
 		</div>
 		<div class="preview">
-			<img src="/banner.png" alt="Team Spirit" />
+			<slot />
 		</div>
 	</div>
 </section>
@@ -75,13 +75,6 @@
 				justify-content: center;
 				align-items: center;
 				padding: 2em;
-
-				img {
-					width: 100%;
-					transform: translate(4rem);
-					border-radius: 1em;
-					border: 5px solid var(--primary-800);
-				}
 			}
 
 			&.inverte {
@@ -112,6 +105,7 @@
 					padding: 2em 2em 0 2em;
 					img {
 						transform: translateY(-4em) !important;
+						max-width: 50vh;
 					}
 				}
 
@@ -137,6 +131,20 @@
 		section.module {
 			background-color: var(--primary-900);
 			color: var(--primary-50);
+		}
+	}
+
+	@media screen and (max-height: 500px) {
+		section.module {
+			max-height: 50vh !important;
+			div.container {
+				div.preview {
+					padding: 0 !important;
+					img {
+						display: none;
+					}
+				}
+			}
 		}
 	}
 </style>

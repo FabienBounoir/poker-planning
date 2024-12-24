@@ -52,6 +52,13 @@
 
 		--first-color: var(--primary-950);
 		--second-color: var(--primary-500);
+
+		transition: scale 0.3s !important;
+		cursor: pointer;
+
+		&:active {
+			scale: 1.1;
+		}
 	}
 
 	@keyframes float {

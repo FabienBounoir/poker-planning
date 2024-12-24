@@ -1,26 +1,26 @@
 <script>
 	import { onMount } from 'svelte';
+	import { _ } from 'svelte-i18n';
 
 	const picto = ['♥', '🂡', '♦', '🂢', '♣', '🂣', '♠', '🂤'];
 
 	const pokerPlanningKeywords = [
-		'Intuitif',
-		'Interactif',
-		'Collaboratif',
-		'Performant',
-		'Élégant',
-		'Pratique',
-		'Fiable',
-		'Rapide',
-		'Efficace',
-		'Accessible',
-		'Flexible',
-		'Moderne',
-		'Adaptable',
-		'Transparent',
-		'Convivial',
-		'Structuré',
-		'Optimisé'
+		'HomePage.banner.keywords.intuitif',
+		'HomePage.banner.keywords.interactif',
+		'HomePage.banner.keywords.collaboratif',
+		'HomePage.banner.keywords.performant',
+		'HomePage.banner.keywords.élégant',
+		'HomePage.banner.keywords.pratique',
+		'HomePage.banner.keywords.fiable',
+		'HomePage.banner.keywords.rapide',
+		'HomePage.banner.keywords.efficace',
+		'HomePage.banner.keywords.flexible',
+		'HomePage.banner.keywords.moderne',
+		'HomePage.banner.keywords.adaptable',
+		'HomePage.banner.keywords.transparent',
+		'HomePage.banner.keywords.convivial',
+		'HomePage.banner.keywords.structuré',
+		'HomePage.banner.keywords.optimisé'
 	];
 
 	let scrollValue = 0;
@@ -51,7 +51,7 @@
 			style="transform: translateX(calc(-1 * {Math.min(scrollValue, totalWidth)}px));"
 		>
 			{#each pokerPlanningKeywords as keyword, i}
-				<span>{keyword}</span>
+				<span>{$_(keyword)}</span>
 				<b>
 					{picto[i % picto.length]}
 				</b>

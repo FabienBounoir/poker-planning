@@ -4,21 +4,17 @@
 </script>
 
 <section class="plan">
-	<h1>Pas de Frais, Pas de Limites</h1>
+	<h1>{$_('HomePage.plan.heading')}</h1>
 
 	<div class="card">
 		<div>
-			<h2>All Inclusive</h2>
+			<h2>{$_('HomePage.plan.card.allInclusive.title')}</h2>
 
-			<p>
-				Another Poker Planning est un outil gratuit et sans publicité. Pas de compte à créer, pas de
-				limite de participants, pas de frais cachés. Tout est pensé pour vous offrir une expérience
-				optimale.
-			</p>
+			<p>{$_('HomePage.plan.card.allInclusive.description')}</p>
 		</div>
 
 		<div>
-			<h3>Ready to play?</h3>
+			<h3>{$_('HomePage.plan.card.readyToPlay.title')}</h3>
 
 			<button
 				aria-label="Go to Create Page"
@@ -31,13 +27,13 @@
 		</div>
 
 		<div>
-			<h3>Free without limits</h3>
+			<h3>{$_('HomePage.plan.card.features.freeWithoutLimits')}</h3>
 
 			<ul>
-				<li>Unlimited participants</li>
-				<li>Unlimited Votes per session</li>
-				<li>No account required</li>
-				<li>No hidden fees</li>
+				<li>{$_('HomePage.plan.card.features.list.unlimitedParticipants')}</li>
+				<li>{$_('HomePage.plan.card.features.list.unlimitedVotes')}</li>
+				<li>{$_('HomePage.plan.card.features.list.noAccountRequired')}</li>
+				<li>{$_('HomePage.plan.card.features.list.noHiddenFees')}</li>
 			</ul>
 		</div>
 	</div>
@@ -134,7 +130,6 @@
 			}
 
 			.card {
-				width: 90vw;
 				padding: 1em;
 				gap: 1em;
 
@@ -162,7 +157,6 @@
 			}
 
 			.card {
-				width: 90vw;
 				padding: 1em;
 				gap: 1em;
 
