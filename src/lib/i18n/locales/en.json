@@ -25,7 +25,7 @@
             "card": {
                 "allInclusive": {
                     "title": "All Inclusive",
-                    "description": "Another Poker Planning is a free and ad-free tool. No account to create, no limit on participants, no hidden fees. Everything is designed to give you the best experience."
+                    "description": "Another Planning Poker is a free and ad-free tool. No account to create, no limit on participants, no hidden fees. Everything is designed to give you the best experience."
                 },
                 "readyToPlay": {
                     "title": "Ready to play?"
@@ -53,7 +53,7 @@
         "features": {
             "estimationMethods": {
                 "title": "Estimation Methods",
-                "description": "With Another Poker Planning, estimate the complexity of a task using a multi-level scale. An approach designed to gather the team’s input and achieve a clear and precise consensus."
+                "description": "With Another Planning Poker, estimate the complexity of a task using a multi-level scale. An approach designed to gather the team’s input and achieve a clear and precise consensus."
             },
             "simplifiedVoting": {
                 "title": "Simplified Voting",

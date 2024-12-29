@@ -25,7 +25,7 @@
             "card": {
                 "allInclusive": {
                     "title": "Tout inclus",
-                    "description": "Another Poker Planning est un outil gratuit et sans publicité. Pas de compte à créer, pas de limite de participants, pas de frais cachés. Tout est conçu pour vous offrir la meilleure expérience possible."
+                    "description": "Another Planning Poker est un outil gratuit et sans publicité. Pas de compte à créer, pas de limite de participants, pas de frais cachés. Tout est conçu pour vous offrir la meilleure expérience possible."
                 },
                 "readyToPlay": {
                     "title": "Prêt à jouer ?"
@@ -53,7 +53,7 @@
         "features": {
             "estimationMethods": {
                 "title": "Méthodes de Chiffrage",
-                "description": "Avec Another Poker Planning, estimez la complexité d’une tâche grâce à une échelle à plusieurs niveaux. Une approche pensée pour recueillir l’avis de l’équipe et aboutir à un consensus clair et précis."
+                "description": "Avec Another Planning Poker, estimez la complexité d’une tâche grâce à une échelle à plusieurs niveaux. Une approche pensée pour recueillir l’avis de l’équipe et aboutir à un consensus clair et précis."
             },
             "simplifiedVoting": {
                 "title": "Le Vote Simplifié",

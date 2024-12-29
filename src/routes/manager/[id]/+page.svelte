@@ -174,8 +174,20 @@
 </script>
 
 <svelte:head>
-	<title>Poker Planning: {pokerManager.team}</title>
-	<meta name="description" content="Manager votre poker planning comme un chef" />
+	<title>Planning Poker {pokerManager?.team || ''}</title>
+	<meta
+		name="description"
+		content="Manage your session of planning poker with ease, with Another Planning Poker."
+	/>
+	<meta
+		name="og:description"
+		content="Manage your session of planning poker with ease, with Another Planning Poker."
+	/>
+	<meta
+		name="twitter:description"
+		content="Manage your session of planning poker with ease, with Another Planning Poker."
+	/>
+	<meta name="theme-color" content={pokerManager?.hexcode || '#ff910a'} />
 </svelte:head>
 
 {#if resultsItem}

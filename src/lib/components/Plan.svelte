@@ -47,7 +47,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 2em;
-		padding: 0 0 3em 0;
+		padding: 4em 0 4em 0;
 
 		h1 {
 			font-size: 3rem;

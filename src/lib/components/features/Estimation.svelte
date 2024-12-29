@@ -172,4 +172,10 @@
 			display: none;
 		}
 	}
+
+	@media screen and (max-height: 900px) and (max-width: 1000px) {
+		svg {
+			width: auto;
+		}
+	}
 </style>

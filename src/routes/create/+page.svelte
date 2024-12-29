@@ -186,8 +186,19 @@
 </script>
 
 <svelte:head>
-	<title>{$_('CreatePage.title')} - Another Poker Planning</title>
-	<meta name="description" content="Crée un poker planning" />
+	<title>{$_('CreatePage.title')} - Another Planning Poker</title>
+	<meta
+		name="description"
+		content="Create a new room for your team to start a planning poker session"
+	/>
+	<meta
+		name="og:description"
+		content="Create a new room for your team to start a planning poker session"
+	/>
+	<meta
+		name="twitter:description"
+		content="Create a new room for your team to start a planning poker session"
+	/>
 </svelte:head>
 
 {#if status == 'create'}
