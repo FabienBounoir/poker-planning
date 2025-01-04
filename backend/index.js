@@ -50,13 +50,13 @@ app.post('/room', (req, res) => {
             roomData.cards = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
             break;
         case "FIBONACCI":
-            roomData.cards = ["1", "2", "3", "5", "8", "13", "21"];
+            roomData.cards = ["0", "1", "2", "3", "5", "8", "13", "21"];
             break;
         case "POWEROF2":
-            roomData.cards = ["1", "2", "4", "8", "16", "32"];
+            roomData.cards = ["1", "2", "4", "8", "16", "32", "64"];
             break;
         case "SEQUENTIAL":
-            roomData.cards = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+            roomData.cards = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
             break;
         case "TSHIRT_HALF":
             roomData.cards = ['XS', 'S', 'M', 'M/L', 'L', 'XL'];

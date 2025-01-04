@@ -3,6 +3,7 @@
 	import { Toaster } from 'svelte-sonner';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import { onMount } from 'svelte';
+	let { children } = $props();
 
 	onMount(() => {
 		injectAnalytics();
@@ -18,7 +19,8 @@
 		rel="noopener noreferrer">v{PACKAGE_JSON.version}</a
 	>
 {/if}
-<slot></slot>
+
+{@render children()}
 
 <style lang="scss">
 	.version {
@@ -33,7 +35,7 @@
 		padding: 0.3em 0.7em;
 		font-weight: 700;
 		color: var(--primary-950);
-		z-index: 9999;
+		z-index: 9980;
 		cursor: pointer;
 		text-decoration: none;
 

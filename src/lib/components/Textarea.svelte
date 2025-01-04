@@ -19,7 +19,11 @@
 	<pre aria-hidden="true" style="min-height: {minHeight}; max-height: {maxHeight}">{value +
 			'\n'}</pre>
 
-	<textarea disabled={!disabled} bind:value placeholder={$_('ManagerPage.textareaPlaceholder')}
+	<textarea
+		id="userStory"
+		disabled={!disabled}
+		bind:value
+		placeholder={$_('ManagerPage.textareaPlaceholder')}
 	></textarea>
 </div>
 

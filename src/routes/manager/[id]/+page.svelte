@@ -220,13 +220,9 @@
 <main>
 	<div class="manager">
 		<div class="container">
-			<h1
-				on:click={() => {
-					goto('/');
-				}}
-			>
+			<a href="/">
 				<span in:fly|local={{ easing: backOut, x: -25 }}> Poker Planning </span>
-			</h1>
+			</a>
 
 			<div class="me">
 				{$_('ManagerPage.welcomeMessage', { values: { USER: pokerManager.team || '' } })}
@@ -235,7 +231,7 @@
 			<Code code={roomId} {url} />
 		</div>
 
-		<label>{$_('ManagerPage.userStoryLabel')}</label>
+		<label for="userStory">{$_('ManagerPage.userStoryLabel')}</label>
 		<TextArea
 			bind:value={pokerManager.userStory}
 			disabled={pokerManager.state == 'result' || pokerManager.state == 'waiting'}
@@ -293,6 +289,7 @@
 				>
 					<div class="profile">
 						<img
+							alt={'avatar for ' + user.name}
 							src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
 								`?seed=${user.name}`}
 						/>
@@ -368,11 +365,12 @@
 				min-height: 100%;
 				color: var(--primary-950);
 
-				> h1 {
+				> a {
 					font-size: 3rem;
 					font-weight: 900;
 					line-height: 37px;
 					cursor: pointer;
+					text-decoration: none;
 
 					span {
 						display: block;
@@ -521,7 +519,7 @@
 	}
 
 	@media (prefers-color-scheme: dark) {
-		h1 {
+		a {
 			color: var(--primary-100);
 		}
 

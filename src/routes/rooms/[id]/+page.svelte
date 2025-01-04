@@ -560,22 +560,6 @@
 				gap: 1em;
 				flex-wrap: wrap;
 				justify-content: center;
-
-				& > * {
-					transition: filter 0.3s;
-				}
-
-				& > *:hover {
-					/* Annule le grisage pour la carte survolée */
-					filter: none;
-					background-color: red !important;
-				}
-
-				& > *:not(:hover) {
-					/* Grise les autres cartes */
-					filter: grayscale(1) !important;
-					pointer-events: none; /* Empêche les autres cartes d'être sélectionnées lors du survol */
-				}
 			}
 
 			button {

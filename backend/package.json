@@ -1,7 +1,7 @@
 {
   "name": "poker-planning",
   "version": "1.2.1",
-  "description": "Websocket for poker planning",
+  "description": "Backend for planning poker",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

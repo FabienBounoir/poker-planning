@@ -44,6 +44,7 @@
 {#if displayQrCode}
 	<div class="fullscreen" on:click={() => (displayQrCode = false)} transition:fade>
 		<img
+			alt="QR Code for joining the room"
 			in:scale
 			src={`https://api.qrserver.com/v1/create-qr-code/?size=700x700&bgcolor=${getCssColor('--primary-200')}&margin=50&color=${getCssColor('--primary-950')}&data=${encodeURIComponent(url)}`}
 		/>

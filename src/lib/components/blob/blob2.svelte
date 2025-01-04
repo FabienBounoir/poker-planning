@@ -101,10 +101,4 @@
 			display: none;
 		}
 	}
-
-	// @media (max-height: 500px) and (min-width: 950px) {
-	// 	svg {
-	// 		display: none;
-	// 	}
-	// }
 </style>

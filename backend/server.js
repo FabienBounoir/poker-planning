@@ -1,6 +1,6 @@
 const { Server } = require('socket.io');
 const { v4: uuidv4 } = require('uuid');
-const { newUserJoined, roomDeleted } = require('./utils/statistics');
+const { newUserJoined, roomDeleted, userLeft, stateUpdate } = require('./utils/statistics');
 const e = require('express');
 
 /**
@@ -69,6 +69,8 @@ const createSocketIOServer = (server, rooms) => {
                         clearTimeout(this.timeout);
                         delete this.timeout;
                     }
+
+                    stateUpdate(element, roomId, state);
 
                     if (state == "result") {
                         let resultsByItem = new Map();
@@ -198,7 +200,7 @@ const createSocketIOServer = (server, rooms) => {
                 return socket.disconnect(true);
             }
 
-            newUserJoined(name, room.data);
+            newUserJoined(name, room.data, roomId);
 
             console.log('New connection with ID:', socket.id);
 
@@ -220,24 +222,10 @@ const createSocketIOServer = (server, rooms) => {
             room.players.set(socket.id, player);
             room.emitPlayers(room.data.state != "waiting");
 
-            socket.on("leave-room", () => {
-                console.log(`User leave room ${socket.id}`);
-                room.players.delete(socket.id);
-
-                if (room.players.size) {
-                    room.emitPlayers(room.data.state != "waiting");
-                } else {
-                    room.timeout = setTimeout(() => {
-                        if (!room.players.size) {
-                            rooms.delete(roomId);
-                            console.log(`Room ${roomId} deleted after inactivity.`);
-                        }
-                    }, 3600000);
-                }
-            })
-
             socket.on('disconnect', () => {
                 console.log(`User ${socket.id} disconnected`);
+
+                userLeft(room.players.get(socket.id)?.name || "Unknown", room.data, roomId);
                 room.players.delete(socket.id);
 
                 if (room.players.size) {
@@ -245,7 +233,7 @@ const createSocketIOServer = (server, rooms) => {
                 } else {
                     console.log("Setup Timeout 1 hour to delete inactive room")
 
-                    if (['result'].inclroom?.data?.state) {
+                    if (['result'].includes(room?.data?.state)) {
                         room.data.state = 'waiting';
                         room.data.userStory = ''
                     }
@@ -254,7 +242,7 @@ const createSocketIOServer = (server, rooms) => {
                         if (!room.players.size) {
                             rooms.delete(roomId);
                             console.log(`Room ${roomId} deleted after inactivity.`);
-                            roomDeleted(roomId, room.data);
+                            roomDeleted(room.data);
                         }
                     }, 3600000);
                 }

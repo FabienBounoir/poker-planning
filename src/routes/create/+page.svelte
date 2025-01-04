@@ -79,13 +79,13 @@
 		submitting = false;
 	};
 
-	let choices = [
+	let choices = $state([
 		{ id: 'TSHIRT', text: $_('selectCategories.types.TSHIRT') },
 		{ id: 'FIBONACCI', text: $_('selectCategories.types.FIBONACCI') },
 		{ id: 'POWEROF2', text: $_('selectCategories.types.POWEROF2') },
 		{ id: 'SEQUENTIAL', text: $_('selectCategories.types.SEQUENTIAL') },
 		{ id: 'TSHIRT_HALF', text: $_('selectCategories.types.TSHIRT_HALF') }
-	];
+	]);
 
 	onMount(() => {
 		if (window.localStorage.getItem('advancedSettings')) {
@@ -118,6 +118,16 @@
 
 		status = 'create';
 	});
+
+	const checkDeckIsValide = (deck) => {
+		if (!deck) return false;
+
+		if (!deck.name || !deck.cards) return false;
+
+		if (deck.cards.length < 2) return false;
+
+		return true;
+	};
 
 	const addNewDeck = () => {
 		window.localStorage.setItem(
@@ -275,27 +285,28 @@
 		/>
 
 		<div>
-			<label>{$_('CreatePage.preview')}</label>
-			<div class="card-preview">
+			<label for="card-preview">{$_('CreatePage.preview')}</label>
+			<div class="card-preview" id="card-preview">
 				{#each customCard.cards as card}
-					<div
+					<button
+						tabindex="0"
 						class="card"
 						in:fade
 						on:click={() => (customCard.cards = customCard.cards.filter((c) => c !== card))}
 					>
 						<p>{`${card}`.slice(0, 3)}</p>
-					</div>
+					</button>
 				{/each}
 
-				{#if customCard.cards.length == 0}
+				{#if customCard?.cards?.length == 0}
 					<div class="card skeleton">
-						<p></p>
+						<p>♠</p>
 					</div>
 				{/if}
 
-				{#if customCard.cards.length == 1}
+				{#if customCard?.cards?.length <= 1}
 					<div class="card skeleton">
-						<p></p>
+						<p>♣</p>
 					</div>
 				{/if}
 			</div>
@@ -323,6 +334,10 @@
 			width: 300px;
 		}
 
+		label {
+			color: var(--primary-950);
+		}
+
 		.card-preview {
 			display: flex;
 			gap: 0.5em;
@@ -344,8 +359,12 @@
 				align-items: center;
 				justify-content: center;
 
+				p {
+					color: var(--primary-800);
+				}
+
 				&:hover:not(.skeleton) {
-					animation: shake 1s alternate;
+					animation: shake 1s alternate infinite;
 					cursor: pointer;
 					filter: grayscale(50%);
 				}
@@ -413,26 +432,6 @@
 			margin-top: 1em;
 		}
 
-		.custom-card-container {
-			display: flex;
-			flex-direction: row;
-			gap: 0.5em;
-
-			.card {
-				all: unset;
-				width: 3em;
-				aspect-ratio: 2.5 / 4;
-				background-color: var(--primary-200);
-				border: 1px solid var(--primary-800);
-				border-radius: 8px;
-
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-			}
-		}
-
 		.advance-settings {
 			& > * {
 				margin-top: 1em;
@@ -455,13 +454,6 @@
 					aspect-ratio: 2 / 1;
 					position: relative;
 					width: 3em;
-
-					p {
-						position: absolute;
-						top: 50%;
-						left: 50%;
-						transform: translate(-50%, -50%);
-					}
 
 					input {
 						visibility: hidden;
@@ -543,15 +535,6 @@
 				transform: rotate(180deg);
 			}
 		}
-
-		span {
-			font-size: 0.8em;
-
-			&:hover {
-				cursor: pointer;
-				text-decoration: underline;
-			}
-		}
 	}
 
 	main {
@@ -608,6 +591,18 @@
 	@media (prefers-color-scheme: dark) {
 		h1 {
 			color: var(--primary-100);
+		}
+
+		.create-new-set {
+			label {
+				color: var(--primary-100);
+			}
+
+			.card {
+				p {
+					color: var(--primary-800);
+				}
+			}
 		}
 
 		.advance-setting-button {

@@ -1,12 +1,10 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { _ } from 'svelte-i18n';
 	import Blob1 from '$lib/components/blob/Blob1.svelte';
 	import Blob2 from '$lib/components/blob/blob2.svelte';
-	import Footer from '$lib/components/Footer.svelte';
 	import Feature from '$lib/components/Feature.svelte';
 	import Plan from '$lib/components/Plan.svelte';
-	import { onMount } from 'svelte';
-	import { _ } from 'svelte-i18n';
 	import Banner from '$lib/components/Banner.svelte';
 	import Vote from '$lib/components/features/Vote.svelte';
 	import Result from '$lib/components/features/Result.svelte';
@@ -103,51 +101,6 @@
 </main>
 
 <style lang="scss">
-	section.banner {
-		overflow: hidden;
-		height: 12vh;
-		justify-items: center;
-		place-content: center;
-		background: linear-gradient(
-			180deg,
-			var(--primary-50) 0%,
-			var(--primary-50) 49%,
-			var(--primary-200) 51%,
-			var(--primary-200) 100%
-		);
-		div.container {
-			height: 9vh;
-			width: 110vw;
-			background-color: var(--primary-800);
-			transform: rotate(-1deg);
-			color: var(--primary-100);
-			transition: transform 0.1s linear;
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			user-select: none;
-
-			b {
-				color: var(--primary-500);
-				font-weight: 900;
-				font-size: 1.2em;
-			}
-
-			> div {
-				transform: translateX(0);
-				margin-left: 2em;
-				display: flex;
-				flex-direction: row;
-				gap: 3em;
-				align-items: center;
-				font-weight: 900;
-
-				white-space: nowrap;
-				transition: transform 0.1s linear;
-			}
-		}
-	}
-
 	section.head {
 		background-color: var(--primary-50);
 		width: 100%;
@@ -243,6 +196,21 @@
 		}
 	}
 
+	@media screen and (max-height: 550px) and (max-width: 950px) {
+		section.head {
+			main {
+				h1,
+				h2 {
+					font-size: 2em !important;
+				}
+
+				p {
+					display: none;
+				}
+			}
+		}
+	}
+
 	@media (prefers-color-scheme: dark) {
 		section.head {
 			background-color: var(--primary-950);
@@ -257,10 +225,6 @@
 			mark {
 				color: var(--primary-950);
 			}
-		}
-		section.module {
-			background-color: var(--primary-800);
-			color: var(--primary-50);
 		}
 	}
 </style>

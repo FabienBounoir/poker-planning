@@ -1,5 +1,5 @@
 <script>
-	let { title, description, invert = false } = $props();
+	let { title, description, invert = false, children } = $props();
 </script>
 
 <section class="module">
@@ -11,7 +11,7 @@
 			</p>
 		</div>
 		<div class="preview">
-			<slot />
+			{@render children()}
 		</div>
 	</div>
 </section>
