@@ -40,6 +40,7 @@
 		}
 
 		div.container {
+			margin-top: 6em !important;
 			width: 80%;
 			background-color: var(--primary-50);
 			border-radius: 1em;
@@ -91,7 +92,7 @@
 
 	@media screen and (max-width: 1000px) {
 		section.module {
-			height: 75vh;
+			min-height: 75vh;
 			h2 {
 				font-size: 1.5rem !important;
 			}
@@ -119,9 +120,6 @@
 				grid-template-areas: 'preview' 'description' !important;
 				div.preview {
 					padding: 2em 2em 0 2em !important;
-					img {
-						transform: translateY(-4em) !important;
-					}
 				}
 			}
 		}
@@ -134,17 +132,9 @@
 		}
 	}
 
-	@media screen and (max-height: 500px) {
+	@media screen and (max-height: 900px) and (max-width: 1000px) {
 		section.module {
-			max-height: 50vh !important;
-			div.container {
-				div.preview {
-					padding: 0 !important;
-					img {
-						display: none;
-					}
-				}
-			}
+			height: auto !important;
 		}
 	}
 </style>

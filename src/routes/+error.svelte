@@ -1,7 +1,13 @@
 <script>
 	import { page } from '$app/stores';
-	import { scale } from 'svelte/transition';
 </script>
+
+<svelte:head>
+	<title>Oopsie... 🤓 - Another {$page.status} Error</title>
+	<meta name="description" content="Oopsie... 🤓 - Another Planning Poker" />
+	<meta name="og:description" content="Oopsie... 🤓 - Another Planning Poker" />
+	<meta name="twitter:description" content="Oopsie... 🤓 - Another Planning Poker" />
+</svelte:head>
 
 <main>
 	<h1>Oopsie... 🤓</h1>

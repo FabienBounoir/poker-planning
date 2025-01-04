@@ -14,13 +14,29 @@
 	import Estimation from '$lib/components/features/Estimation.svelte';
 </script>
 
+<svelte:head>
+	<title>Another Planning Poker - Simplify Your Scrum Estimations</title>
+	<meta
+		name="description"
+		content="With Another Planning Poker, streamline your Scrum estimations with instant, clear, and easily understandable results. Enjoy detailed insights, superior analysis, and an efficient Agile planning tool for your team."
+	/>
+	<meta
+		name="og:description"
+		content="With Another Planning Poker, streamline your Scrum estimations with instant, clear, and easily understandable results. Enjoy detailed insights, superior analysis, and an efficient Agile planning tool for your team."
+	/>
+	<meta
+		name="twitter:description"
+		content="With Another Planning Poker, streamline your Scrum estimations with instant, clear, and easily understandable results. Enjoy detailed insights, superior analysis, and an efficient Agile planning tool for your team."
+	/>
+</svelte:head>
+
 <main>
 	<section class="head">
 		<Blob2 />
 		<main>
 			<div>
 				<h1>{$_('HomePage.headings.planPokerSessions')}</h1>
-				<h1>{$_('HomePage.headings.togetherEffortlessly')}</h1>
+				<h2>{$_('HomePage.headings.togetherEffortlessly')}</h2>
 			</div>
 
 			<p>
@@ -169,7 +185,8 @@
 			}
 		}
 
-		h1 {
+		h1,
+		h2 {
 			font-size: 3.5vw;
 			font-weight: 900;
 			color: var(--primary-950);
@@ -205,7 +222,8 @@
 				// justify-content: space-evenly !important;
 				height: 50vh;
 
-				h1 {
+				h1,
+				h2 {
 					font-size: 7vw !important;
 				}
 
@@ -228,7 +246,8 @@
 	@media (prefers-color-scheme: dark) {
 		section.head {
 			background-color: var(--primary-950);
-			h1 {
+			h1,
+			h2 {
 				color: var(--primary-50);
 			}
 			p {

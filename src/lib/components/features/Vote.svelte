@@ -1,4 +1,4 @@
-<svg width="40vw" viewBox="0 0 1000 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 1000 600" fill="none" xmlns="http://www.w3.org/2000/svg">
 	<rect width="1000" height="600" fill="white" />
 	<rect x="270" y="206" width="132" height="188" rx="18" fill="var(--primary-200)" />
 	<rect x="106" y="206" width="132" height="188" rx="18" fill="var(--primary-200)" />
@@ -57,6 +57,12 @@
 	@media screen and (max-height: 500px) {
 		svg {
 			display: none;
+		}
+	}
+
+	@media screen and (max-height: 900px) and (max-width: 1000px) {
+		svg {
+			width: auto !important;
 		}
 	}
 </style>

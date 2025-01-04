@@ -93,7 +93,7 @@
         "startVoteButton": "Start the vote",
         "textareaPlaceholder": "Description of your user story (US)",
         "resultDescriptionTitle": "Planning results",
-        "noParticipantsMessage": "No participants for the poker planning.",
+        "noParticipantsMessage": "No participants for the planning poker.",
         "noUserStoryDefined": "No User Story has been defined.",
         "noParticipantsForVote": "No participants found to start the vote."
     },
@@ -108,21 +108,21 @@
         }
     },
     "JoinPage": {
-        "windowsTitle": "Join a poker planning",
-        "title": "Which poker planning would you like to join?",
+        "windowsTitle": "Join a planning poker",
+        "title": "Which planning poker would you like to join?",
         "joinButton": "Join",
         "noCodeLink": "No code?",
         "roomDoesntExist": "The room does not exist..."
     },
     "CreatePage": {
-        "title": "Create a new poker planning",
+        "title": "Create a new planning poker",
         "teamInputPlaceholder": "Team Name",
         "selectLabel": "Choose a type",
         "createButton": "Create",
         "createNewSetOfCards": "Create a new deck of cards",
         "preview": "Preview",
         "deckName": "Deck name",
-        "error": "An error occurred while creating the poker planning.",
+        "error": "An error occurred while creating the planning poker.",
         "advancedSettings": "Advanced Settings",
         "pokerPlanningColor": "Planning poker color",
         "autoRevealResults": "Auto Reveal Results",
@@ -130,7 +130,7 @@
         "save": "Save"
     },
     "common": {
-        "pokerPlanningDoesntExist": "This poker planning does not exist.",
+        "pokerPlanningDoesntExist": "This planning poker does not exist.",
         "connectionWithServerLost": "The connection with the server has been lost."
     }
 }

@@ -1,6 +1,12 @@
 <script>
-	import { Toaster } from 'svelte-sonner';
 	import '../app.scss';
+	import { Toaster } from 'svelte-sonner';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		injectAnalytics();
+	});
 </script>
 
 <Toaster position="top-center" richColors />

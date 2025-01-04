@@ -183,7 +183,19 @@
 
 <svelte:head>
 	<title>{pokerManager?.team || ''} Another Poker Planning</title>
-	<meta name="description" content="Partie de poker planning" />
+	<meta
+		name="description"
+		content="Your private planning poker room where you can vote on user stories."
+	/>
+	<meta
+		name="og:description"
+		content="Your private planning poker room where you can vote on user stories."
+	/>
+	<meta
+		name="twitter:description"
+		content="Your private planning poker room where you can vote on user stories."
+	/>
+	<meta name="theme-color" content={pokerManager?.hexcode || '#ff910a'} />
 </svelte:head>
 
 {#if pokerManager == null}
@@ -226,6 +238,7 @@
 						transition:scale={{ duration: 500 }}
 					>
 						<img
+							alt="User-avatar"
 							src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
 								`?seed=${player.name}`}
 						/>
@@ -274,6 +287,7 @@
 						<h3 transition:scale={{ delay: 2000, duration: 500, easing: quintInOut }}>
 							<div>
 								<img
+									alt="User-avatar"
 									src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
 										`?seed=${resultDefender.name}`}
 								/>

@@ -38,8 +38,19 @@
 </script>
 
 <svelte:head>
-	<title>{$_('JoinPage.windowsTitle')} - Another Poker Planning</title>
-	<meta name="description" content="Join a poker planning" />
+	<title>{$_('JoinPage.windowsTitle')} - Another Planning Poker</title>
+	<meta
+		name="description"
+		content="Join your team's poker planning session with ease with Another Planning Poker."
+	/>
+	<meta
+		name="og:description"
+		content="Join your team's poker planning session with ease with Another Planning Poker."
+	/>
+	<meta
+		name="twitter:description"
+		content="Join your team's poker planning session with ease with Another Planning Poker."
+	/>
 </svelte:head>
 
 <main>
