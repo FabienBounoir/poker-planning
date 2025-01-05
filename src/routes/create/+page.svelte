@@ -12,7 +12,7 @@
 	let type = $state();
 	let team = $state('');
 
-	let status = $state('init');
+	let status = $state('create');
 
 	let advancedSettingsObject = $state({
 		hexcode: '#FF7F00',
@@ -115,19 +115,7 @@
 
 		type = window.localStorage.getItem('type') || 'TSHIRT';
 		team = window.localStorage.getItem('team') || '';
-
-		status = 'create';
 	});
-
-	const checkDeckIsValide = (deck) => {
-		if (!deck) return false;
-
-		if (!deck.name || !deck.cards) return false;
-
-		if (deck.cards.length < 2) return false;
-
-		return true;
-	};
 
 	const addNewDeck = () => {
 		window.localStorage.setItem(
