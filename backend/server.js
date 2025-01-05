@@ -1,7 +1,5 @@
 const { Server } = require('socket.io');
-const { v4: uuidv4 } = require('uuid');
 const { newUserJoined, roomDeleted, userLeft, stateUpdate } = require('./utils/statistics');
-const e = require('express');
 
 /**
  * @type {Server}

@@ -68,11 +68,7 @@
 		<button aria-label="Rejoindre un poker planning" type="submit" disabled={submitting}
 			>{$_('JoinPage.joinButton')}</button
 		>
-		<span
-			on:click={() => {
-				goto('/create');
-			}}>{$_('JoinPage.noCodeLink')}</span
-		>
+		<a href="/create" title={$_('CreatePage.title')}>{$_('JoinPage.noCodeLink')}</a>
 	</form>
 </main>
 
@@ -81,9 +77,10 @@
 		display: grid;
 		gap: 0.5em;
 
-		span {
+		a {
 			text-align: center;
 			font-size: 0.8em;
+			text-decoration: none;
 
 			&:hover {
 				cursor: pointer;

@@ -21,7 +21,7 @@
 	let timeout: number | null;
 
 	let selectedLetter = $state(null);
-	let username = $state('');
+	let username: string | null = $state('');
 	let submitting = $state(false);
 	let submittedLetter = $state(null);
 
@@ -30,7 +30,7 @@
 
 	let players = $state(null);
 
-	let existingPositions = [];
+	let existingPositions: { top: number; left: number }[] = [];
 
 	onMount(() => {
 		if (window.localStorage.getItem('username')) {
@@ -50,7 +50,7 @@
 	});
 
 	const connect = () => {
-		if (username.trim() == '') {
+		if (username?.trim?.() == '') {
 			return toast.info($_('RoomPage.IWantYourName'));
 		}
 
@@ -139,7 +139,7 @@
 		submittedLetter = forceValue;
 	};
 
-	const includeUS_ID = (userStory) => {
+	const includeUS_ID = (userStory: string) => {
 		const match = userStory.match(/NFS-\d+/i);
 		return match ? `https://portail.agir.orange.com/browse/${match[0]}` : false;
 	};
@@ -158,7 +158,7 @@
 		io.send({ type: 'hexcode', data: { hexcode } });
 	};
 
-	const isPositionFree = (top, left) => {
+	const isPositionFree = (top: number, left: number) => {
 		return !existingPositions.some(
 			(pos) => Math.abs(pos.top - top) < 15 && Math.abs(pos.left - left) < 15
 		);
@@ -252,8 +252,10 @@
 					<h3>User story</h3>
 					{#if includeUS_ID(pokerManager.userStory)}
 						<h1>
-							<a target="_blank" href={includeUS_ID(pokerManager.userStory)}
-								>{pokerManager.userStory}</a
+							<a
+								title="Open User story on jira"
+								target="_blank"
+								href={includeUS_ID(pokerManager.userStory)}>{pokerManager.userStory}</a
 							>
 						</h1>
 					{:else}

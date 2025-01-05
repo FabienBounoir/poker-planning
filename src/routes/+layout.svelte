@@ -13,6 +13,7 @@
 <Toaster position="top-center" richColors />
 {#if PACKAGE_JSON?.version}
 	<a
+		title="View on GitHub"
 		href="https://github.com/FabienBounoir/poker-planning"
 		class="version"
 		target="_blank"

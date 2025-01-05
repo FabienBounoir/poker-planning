@@ -5,9 +5,13 @@
 
 	const uniqueID = Math.floor(Math.random() * 100);
 
+	/**
+	 * Event handler function.
+	 *
+	 * @param {Event} event - The event object.
+	 */
 	function handleClick(event) {
 		const target = event.target;
-
 		const state = target.getAttribute('aria-checked');
 
 		checked = state === 'true' ? false : true;

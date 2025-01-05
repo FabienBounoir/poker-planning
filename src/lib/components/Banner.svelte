@@ -86,7 +86,7 @@
 			user-select: none;
 
 			b {
-				color: var(--primary-500);
+				color: var(--primary-300);
 				font-weight: 900;
 				font-size: 1.2em;
 			}

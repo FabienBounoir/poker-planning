@@ -7,6 +7,7 @@
 	<meta name="description" content="Oopsie... 🤓 - Another Planning Poker" />
 	<meta name="og:description" content="Oopsie... 🤓 - Another Planning Poker" />
 	<meta name="twitter:description" content="Oopsie... 🤓 - Another Planning Poker" />
+	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <main>
@@ -15,7 +16,7 @@
 		{#if $page.status === 404}
 			<p>cette page n'existe pas...</p>
 			<p>Navigue avec les boutons pour explorer d'autres contrées !</p>
-			<a href="/">Oh, un bouton, quel miracle !</a>
+			<a href="/" title="Go to home page" rel="home">Oh, un bouton, quel miracle !</a>
 		{:else if $page.status >= 500}
 			<p>
 				On dirait que notre serveur a pris une petite pause... Pas de panique, on s'en occupe ! ⚙️

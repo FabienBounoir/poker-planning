@@ -1,8 +1,5 @@
 <script>
-	import { fade } from 'svelte/transition';
-
 	let { timer = false } = $props();
-
 	let menuState = $state('close');
 
 	const menuStateChange = () => {

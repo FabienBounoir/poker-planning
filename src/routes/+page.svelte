@@ -43,20 +43,12 @@
 			</p>
 
 			<div class="button-container">
-				<button
-					aria-label="Go to Create Page"
-					on:click={() => {
-						goto('/create');
-					}}
-				>
+				<a aria-label="Go to Create Page" href="/create" title={$_('CreatePage.title')}>
 					{$_('HomePage.buttons.create')}
-				</button>
+				</a>
 
-				<button
-					aria-label="Go to Join page"
-					on:click={() => {
-						goto('/join');
-					}}>{$_('HomePage.buttons.join')}</button
+				<a aria-label="Go to Join page" href="/join" title={$_('JoinPage.title')}
+					>{$_('HomePage.buttons.join')}</a
 				>
 			</div>
 		</main>
@@ -152,7 +144,29 @@
 			flex-direction: row;
 			gap: 2em;
 			width: 40%;
-			button {
+			a {
+				cursor: pointer;
+
+				border: none;
+
+				background-color: var(--primary-500);
+				color: var(--primary-950);
+				font-weight: 600;
+
+				padding: 0.5rem 0.75rem;
+				border-radius: 0.5rem;
+
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.5rem;
+
+				outline-color: var(--primary-200);
+				text-align: center;
+
+				transition-property: outline-width, opacity;
+
+				text-decoration: none;
 				width: 100%;
 				transition: scale 0.3s !important;
 
@@ -188,7 +202,7 @@
 					flex-direction: column !important;
 					width: 80% !important;
 					gap: 1em !important;
-					button {
+					a {
 						width: 100%;
 					}
 				}

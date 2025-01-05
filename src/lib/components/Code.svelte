@@ -20,6 +20,12 @@
 		}
 	};
 
+	/**
+	 * Retrieves the CSS color value for a given CSS variable.
+	 *
+	 * @param {string} variable - The name of the CSS variable to retrieve the color value for.
+	 * @returns {string} The CSS color value associated with the given variable.
+	 */
 	const getCssColor = (variable) => {
 		const root = document.documentElement;
 		const hexaCode = getComputedStyle(root).getPropertyValue(variable).trim();

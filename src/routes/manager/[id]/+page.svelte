@@ -7,8 +7,8 @@
 	import type { Socket } from 'socket.io-client';
 	import { onDestroy, onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { backOut, bounceInOut, cubicInOut, elasticInOut } from 'svelte/easing';
-	import { fade, fly, scale, slide } from 'svelte/transition';
+	import { backOut, cubicInOut } from 'svelte/easing';
+	import { fly, slide } from 'svelte/transition';
 	import ioClient from 'socket.io-client';
 	import Confetti from 'svelte-confetti';
 	import { _ } from 'svelte-i18n';
@@ -220,7 +220,7 @@
 <main>
 	<div class="manager">
 		<div class="container">
-			<a href="/">
+			<a href="/" title="Go to Home Page" rel="home">
 				<span in:fly|local={{ easing: backOut, x: -25 }}> Poker Planning </span>
 			</a>
 
