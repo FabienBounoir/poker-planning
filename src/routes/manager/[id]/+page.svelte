@@ -237,6 +237,7 @@
 			disabled={pokerManager.state == 'result' || pokerManager.state == 'waiting'}
 			minRows={1}
 			maxRows={10}
+			placeholder="ManagerPage.textareaPlaceholder"
 		/>
 
 		<div class="buttons">
