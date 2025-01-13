@@ -1,5 +1,4 @@
 <script>
-	import '@fortawesome/fontawesome-free/css/all.min.css';
 	import { fade, scale } from 'svelte/transition';
 	let { code, url = 'https://coucou.com' } = $props();
 	import { _ } from 'svelte-i18n';

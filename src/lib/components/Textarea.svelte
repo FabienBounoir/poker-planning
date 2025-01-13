@@ -1,7 +1,7 @@
 <script>
 	import { _ } from 'svelte-i18n';
 
-	let { value = $bindable(), minRows = 3, maxRows = 3, disabled } = $props();
+	let { value = $bindable(), minRows = 3, maxRows = 3, disabled = false } = $props();
 
 	let minHeight = $state(`${1 + minRows * 1.2}em`);
 	let maxHeight = $state(`${1 + maxRows * 1.2}em`);
