@@ -132,5 +132,16 @@
     "common": {
         "pokerPlanningDoesntExist": "This planning poker does not exist.",
         "connectionWithServerLost": "The connection with the server has been lost."
+    },
+    "feedback": {
+        "headerFeedback": "How are your feeling?",
+        "paragraphFeedback": "Your input is valuable in helping us better understand your needs and tailor our service accordingly",
+        "placeholderEmail": "Your Email",
+        "placeholderComment": "Add a comment...",
+        "buttonSendFeedback": "Send Feedback",
+        "headerThankYou": "Thank you for your feedback!",
+        "paragraphThankYou": "We appreciate your time and effort in helping us improve our service",
+        "errorInvalidEmail": "Please enter a valid email",
+        "buttonBackHome": "Back to Home"
     }
 }

@@ -132,5 +132,16 @@
     "common": {
         "pokerPlanningDoesntExist": "Este poker planning no existe.",
         "connectionWithServerLost": "Se perdió la conexión con el servidor."
+    },
+    "feedback": {
+        "headerFeedback": "¿Cómo te sientes?",
+        "paragraphFeedback": "Tu opinión es valiosa para ayudarnos a comprender mejor tus necesidades y adaptar nuestro servicio en consecuencia",
+        "placeholderEmail": "Tu correo electrónico",
+        "placeholderComment": "Agrega un comentario...",
+        "buttonSendFeedback": "Enviar comentarios",
+        "headerThankYou": "¡Gracias por tus comentarios!",
+        "paragraphThankYou": "Agradecemos tu tiempo y esfuerzo para ayudarnos a mejorar nuestro servicio",
+        "errorInvalidEmail": "Por favor, introduce un correo electrónico válido",
+        "buttonBackHome": "Volver a inicio"
     }
 }

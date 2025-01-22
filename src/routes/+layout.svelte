@@ -4,6 +4,7 @@
 	import { Toaster } from 'svelte-sonner';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	let { children } = $props();
 
 	onMount(() => {
@@ -23,9 +24,11 @@
 		>
 	{/if}
 
-	<a title="Send a feedback" target="_blank" href="/feedback" class="version"
-		><i class="fa-solid fa-question"></i></a
-	>
+	{#if $page.route.id !== '/feedback'}
+		<a title="Send a feedback" target="_blank" href="/feedback" class="version"
+			><i class="fa-solid fa-question"></i></a
+		>
+	{/if}
 </div>
 
 {@render children()}

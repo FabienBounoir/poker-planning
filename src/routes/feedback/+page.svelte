@@ -1,19 +1,39 @@
 <script>
 	import Textarea from '$lib/components/Textarea.svelte';
+	import { toast } from 'svelte-sonner';
 	import { quintOut } from 'svelte/easing';
 	import { scale } from 'svelte/transition';
+	import { _ } from 'svelte-i18n';
 
 	let step = $state('feedback');
 	let feedback = $state('');
 	let feeling = $state('neutral');
+	let email = $state('');
 
 	const sendFeedback = () => {
-		console.log(feedback);
-		step = 'thankyou';
+		if (!validEmail(email)) {
+			toast.error($_('feedback.errorInvalidEmail'));
+			return;
+		}
 
-		setTimeout(() => {
-			step = 'feedback';
-		}, 3000);
+		fetch('http://localhost:5876/feedback', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				feeling,
+				feedback,
+				email
+			})
+		});
+
+		step = 'thankyou';
+	};
+
+	const validEmail = (email) => {
+		const re = /\S+@\S+\.\S+/;
+		return re.test(email);
 	};
 </script>
 
@@ -35,11 +55,8 @@
 
 {#if step === 'feedback'}
 	<main in:scale={{ duration: 300, easing: quintOut }}>
-		<h1>How are your feeling?</h1>
-		<p>
-			Your input is valuable in helping us better understand your needs and tailor our service
-			accordingly
-		</p>
+		<h1>{$_('feedback.headerFeedback')}</h1>
+		<p>{$_('feedback.paragraphFeedback')}</p>
 		<form on:submit|preventDefault={sendFeedback}>
 			<div class="feeling">
 				<input type="radio" id="angry" name="feeling" value="angry" bind:group={feeling} />
@@ -58,16 +75,25 @@
 				<label for="loving">🥰</label>
 			</div>
 
-			<input type="text" placeholder="Your Email" />
-			<Textarea bind:value={feedback} minRows={3} maxRows={10} placeholder="Add a comment..." />
+			<input type="text" placeholder={$_('feedback.placeholderEmail')} bind:value={email} />
+			<Textarea
+				bind:value={feedback}
+				minRows={3}
+				maxRows={10}
+				placeholder={$_('feedback.placeholderComment')}
+			/>
 
-			<button type="submit">Send Feedback</button>
+			<button type="submit" disabled={!feedback || !email}
+				>{$_('feedback.buttonSendFeedback')}</button
+			>
 		</form>
 	</main>
 {:else}
 	<main in:scale={{ duration: 300, easing: quintOut }}>
-		<h1>Thank you for your feedback!</h1>
-		<p>We appreciate your time and effort in helping us improve our service</p>
+		<h1>{$_('feedback.headerThankYou')}</h1>
+		<p>{$_('feedback.paragraphThankYou')}</p>
+
+		<a href="/" title={$_('feedback.buttonBackHome')}>{$_('feedback.buttonBackHome')}</a>
 	</main>
 {/if}
 
@@ -77,6 +103,40 @@
 		text-wrap: balance;
 		width: min(100%, 40ch);
 	}
+
+	a {
+		margin-top: 1em;
+		cursor: pointer;
+
+		border: none;
+
+		background-color: var(--primary-500);
+		color: var(--primary-950);
+		font-weight: 600;
+
+		padding: 0.5rem 0.75rem;
+		border-radius: 0.5rem;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+
+		outline-color: var(--primary-200);
+		text-align: center;
+
+		transition-property: outline-width, opacity;
+
+		text-decoration: none;
+
+		transition: scale 0.3s !important;
+
+		&:hover {
+			scale: 1.05;
+		}
+		font-weight: bold;
+	}
+
 	form {
 		display: grid;
 		gap: 0.5em;
