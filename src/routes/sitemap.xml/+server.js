@@ -39,6 +39,12 @@ export async function GET() {
                 <lastmod>2025-01-05T16:15:00+00:00</lastmod>
                 <priority>0.8</priority>
             </url>
+
+            <url>
+                <loc>https://anotherpp.vercel.app/feedback</loc>
+                <lastmod>2025-01-22T23:15:00+00:00</lastmod>
+                <priority>0.8</priority>
+            </url>
 		</urlset>`.trim(),
         {
             headers: {

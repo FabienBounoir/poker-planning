@@ -16,7 +16,7 @@
 			return;
 		}
 
-		fetch('http://localhost:5876/feedback', {
+		fetch(`${import.meta.env.VITE_BACKEND_URL}/feedback`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
