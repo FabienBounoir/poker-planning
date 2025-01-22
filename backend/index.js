@@ -3,7 +3,7 @@ const http = require('http');
 const { createRoomId, rooms } = require('./rooms');
 const { createSocketIOServer } = require('./server');
 const cors = require('cors');
-const { newPokerPlanningCreated,  g } = require('./utils/statistics');
+const { newPokerPlanningCreated, sendFeedback } = require('./utils/statistics');
 require('dotenv').config();
 
 const app = express();
