@@ -3,7 +3,7 @@ const http = require('http');
 const { createRoomId, rooms } = require('./rooms');
 const { createSocketIOServer } = require('./server');
 const cors = require('cors');
-const { newPokerPlanningCreated } = require('./utils/statistics');
+const { newPokerPlanningCreated,  g } = require('./utils/statistics');
 require('dotenv').config();
 
 const app = express();
@@ -31,6 +31,18 @@ app.get("/room", (req, res) => {
 
     return res.status(400).json({ error: "Room doesn't exist." });
 })
+
+app.post('/feedback', (req, res) => {
+    const { email, feedback, feeling } = req.body;
+
+    if (!email || !feedback || !feeling) {
+        return res.status(400).json({ error: "Missing fields." });
+    }
+
+    sendFeedback(email, feedback, feeling)
+
+    res.json({ success: true });
+});
 
 app.post('/room', (req, res) => {
     const { type, team, hexcode, avatar, autoReveal, cards } = req.body;

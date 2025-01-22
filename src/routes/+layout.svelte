@@ -1,8 +1,10 @@
 <script>
 	import '../app.scss';
+	import '@fortawesome/fontawesome-free/css/all.min.css';
 	import { Toaster } from 'svelte-sonner';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	let { children } = $props();
 
 	onMount(() => {
@@ -11,36 +13,55 @@
 </script>
 
 <Toaster position="top-center" richColors />
-{#if PACKAGE_JSON?.version}
-	<a
-		title="View on GitHub"
-		href="https://github.com/FabienBounoir/poker-planning"
-		class="version"
-		target="_blank"
-		rel="noopener noreferrer">v{PACKAGE_JSON.version}</a
-	>
-{/if}
+<div class="menu">
+	{#if PACKAGE_JSON?.version}
+		<a
+			title="View on GitHub"
+			href="https://github.com/FabienBounoir/poker-planning"
+			class="version"
+			target="_blank"
+			rel="noopener noreferrer">v{PACKAGE_JSON.version}</a
+		>
+	{/if}
+
+	{#if $page.route.id !== '/feedback'}
+		<a title="Send a feedback" target="_blank" href="/feedback" class="version"
+			><i class="fa-solid fa-question"></i></a
+		>
+	{/if}
+</div>
 
 {@render children()}
 
 <style lang="scss">
-	.version {
+	.menu {
 		position: fixed;
 		top: 0;
 		left: 0;
 		margin: 1em 1.5em;
-		border-radius: 9999px;
-		background: linear-gradient(120deg, var(--primary-200), var(--primary-500), var(--primary-800));
-		background-size: 200% 200%;
-		animation: shimmer 5s infinite alternate;
-		padding: 0.3em 0.7em;
 		font-weight: 700;
 		color: var(--primary-950);
 		z-index: 9980;
 		cursor: pointer;
-		text-decoration: none;
 
-		&:hover {
+		display: flex;
+		gap: 0.5em;
+
+		a {
+			border-radius: 9999px;
+			background: linear-gradient(
+				120deg,
+				var(--primary-200),
+				var(--primary-500),
+				var(--primary-800)
+			);
+			background-size: 200% 200%;
+			animation: shimmer 5s infinite alternate;
+			padding: 0.3em 0.7em;
+			text-decoration: none;
+		}
+
+		a:hover {
 			animation:
 				splash 1s ease-in-out infinite,
 				shimmer 5s infinite alternate;
@@ -69,15 +90,16 @@
 	}
 
 	@media screen and (max-width: 960px) {
-		.version {
+		.menu {
 			top: 0;
 			right: 0;
 			left: auto;
+			flex-direction: row-reverse;
 		}
 	}
 
 	@media screen and (max-width: 500px) {
-		.version {
+		.menu {
 			display: none;
 		}
 	}

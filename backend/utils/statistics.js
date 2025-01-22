@@ -1,3 +1,11 @@
+const feedbackEmoji = {
+    "loving": "😍",
+    "happy": "😊",
+    "neutral": "😐",
+    "sad": "😔",
+    "angry": "😡"
+}
+
 const newPokerPlanningCreated = async (pokerPlanning) => {
     if (!process.env.STATISTIC_API_URL) return;
 
@@ -45,6 +53,7 @@ const newPokerPlanningCreated = async (pokerPlanning) => {
 }
 
 const newUserJoined = async (name, pokerPlanning, roomId) => {
+    return //disable this stats
     if (name == "ADMIN") return;
     try {
         await fetch(process.env.STATISTIC_API_URL, {
@@ -70,6 +79,7 @@ const newUserJoined = async (name, pokerPlanning, roomId) => {
 }
 
 const userLeft = async (name, pokerPlanning, roomId) => {
+    return //disable this stats
     if (name == "ADMIN") return;
     try {
         await fetch(process.env.STATISTIC_API_URL, {
@@ -142,6 +152,27 @@ const stateUpdate = async (pokerPlanning, roomId, state) => {
     }
 }
 
+const sendFeedback = async (email, feedback, feeling) => {
+    console.log("FEEDBACK", email, feedback, feeling)
+    try {
+        await fetch(process.env.FEEDBACK_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "content": `\`${feedbackEmoji[feeling] || feeling}\` | \`${email}\``,
+                "embeds": [{
+                    "description": feedback,
+                    "color": 16714250
+                }],
+            })
+        })
+    }
+    catch (error) {
+        console.error("[FEEDBACK] error: ", error);
+    }
+}
 
 const formatAvatar = (avatarUrl) => {
     if (!avatarUrl) return undefined
@@ -154,5 +185,6 @@ module.exports = {
     newUserJoined,
     roomDeleted,
     userLeft,
-    stateUpdate
+    stateUpdate,
+    sendFeedback
 }
