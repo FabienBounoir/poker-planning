@@ -77,6 +77,12 @@
 
 <div class="history-container">
 	<h1>Poker Planning History</h1>
+
+	{#if pokerHistory.length === 0}
+		<h2>No poker history found</h2>
+		<p>Start a new poker session to see it here</p>
+	{/if}
+
 	{#if !poker}
 		{#each pokerHistory as history}
 			<div class="poker-history" on:click={() => setPoker(history)}>
