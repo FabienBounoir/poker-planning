@@ -143,5 +143,12 @@
         "paragraphThankYou": "Apprezziamo il tuo tempo e impegno per aiutarci a migliorare il nostro servizio",
         "errorInvalidEmail": "Per favore, inserisci un'email valida",
         "buttonBackHome": "Torna alla home"
+    },
+    "history": {
+        "title": "Storico delle Sessioni",
+        "noHistory": "Nessuna storia di sessione di poker trovata",
+        "startSession": "Inizia una nuova sessione di poker per vederla qui",
+        "pokerFor": "Team {team}",
+        "dateFormat": "{hour}:{minute} - {day}/{month}/{year}"
     }
 }

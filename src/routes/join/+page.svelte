@@ -29,10 +29,23 @@
 	};
 
 	function handleInput(event) {
-		let value = event.target.value.replace(/[^A-Za-z0-9]/g, '');
+		const input = event.target;
+		const cursorPosition = input.selectionStart;
+		const originalValue = input.value;
+
+		let value = originalValue.replace(/[^A-Za-z0-9]/g, '');
+
 		if (value.length > 3) {
 			value = value.slice(0, 3) + '-' + value.slice(3, 6);
 		}
+
+		input.value = value;
+
+		const adjustment = value.length - originalValue.length;
+
+		const newCursorPosition = Math.min(cursorPosition + adjustment, value.length);
+		input.setSelectionRange(newCursorPosition, newCursorPosition);
+
 		roomId = value;
 	}
 </script>
@@ -65,14 +78,25 @@
 			placeholder="XXX-XXX"
 			disabled={submitting}
 		/>
-		<button aria-label="Rejoindre un poker planning" type="submit" disabled={submitting}
-			>{$_('JoinPage.joinButton')}</button
+		<button
+			class:button--loading={submitting}
+			aria-label="Rejoindre un poker planning"
+			type="submit"
+			disabled={submitting}
 		>
+			<span class="button__text">
+				{$_('JoinPage.joinButton')}
+			</span>
+		</button>
 		<a href="/create" title={$_('CreatePage.title')}>{$_('JoinPage.noCodeLink')}</a>
 	</form>
 </main>
 
 <style lang="scss">
+	button {
+		position: relative;
+	}
+
 	form {
 		display: grid;
 		gap: 0.5em;
@@ -157,7 +181,13 @@
 			border: 1px solid var(--primary-500);
 		}
 
-		span {
+		button {
+			span {
+				color: var(--primary-950);
+			}
+		}
+
+		a {
 			color: var(--primary-200);
 		}
 	}

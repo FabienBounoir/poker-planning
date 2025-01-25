@@ -253,9 +253,14 @@
 					/>
 				</div>
 			</div>
-			<button aria-label={$_('CreatePage.title')} type="submit" disabled={submitting || !team}
-				>{$_('CreatePage.createButton')}</button
+			<button
+				class:button--loading={submitting}
+				aria-label={$_('CreatePage.title')}
+				type="submit"
+				disabled={submitting || !team}
 			>
+				<span class="button__text">{$_('CreatePage.createButton')}</span>
+			</button>
 		</form>
 	</main>
 {:else if status == 'new-card'}
@@ -310,6 +315,27 @@
 {/if}
 
 <style lang="scss">
+	.button--loading .button__text {
+		visibility: hidden;
+		opacity: 0;
+	}
+
+	.button--loading::after {
+		content: '';
+		position: absolute;
+		width: 16px;
+		height: 16px;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+		border: 4px solid transparent;
+		border-top-color: #ffffff;
+		border-radius: 50%;
+		animation: button-loading-spinner 1s ease infinite;
+	}
+
 	select {
 		max-width: 300px;
 	}
@@ -417,6 +443,8 @@
 		gap: 0.5em;
 
 		> button {
+			transition: all 0.2s;
+			position: relative;
 			margin-top: 1em;
 		}
 

@@ -213,8 +213,13 @@
 				disabled={submitting}
 				maxlength="32"
 			/>
-			<button aria-label="Valider son nom" type="submit" disabled={submitting}
-				>{$_('RoomPage.validateButton')}</button
+			<button
+				class:button--loading={submitting}
+				aria-label="Validate your name"
+				type="submit"
+				disabled={submitting}
+			>
+				<span class="button__text">{$_('RoomPage.validateButton')}</span></button
 			>
 		</form>
 	</div>

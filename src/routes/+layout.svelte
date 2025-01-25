@@ -6,9 +6,18 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	let { children } = $props();
+	let hasPokerHistory = $state(false);
 
 	onMount(() => {
 		injectAnalytics();
+
+		const pokerHistory = Object.keys(window.localStorage).filter((key) =>
+			key.startsWith('PP_HISTORY')
+		);
+
+		if (pokerHistory.length) {
+			hasPokerHistory = true;
+		}
 	});
 </script>
 
@@ -21,6 +30,12 @@
 			class="version"
 			target="_blank"
 			rel="noopener noreferrer">v{PACKAGE_JSON.version}</a
+		>
+	{/if}
+
+	{#if hasPokerHistory}
+		<a title="View history" href="/pokerhistory" class="version"
+			><i class="fa-solid fa-history"></i></a
 		>
 	{/if}
 
