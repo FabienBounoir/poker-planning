@@ -79,7 +79,7 @@ const createSocketIOServer = (server, rooms) => {
                         }
 
                         let history = {
-                            story: "",
+                            story: object.data.userStory || null,
                             winner: null,
                             results: [],
                         }

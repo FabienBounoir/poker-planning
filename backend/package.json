@@ -1,6 +1,6 @@
 {
   "name": "poker-planning",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Backend for planning poker",
   "main": "index.js",
   "scripts": {
