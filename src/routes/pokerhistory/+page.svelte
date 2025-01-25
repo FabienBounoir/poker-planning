@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import { _ } from 'svelte-i18n';
 
 	/**
 	 * @typedef {Object} PokerResult
@@ -53,6 +54,9 @@
 		return sortedKeys;
 	};
 
+	/**
+	 * @param {Poker} history - The poker session to display.
+	 */
 	const setPoker = (history) => {
 		poker = history;
 		window.scrollTo(0, 0);
@@ -61,62 +65,53 @@
 
 <svelte:head>
 	<title>History - Another Planning Poker</title>
-	<!-- <meta
-		name="description"
-		content="Create a new room for your team to start a planning poker session"
-	/>
-	<meta
-		name="og:description"
-		content="Create a new room for your team to start a planning poker session"
-	/>
-	<meta
-		name="twitter:description"
-		content="Create a new room for your team to start a planning poker session"
-	/> -->
 </svelte:head>
 
 <div class="history-container">
-	<h1>Poker Planning History</h1>
+	<h1>{$_('history.title')}</h1>
 
 	{#if pokerHistory.length === 0}
-		<h2>No poker history found</h2>
-		<p>Start a new poker session to see it here</p>
+		<h2>{$_('history.noHistory')}</h2>
+		<p>{$_('history.startSession')}</p>
 	{/if}
 
 	{#if !poker}
 		{#each pokerHistory as history}
 			<div class="poker-history" on:click={() => setPoker(history)}>
-				<p>➜ Poker for {history.team}</p>
+				<p>➜ {$_('history.pokerFor', { values: { team: history.team } })}</p>
 				<span style="flex: 1"></span>
 				<p class="cards">{history?.cards?.length} <i class="fa-solid fa-clipboard-question"></i></p>
 				<p class="plays">{history?.history?.length} <i class="fa-solid fa-play"></i></p>
 				<p>
-					{`${new Date(history?.date).getHours()}`.padStart(2, '0') +
-						':' +
-						`${new Date(history?.date).getMinutes()}`.padStart(2, '0')} -
-					{`${new Date(history?.date).getDate()}`.padStart(2, '0') +
-						'/' +
-						`${new Date(history?.date).getMonth() + 1}`.padStart(2, '0') +
-						'/' +
-						new Date(history?.date).getFullYear()} <i class="fa-solid fa-calendar-days"></i>
+					{$_('history.dateFormat', {
+						values: {
+							hour: `${new Date(history?.date).getHours()}`.padStart(2, '0'),
+							minute: `${new Date(history?.date).getMinutes()}`.padStart(2, '0'),
+							day: `${new Date(history?.date).getDate()}`.padStart(2, '0'),
+							month: `${new Date(history?.date).getMonth() + 1}`.padStart(2, '0'),
+							year: new Date(history?.date).getFullYear()
+						}
+					})}
+					<i class="fa-solid fa-calendar-days"></i>
 				</p>
 			</div>
 		{/each}
 	{:else}
 		<div class="poker-history" on:click={() => (poker = null)}>
-			<p>➜ Poker for {poker.team}</p>
+			<p>➜ {$_('history.pokerFor', { values: { team: poker.team } })}</p>
 			<span style="flex: 1"></span>
 			<p class="cards">{poker?.cards?.length} <i class="fa-solid fa-clipboard-question"></i></p>
 			<p class="plays">{poker?.history?.length} <i class="fa-solid fa-play"></i></p>
 			<p>
-				{`${new Date(poker?.date).getHours()}`.padStart(2, '0') +
-					':' +
-					`${new Date(poker?.date).getMinutes()}`.padStart(2, '0')} -
-				{`${new Date(poker?.date).getDate()}`.padStart(2, '0') +
-					'/' +
-					`${new Date(poker?.date).getMonth() + 1}`.padStart(2, '0') +
-					'/' +
-					new Date(poker?.date).getFullYear()} <i class="fa-solid fa-calendar-days"></i>
+				{$_('history.dateFormat', {
+					values: {
+						hour: `${new Date(poker?.date).getHours()}`.padStart(2, '0'),
+						minute: `${new Date(poker?.date).getMinutes()}`.padStart(2, '0'),
+						day: `${new Date(poker?.date).getDate()}`.padStart(2, '0'),
+						month: `${new Date(poker?.date).getMonth() + 1}`.padStart(2, '0'),
+						year: new Date(poker?.date).getFullYear()
+					}
+				})} <i class="fa-solid fa-calendar-days"></i>
 			</p>
 		</div>
 

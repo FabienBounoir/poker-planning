@@ -143,5 +143,12 @@
         "paragraphThankYou": "We appreciate your time and effort in helping us improve our service",
         "errorInvalidEmail": "Please enter a valid email",
         "buttonBackHome": "Back to Home"
+    },
+    "history": {
+        "title": "Session History",
+        "noHistory": "No poker session history found",
+        "startSession": "Start a new poker session to see it here",
+        "pokerFor": "Team {team}",
+        "dateFormat": "{hour}:{minute} - {month}/{day}/{year}"
     }
 }
