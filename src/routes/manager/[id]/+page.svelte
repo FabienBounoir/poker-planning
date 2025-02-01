@@ -532,9 +532,17 @@
 			color: var(--primary-50);
 		}
 
-		.information {
-			p {
-				color: var(--primary-100);
+		main {
+			.information {
+				p {
+					color: var(--primary-100);
+				}
+
+				.user {
+					&.defender {
+						border: 3px solid var(--primary-600);
+					}
+				}
 			}
 		}
 	}
