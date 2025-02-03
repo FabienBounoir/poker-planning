@@ -10,6 +10,7 @@
 	import Result from '$lib/components/features/Result.svelte';
 	import Security from '$lib/components/features/Security.svelte';
 	import Estimation from '$lib/components/features/Estimation.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 </script>
 
 <svelte:head>
@@ -89,7 +90,7 @@
 
 	<Plan />
 
-	<!-- <Footer /> -->
+	<Footer />
 </main>
 
 <style lang="scss">
