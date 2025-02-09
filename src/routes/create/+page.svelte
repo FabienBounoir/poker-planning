@@ -17,7 +17,8 @@
 	let advancedSettingsObject = $state({
 		hexcode: '#FF7F00',
 		avatar: 'https://api.dicebear.com/9.x/dylan/svg',
-		autoReveal: false
+		autoReveal: false,
+		voteOnResults: false
 	});
 
 	let submitting = $state(false);
@@ -249,6 +250,13 @@
 					<Switch
 						bind:value={advancedSettingsObject.autoReveal}
 						label={$_('CreatePage.autoRevealResults')}
+						fontSize={16}
+					/>
+				</div>
+				<div class="auto-reveal-container">
+					<Switch
+						bind:value={advancedSettingsObject.voteOnResults}
+						label={$_('CreatePage.voteOnResults')}
 						fontSize={16}
 					/>
 				</div>
@@ -494,6 +502,7 @@
 					border: 3px solid transparent;
 					cursor: pointer;
 					width: 3em;
+					aspect-ratio: 1 / 1;
 					background-color: var(--primary-200);
 					transition:
 						width 0.3s ease-in-out,

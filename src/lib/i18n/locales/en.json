@@ -127,7 +127,8 @@
         "pokerPlanningColor": "Planning poker color",
         "autoRevealResults": "Auto Reveal Results",
         "cancel": "Cancel",
-        "save": "Save"
+        "save": "Save",
+        "voteOnResults": "Vote during results"
     },
     "common": {
         "pokerPlanningDoesntExist": "This planning poker does not exist.",
