@@ -4,7 +4,8 @@
 		cardSelected = $bindable(),
 		submittedLetter = $bindable(),
 		height = '20vh',
-		interact = true
+		interact = true,
+		style = ''
 	} = $props();
 </script>
 
@@ -14,7 +15,7 @@
 	class:selected={cardSelected === content}
 	class:submit={submittedLetter === content}
 	class:interact
-	style="--card-height: {height};"
+	style="--card-height: {height}; {style}"
 	on:click={() => {
 		if (cardSelected === content) {
 			cardSelected = null;

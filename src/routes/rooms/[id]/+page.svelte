@@ -268,85 +268,7 @@
 					{/if}
 				</div>
 			{/if}
-		{:else if pokerManager.state === 'result'}
-			<div class="result-container" in:fade={{ duration: 700, easing: quintInOut }}>
-				<h1>{$_('RoomPage.resultsTitle')}</h1>
 
-				{#if resultDefender}
-					{#key resultDefender}
-						<h3 transition:scale={{ delay: 2000, duration: 500, easing: quintInOut }}>
-							<div>
-								<img
-									alt="User-avatar"
-									src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
-										`?seed=${resultDefender.name}`}
-								/>
-								<span>{resultDefender.name}</span>
-							</div>
-							{$_('RoomPage.resultDefenderQuestion')}
-							<span> {resultDefender.item}</span> ?
-						</h3>
-					{/key}
-				{/if}
-
-				<div class="result">
-					{#if resultsItem}
-						{#if resultsItem.length == 1 && resultsItem?.[0]?.players?.length > 1}
-							<div
-								style="
-							position: fixed;
-							top: -50px;
-							left: 0;
-							height: 100dvh;
-							width: 100dvw;
-							display: flex;
-							justify-content: center;
-							overflow: hidden;
-							pointer-events: none;"
-							>
-								<Confetti
-									x={[-5, 5]}
-									y={[0, 0.1]}
-									delay={[500, 2000]}
-									infinite
-									duration={5000}
-									amount={200}
-									fallDistance="100dvh"
-								/>
-							</div>
-						{/if}
-
-						{#each resultsItem as { item, players, pourcentage }}
-							<div class="result-item">
-								<div class="progress-bar">
-									<div class="bar" style="right: calc(100% - {pourcentage}%);"></div>
-									<p>{item || '-'}</p>
-									<p>{pourcentage}%</p>
-								</div>
-								<div class="players-container">
-									{#each players as player}
-										<span class="player">
-											<img
-												alt="User-avatar"
-												src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
-													`?seed=${player}`}
-											/>
-											{player}
-										</span>
-									{/each}
-								</div>
-							</div>
-						{/each}
-					{:else}
-						<p class="no-vote">{$_('RoomPage.noVotesMessage')}</p>
-					{/if}
-				</div>
-			</div>
-
-			<!-- //-------------- -->
-		{/if}
-
-		{#if pokerManager.state === 'playing' || (pokerManager.state === 'result' && pokerManager.voteOnResults)}
 			<div class="flex" in:fade={{ duration: 500, easing: quintOut }}>
 				{#each pokerManager.cards as card}
 					<Card content={card} bind:cardSelected={selectedLetter} bind:submittedLetter />
@@ -363,119 +285,257 @@
 			>
 				{$_('RoomPage.voteButton', { values: { LETTER: selectedLetter } })}
 			</button>
+		{:else if pokerManager.state === 'result'}
+			<div class="results-container">
+				<div class="results" in:fade={{ duration: 700, easing: quintInOut }}>
+					<div class="header">
+						<h1>{$_('RoomPage.resultsTitle')}</h1>
+
+						{#if resultDefender}
+							{#key resultDefender}
+								<h3 transition:scale={{ delay: 2000, duration: 500, easing: quintInOut }}>
+									<div>
+										<img
+											alt="User-avatar"
+											src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
+												`?seed=${resultDefender.name}`}
+										/>
+										<span>{resultDefender.name}</span>
+									</div>
+									{$_('RoomPage.resultDefenderQuestion')}
+									<span> {resultDefender.item}</span> ?
+								</h3>
+							{/key}
+						{/if}
+					</div>
+
+					<div class="result">
+						{#if resultsItem}
+							{#if resultsItem.length == 1 && resultsItem?.[0]?.players?.length > 1}
+								<div
+									style="
+							position: fixed;
+							top: -50px;
+							left: 0;
+							height: 100dvh;
+							width: 100dvw;
+							display: flex;
+							justify-content: center;
+							overflow: hidden;
+							pointer-events: none;"
+								>
+									<Confetti
+										x={[-5, 5]}
+										y={[0, 0.1]}
+										delay={[500, 2000]}
+										infinite
+										duration={5000}
+										amount={200}
+										fallDistance="100dvh"
+									/>
+								</div>
+							{/if}
+
+							{#each resultsItem as { item, players, pourcentage }}
+								<div class="result-item">
+									<div class="progress-bar">
+										<div class="bar" style="right: calc(100% - {pourcentage}%);"></div>
+										<p>{item || '-'}</p>
+										<p>{pourcentage}%</p>
+									</div>
+									<div class="players-container">
+										{#each players as player}
+											<span class="player">
+												<img
+													alt="User-avatar"
+													src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
+														`?seed=${player}`}
+												/>
+												{player}
+											</span>
+										{/each}
+									</div>
+								</div>
+							{/each}
+						{:else}
+							<p class="no-vote">{$_('RoomPage.noVotesMessage')}</p>
+						{/if}
+					</div>
+				</div>
+
+				<!-- //-------------- -->
+
+				{#if pokerManager.voteOnResults}
+					<div class="cards" in:fade={{ duration: 500, easing: quintOut }}>
+						{#each pokerManager.cards as card}
+							<Card
+								height={'12dvh'}
+								style={'aspect-ratio: 4/2'}
+								content={card}
+								bind:cardSelected={selectedLetter}
+								bind:submittedLetter
+							/>
+						{/each}
+					</div>
+
+					<!-- <button
+					aria-label="Send vote"
+					class:hidden={selectedLetter === null}
+					disabled={submittedLetter != null && selectedLetter == submittedLetter}
+					on:click={() => {
+						sendVote();
+					}}
+				>
+					{$_('RoomPage.voteButton', { values: { LETTER: selectedLetter } })}
+				</button> -->
+				{/if}
+			</div>
 		{/if}
 	</main>
 {/if}
 
 <style lang="scss">
-	.result-container {
+	.results-container {
 		display: flex;
-		flex-direction: column;
-		gap: 3em;
-		justify-content: center;
+		max-width: 100dvw;
+		max-height: 100dvh;
+		overflow: hidden;
+
+		width: 100dvw;
 		align-items: center;
-		padding: 2em 0;
+		justify-content: space-evenly;
 
-		.no-vote {
-			font-size: 1.5em;
-			font-weight: 800;
-			color: var(--primary-600);
+		.cards {
+			display: flex;
+			flex-wrap: nowrap;
+			justify-content: center;
+			flex-direction: column;
+			gap: 1em;
 		}
 
-		> h1 {
-			font-size: 2em;
-			color: var(--primary-800);
-			font-weight: 800;
-		}
-
-		> h3 {
-			font-size: 2em;
-
-			& > div {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-
-			img {
-				width: 40px;
-				height: 40px;
-				margin-right: 12px;
-				border-radius: 100%;
-				border: 2px solid var(--primary-800);
-			}
-
-			span {
-				font-weight: 600;
-				color: var(--primary-700);
-			}
-		}
-
-		.result {
-			gap: 5dvh;
+		.results {
 			display: flex;
 			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			gap: 1em;
 
-			.result-item {
-				border: 3px solid var(--primary-600);
-				padding: 0.5em;
-				border-radius: calc(20px + 0.5em);
+			.header {
 				display: flex;
+				align-items: center;
 				flex-direction: column;
-				gap: 0.3em;
-				min-width: 98%;
-				max-width: 98%;
+				height: 20dvh;
+				justify-content: space-evenly;
 
-				.progress-bar {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					color: var(--primary-900);
-					background-color: var(--primary-200);
-					margin-bottom: 0.3em;
-					border-radius: 20px;
+				> h3 {
+					font-size: 2em;
 
-					padding: 0.5em 1em;
-					position: relative;
-					overflow: hidden;
-
-					p {
-						color: var(--primary-900);
-						z-index: 3;
-
-						&:first-of-type {
-							font-weight: 800;
-						}
+					& > div {
+						display: flex;
+						align-items: center;
+						justify-content: center;
 					}
 
-					.bar {
-						border-radius: 99999px;
-						background-color: var(--primary-600);
-						position: absolute;
-						top: 0;
-						bottom: 0;
-						left: 0;
+					img {
+						width: 40px;
+						height: 40px;
+						margin-right: 12px;
+						border-radius: 100%;
+						border: 2px solid var(--primary-800);
+					}
+
+					span {
+						font-weight: 600;
+						color: var(--primary-700);
 					}
 				}
 
-				.players-container {
-					display: flex;
-					column-gap: 1em;
-					row-gap: 0.3em;
-					flex-direction: row;
-					flex-wrap: wrap;
-					align-items: center;
-					justify-content: center;
-					span.player {
-						display: flex;
-						gap: 0.3em;
-						align-items: center;
+				> h1 {
+					font-size: 2em;
+					color: var(--primary-800);
+					font-weight: 800;
+				}
+			}
 
-						img {
-							height: 2em;
+			.result {
+				margin-top: 5dvh;
+				max-height: 75dvh;
+				overflow: auto;
+				padding: 1em 1em 3em 1em;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+
+			.no-vote {
+				font-size: 1.5em;
+				font-weight: 800;
+				color: var(--primary-600);
+			}
+
+			.result {
+				display: flex;
+				flex-direction: column;
+				// align-items: center;
+				// justify-content: center;
+				gap: 1em;
+
+				.result-item {
+					border: 3px solid var(--primary-600);
+					padding: 0.5em;
+					border-radius: calc(20px + 0.5em);
+					display: flex;
+					flex-direction: column;
+					gap: 0.3em;
+					min-width: 98%;
+					max-width: 98%;
+
+					.progress-bar {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						color: var(--primary-900);
+						background-color: var(--primary-200);
+						margin-bottom: 0.3em;
+						border-radius: 20px;
+
+						padding: 0.5em 1em;
+						position: relative;
+						overflow: hidden;
+
+						p {
+							color: var(--primary-900);
+							z-index: 3;
+
+							&:first-of-type {
+								font-weight: 800;
+							}
+						}
+
+						.bar {
+							border-radius: 99999px;
+							background-color: var(--primary-600);
+							position: absolute;
+							top: 0;
+							bottom: 0;
+							left: 0;
+						}
+					}
+
+					.players-container {
+						display: flex;
+						column-gap: 1em;
+						row-gap: 0.3em;
+						flex-direction: row;
+						flex-wrap: wrap;
+						align-items: center;
+						justify-content: center;
+						span.player {
+							display: flex;
+							gap: 0.3em;
+							align-items: center;
+
+							img {
+								height: 2em;
+								border-radius: 100%;
+							}
 						}
 					}
 				}
@@ -590,6 +650,11 @@
 			gap: 2vw;
 			flex-wrap: wrap;
 			justify-content: center;
+
+			&.vertical {
+				flex-direction: column;
+				align-items: center;
+			}
 		}
 
 		.hidden {
