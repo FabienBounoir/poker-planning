@@ -374,6 +374,9 @@
 								content={card}
 								bind:cardSelected={selectedLetter}
 								bind:submittedLetter
+								clickHandler={() => {
+									sendVote();
+								}}
 							/>
 						{/each}
 					</div>
@@ -421,7 +424,7 @@
 				display: flex;
 				align-items: center;
 				flex-direction: column;
-				height: 20dvh;
+				min-height: 20dvh;
 				justify-content: space-evenly;
 
 				> h3 {
@@ -709,7 +712,7 @@
 	}
 
 	@media (prefers-color-scheme: dark) {
-		.result-container {
+		.results-container {
 			.result-item {
 				border-color: var(--primary-800);
 				background-color: var(--primary-800);
@@ -744,20 +747,23 @@
 			cursor: not-allowed;
 		}
 
-		.result-container {
-			h1 {
-				color: var(--primary-300);
-			}
+		.results-container {
+			.results {
+				.header {
+					h1 {
+						color: var(--primary-300);
+					}
+					h3 {
+						color: var(--primary-100);
 
-			h3 {
-				color: var(--primary-200);
+						span {
+							color: var(--primary-500);
+						}
 
-				span {
-					color: var(--primary-500);
-				}
-
-				img {
-					border-color: var(--primary-500);
+						img {
+							border-color: var(--primary-500);
+						}
+					}
 				}
 			}
 		}
@@ -766,7 +772,7 @@
 			.result-item {
 				border-color: var(--primary-500) !important;
 				background-color: var(--primary-800) !important;
-				color: var(--primary-200) !important;
+				color: var(--primary-100) !important;
 
 				.pourcentage {
 					color: var(--primary-200) !important;
@@ -774,7 +780,7 @@
 
 				h1,
 				p {
-					color: var(--primary-300) !important;
+					color: var(--primary-900) !important;
 				}
 			}
 		}

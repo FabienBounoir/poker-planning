@@ -5,7 +5,8 @@
 		submittedLetter = $bindable(),
 		height = '20vh',
 		interact = true,
-		style = ''
+		style = '',
+		clickHandler = null
 	} = $props();
 </script>
 
@@ -21,6 +22,10 @@
 			cardSelected = null;
 		} else {
 			cardSelected = content;
+		}
+
+		if (clickHandler) {
+			clickHandler();
 		}
 	}}
 >
