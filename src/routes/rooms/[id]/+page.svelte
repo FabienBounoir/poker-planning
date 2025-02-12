@@ -5,12 +5,13 @@
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 	import { onDestroy, onMount } from 'svelte';
-	import { quintInOut, quintOut } from 'svelte/easing';
+	import { quintInOut, quintOut, cubicOut } from 'svelte/easing';
 	import { Confetti } from 'svelte-confetti';
 	import myshades from '$lib/myshades';
 	import type { Socket } from 'socket.io-client';
 	import ioClient from 'socket.io-client';
 	import { _ } from 'svelte-i18n';
+	import ProgressBar from '$lib/components/ProgressBar.svelte';
 
 	let roomId = $page.params.id;
 	let io: Socket;
@@ -336,13 +337,9 @@
 								</div>
 							{/if}
 
-							{#each resultsItem as { item, players, pourcentage }}
+							{#each resultsItem as { item, players, pourcentage }, i}
 								<div class="result-item">
-									<div class="progress-bar">
-										<div class="bar" style="right: calc(100% - {pourcentage}%);"></div>
-										<p>{item || '-'}</p>
-										<p>{pourcentage}%</p>
-									</div>
+									<ProgressBar {pourcentage} {item} delay={i} />
 									<div class="players-container">
 										{#each players as player}
 											<span class="player">
@@ -489,38 +486,6 @@
 					gap: 0.3em;
 					min-width: 98%;
 					max-width: 98%;
-
-					.progress-bar {
-						display: flex;
-						justify-content: space-between;
-						align-items: center;
-						color: var(--primary-900);
-						background-color: var(--primary-200);
-						margin-bottom: 0.3em;
-						border-radius: 20px;
-
-						padding: 0.5em 1em;
-						position: relative;
-						overflow: hidden;
-
-						p {
-							color: var(--primary-900);
-							z-index: 3;
-
-							&:first-of-type {
-								font-weight: 800;
-							}
-						}
-
-						.bar {
-							border-radius: 99999px;
-							background-color: var(--primary-600);
-							position: absolute;
-							top: 0;
-							bottom: 0;
-							left: 0;
-						}
-					}
 
 					.players-container {
 						display: flex;
