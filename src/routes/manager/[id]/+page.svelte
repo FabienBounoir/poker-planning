@@ -333,7 +333,8 @@
 			display: flex;
 			flex-direction: row;
 			flex-wrap: wrap;
-			gap: 2em;
+			column-gap: 1.5em;
+			row-gap: 1em;
 			margin-top: 2em;
 
 			span {
