@@ -9,7 +9,7 @@
 		easing: cubicOut
 	});
 
-	progress.set(pourcentage);
+	progress.set(Number(pourcentage || 0));
 </script>
 
 <div class="progress-bar">
