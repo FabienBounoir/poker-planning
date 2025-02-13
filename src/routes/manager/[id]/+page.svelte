@@ -424,7 +424,20 @@
 				box-sizing: border-box;
 
 				&.defender {
-					border: 3px solid var(--primary-800);
+					box-shadow: 0 0 5px var(--primary-800);
+					animation: breathing 2s infinite ease-in-out;
+
+					@keyframes breathing {
+						0% {
+							box-shadow: 0 0 0 5px var(--primary-800);
+						}
+						50% {
+							box-shadow: 0 0 0 1px var(--primary-800);
+						}
+						100% {
+							box-shadow: 0 0 0 5px var(--primary-800);
+						}
+					}
 				}
 
 				.profile {
@@ -536,6 +549,24 @@
 		.information {
 			p {
 				color: var(--primary-100);
+			}
+
+			.user {
+				&.defender {
+					box-shadow: 0 0 5px var(--primary-600);
+
+					@keyframes breathing {
+						0% {
+							box-shadow: 0 0 0 5px var(--primary-600);
+						}
+						50% {
+							box-shadow: 0 0 0 1px var(--primary-600);
+						}
+						100% {
+							box-shadow: 0 0 0 5px var(--primary-600);
+						}
+					}
+				}
 			}
 		}
 	}

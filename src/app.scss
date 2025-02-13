@@ -169,4 +169,10 @@ img {
     .button--loading::after {
         border-top-color: var(--primary-50);
     }
+
+    // *::selection {
+    //     background-color: var(--primary-700);
+    //     color: var(--on-primary-50);
+    // }
+
 }

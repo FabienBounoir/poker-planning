@@ -756,8 +756,8 @@
 			}
 
 			input {
-				color: var(--primary-950);
-				background-color: var(--primary-300);
+				background-color: var(--primary-800);
+				color: var(--primary-200);
 				border: 1px solid var(--primary-500);
 			}
 		}
