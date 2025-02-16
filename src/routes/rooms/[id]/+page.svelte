@@ -5,7 +5,7 @@
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 	import { onDestroy, onMount } from 'svelte';
-	import { quintInOut, quintOut, cubicOut } from 'svelte/easing';
+	import { quintInOut, quintOut } from 'svelte/easing';
 	import { Confetti } from 'svelte-confetti';
 	import myshades from '$lib/myshades';
 	import type { Socket } from 'socket.io-client';
@@ -17,6 +17,7 @@
 	let io: Socket;
 
 	let pokerManager = $state(null);
+	let status = $state('waiting');
 	let hexcode = $state('');
 
 	let timeout: number | null;
@@ -34,9 +35,23 @@
 	let existingPositions: { top: number; left: number }[] = [];
 
 	onMount(() => {
-		if (window.localStorage.getItem('username')) {
-			username = window.localStorage.getItem('username');
+		try {
+			if (window.localStorage.getItem('username')) {
+				username = window.localStorage.getItem('username');
+			}
+
+			const url = new URL(window.location.href);
+			const hexcodeParam = url.searchParams.get('hexcode');
+			if (hexcodeParam) {
+				myshades({
+					primary: hexcodeParam
+				});
+			}
+		} catch (e) {
+			console.error('Error in RoomPage', e);
 		}
+
+		status = 'init';
 	});
 
 	onDestroy(() => {
@@ -68,7 +83,6 @@
 			});
 
 			io.on('game-update', (payload) => {
-				console.log('Payload', payload);
 				resultsItem = null;
 				resultDefender = null;
 
@@ -94,7 +108,6 @@
 			});
 
 			io.on('success', (payload) => {
-				console.log('Payload success', payload);
 				if (payload?.success) {
 					if (timeout) {
 						clearTimeout(timeout);
@@ -199,8 +212,8 @@
 	<meta name="theme-color" content={pokerManager?.hexcode || '#ff910a'} />
 </svelte:head>
 
-{#if pokerManager == null}
-	<div class="init-page">
+{#if status == 'init' && pokerManager == null}
+	<div class="init-page" in:scale={{ duration: 300, easing: quintOut }}>
 		<h1>
 			{$_('RoomPage.welcome')} <span class="rotateAnimation">👋</span> <br />{$_(
 				'RoomPage.whatIsYourName'
@@ -224,7 +237,7 @@
 			>
 		</form>
 	</div>
-{:else}
+{:else if pokerManager != null}
 	<main>
 		<form on:submit|preventDefault={sendHexa} style="display: none;">
 			<input type="text" bind:value={hexcode} placeholder="#FF00EE" disabled={submitting} />
@@ -294,7 +307,13 @@
 
 						{#if resultDefender}
 							{#key resultDefender}
-								<h3 transition:scale={{ delay: 2000, duration: 500, easing: quintInOut }}>
+								<h3
+									in:scale={{
+										delay: pokerManager?.voteOnResults ? 200 : 2000,
+										duration: 500,
+										easing: quintInOut
+									}}
+								>
 									<div>
 										<img
 											alt="User-avatar"
@@ -362,7 +381,7 @@
 
 				<!-- //-------------- -->
 
-				{#if pokerManager.voteOnResults}
+				{#if pokerManager?.voteOnResults}
 					<div class="cards" in:fade={{ duration: 500, easing: quintOut }}>
 						{#each pokerManager.cards as card}
 							<Card
@@ -377,17 +396,6 @@
 							/>
 						{/each}
 					</div>
-
-					<!-- <button
-					aria-label="Send vote"
-					class:hidden={selectedLetter === null}
-					disabled={submittedLetter != null && selectedLetter == submittedLetter}
-					on:click={() => {
-						sendVote();
-					}}
-				>
-					{$_('RoomPage.voteButton', { values: { LETTER: selectedLetter } })}
-				</button> -->
 				{/if}
 			</div>
 		{/if}
@@ -408,9 +416,15 @@
 		.cards {
 			display: flex;
 			flex-wrap: nowrap;
-			justify-content: center;
 			flex-direction: column;
-			gap: 1em;
+			row-gap: 1em;
+			padding: 0 10px;
+
+			height: 80vh;
+			overflow-y: auto;
+
+			scroll-snap-type: y mandatory;
+			scroll-behavior: smooth;
 		}
 
 		.results {
@@ -462,6 +476,7 @@
 				display: flex;
 				flex-direction: column;
 				align-items: center;
+				scroll-behavior: smooth;
 			}
 
 			.no-vote {
@@ -473,8 +488,6 @@
 			.result {
 				display: flex;
 				flex-direction: column;
-				// align-items: center;
-				// justify-content: center;
 				gap: 1em;
 
 				.result-item {

@@ -1,6 +1,6 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
-	let { code, url = 'https://coucou.com' } = $props();
+	let { code, url = 'https://bento.me/fabienbounoir', hexcode } = $props();
 	import { _ } from 'svelte-i18n';
 
 	let displayText = $state(code);
@@ -8,7 +8,7 @@
 
 	const displayCopyToClipboard = async () => {
 		try {
-			await navigator.clipboard.writeText(url);
+			await navigator.clipboard.writeText(urlFormatted());
 			displayText = $_('ManagerPage.copied');
 
 			setTimeout(() => {
@@ -17,6 +17,16 @@
 		} catch (error) {
 			console.error('Failed to copy!', error);
 		}
+	};
+
+	const urlFormatted = () => {
+		const uri = new URL(url);
+
+		if (hexcode) {
+			uri.searchParams.append('hexcode', hexcode);
+		}
+
+		return uri.href;
 	};
 
 	/**
@@ -51,7 +61,7 @@
 		<img
 			alt="QR Code for joining the room"
 			in:scale
-			src={`https://api.qrserver.com/v1/create-qr-code/?size=700x700&bgcolor=${getCssColor('--primary-200')}&margin=50&color=${getCssColor('--primary-950')}&data=${encodeURIComponent(url)}`}
+			src={`https://api.qrserver.com/v1/create-qr-code/?size=700x700&bgcolor=${getCssColor('--primary-200')}&margin=50&color=${getCssColor('--primary-950')}&data=${encodeURIComponent(urlFormatted())}`}
 		/>
 		<h3 in:scale>{displayText}</h3>
 	</div>
