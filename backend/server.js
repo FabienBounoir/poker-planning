@@ -26,7 +26,9 @@ const createSocketIOServer = (server, rooms) => {
                     color: '#FF7F00',
                     avatar: 'https://api.dicebear.com/9.x/dylan/svg',
                     autoReveal: false,
+                    voteOnResults: false,
                     date: new Date().toISOString(),
+                    firstVoter: null,
                 },
                 history: [],
                 timeout: null,
@@ -71,56 +73,7 @@ const createSocketIOServer = (server, rooms) => {
                     stateUpdate(element, roomId, state);
 
                     if (state == "result") {
-                        let resultsByItem = new Map();
-                        let totalPlayers = 0;
-
-                        if (!object.history) {
-                            object.history = [];
-                        }
-
-                        let history = {
-                            story: object?.data?.userStory || null,
-                            winner: null,
-                            results: [],
-                        }
-
-                        object.players.forEach((player) => {
-                            const selectedCard = player?.selectedCard?.toUpperCase?.();
-                            if (!player.manager && selectedCard) {
-                                totalPlayers++;
-                                if (!resultsByItem.has(selectedCard)) {
-                                    resultsByItem.set(selectedCard, []);
-                                }
-                                resultsByItem.get(selectedCard).push(player.name);
-
-                                history.results.push({ name: player.name, card: selectedCard });
-                            }
-                        });
-
-                        if (resultsByItem.size > 0) {
-                            try {
-                                const result = Array.from(resultsByItem).map(([item, players]) => ({
-                                    item,
-                                    players,
-                                    pourcentage: Math.round((players.length / totalPlayers) * 100).toFixed(0)
-                                })).sort((a, b) => b.players.length - a.players.length);
-
-                                object.data.result = element.result = result;
-
-                                history.winner = result[0].item;
-
-                                if (resultsByItem.size > 1) {
-                                    const lastItem = result[result.length - 1];
-                                    const userSelected = lastItem.players[Math.floor(Math.random() * lastItem.players.length)];
-                                    object.data.defender = element.defender = { name: userSelected, item: lastItem.item };
-                                }
-                            } catch (e) {
-                                console.error("ERROR WHEN PROCESSING RESULT", e);
-                            }
-                        }
-
-                        object.history.push(history);
-                        element.history = object.history;
+                        processResultState(this, element, roomId);
                     } else {
                         object.data.result = object.data.defender = null;
                     }
@@ -128,8 +81,9 @@ const createSocketIOServer = (server, rooms) => {
                     object.emit('game-update', element);
                 },
                 resetChoose() {
+                    object.data.firstVoter = null;
                     object.players.forEach((player) => {
-                        object.players.set(player.socket.id, { ...player, selectedCard: null });
+                        object.players.set(player.socket.id, { ...player, selectedCard: null, firstVoter: false });
                     });
                     this.emitPlayers();
                 },
@@ -156,7 +110,7 @@ const createSocketIOServer = (server, rooms) => {
                         console.log("Timeout to reveal result");
                         this.data.state = "result";
                         this.emitUpdateGame("result");
-                    }, 3000);
+                    }, 2000);
                 }
             };
 
@@ -168,6 +122,61 @@ const createSocketIOServer = (server, rooms) => {
         }
 
         return room;
+    }
+
+    function processResultState(object, element, roomId) {
+        let resultsByItem = new Map();
+        let totalPlayers = 0;
+
+        if (!object.history) {
+            object.history = [];
+        }
+
+        let history = {
+            story: object?.data?.userStory || null,
+            winner: null,
+            results: [],
+        };
+
+        object.players.forEach((player) => {
+            const selectedCard = player?.selectedCard?.toUpperCase?.();
+            if (!player.manager && selectedCard) {
+                totalPlayers++;
+                if (!resultsByItem.has(selectedCard)) {
+                    resultsByItem.set(selectedCard, []);
+                }
+                resultsByItem.get(selectedCard).push(player.name);
+
+                history.results.push({ name: player.name, card: selectedCard });
+            }
+        });
+
+        if (resultsByItem.size > 0) {
+            try {
+                const result = Array.from(resultsByItem).map(([item, players]) => ({
+                    item,
+                    players,
+                    pourcentage: Math.round((players.length / totalPlayers) * 100).toFixed(0)
+                })).sort((a, b) => b.players.length - a.players.length);
+
+                object.data.result = element.result = result;
+                history.winner = result[0].item;
+
+                if (resultsByItem.size > 1) {
+                    const lastItem = result[result.length - 1];
+                    const userSelected = lastItem.players[Math.floor(Math.random() * lastItem.players.length)];
+                    object.data.defender = element.defender = { name: userSelected, item: lastItem.item };
+                }
+                else {
+                    object.data.defender = element.defender = null;
+                }
+            } catch (e) {
+                console.error("ERROR WHEN PROCESSING RESULT", e);
+            }
+        }
+
+        object.history.push(history);
+        element.history = object.history;
     }
 
     function formatName(name) {
@@ -252,11 +261,21 @@ const createSocketIOServer = (server, rooms) => {
                         const player = room.players.get(socket.id);
                         if (!room?.data?.cards?.includes?.(data.card)) return;
 
+                        if (room.data.firstVoter === null) {
+                            room.data.firstVoter = player.name;
+                            player.firstVoter = true;
+                        }
+
                         player.selectedCard = data.card;
                         room.players.set(socket.id, player);
                         room.emitPlayers(true);
                         socket.emit("success", { success: true });
                         room.checkAllPlayersSelected();
+
+                        if (room.data.state === "result" && room?.data?.voteOnResults) {
+                            room.emitUpdateGame("result");
+                        }
+
                         break;
                     }
                     case 'state': {
