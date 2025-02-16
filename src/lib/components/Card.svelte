@@ -18,7 +18,7 @@
 	class:interact
 	style="--card-height: {height}; {style}"
 	on:click={() => {
-		if (cardSelected === content) {
+		if (cardSelected === content && !clickHandler) {
 			cardSelected = null;
 		} else {
 			cardSelected = content;
@@ -34,6 +34,8 @@
 
 <style lang="scss">
 	.card {
+		scroll-snap-align: start;
+
 		user-select: none;
 		height: var(--card-height, 20dvh);
 		aspect-ratio: 2.5 / 4;

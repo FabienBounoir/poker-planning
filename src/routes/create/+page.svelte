@@ -12,7 +12,7 @@
 	let type = $state();
 	let team = $state('');
 
-	let status = $state('create');
+	let status = $state('init');
 
 	let advancedSettingsObject = $state({
 		hexcode: '#FF7F00',
@@ -54,8 +54,6 @@
 			}
 
 			if (type.startsWith('CUSTOM-')) {
-				console.log('custom', type);
-				console.log('choices', choices);
 				bodyBuilder = { ...bodyBuilder, cards: choices.find((choice) => choice.id === type).cards };
 			}
 
@@ -116,6 +114,8 @@
 
 		type = window.localStorage.getItem('type') || 'TSHIRT';
 		team = window.localStorage.getItem('team') || '';
+
+		status == 'create';
 	});
 
 	const addNewDeck = () => {
