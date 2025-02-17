@@ -14,10 +14,18 @@
 		const target = event.target;
 		const state = target.getAttribute('aria-checked');
 
+		updateState(state);
+	}
+
+	function updateState(state) {
 		checked = state === 'true' ? false : true;
 
 		value = state === 'false';
 	}
+
+	$effect(() => {
+		updateState(value ? 'false' : 'true');
+	});
 </script>
 
 <div class="s slider" style="font-size:{fontSize}px">

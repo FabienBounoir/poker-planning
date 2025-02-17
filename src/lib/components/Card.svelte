@@ -4,7 +4,9 @@
 		cardSelected = $bindable(),
 		submittedLetter = $bindable(),
 		height = '20vh',
-		interact = true
+		interact = true,
+		style = '',
+		clickHandler = null
 	} = $props();
 </script>
 
@@ -14,12 +16,16 @@
 	class:selected={cardSelected === content}
 	class:submit={submittedLetter === content}
 	class:interact
-	style="--card-height: {height};"
+	style="--card-height: {height}; {style}"
 	on:click={() => {
-		if (cardSelected === content) {
+		if (cardSelected === content && !clickHandler) {
 			cardSelected = null;
 		} else {
 			cardSelected = content;
+		}
+
+		if (clickHandler) {
+			clickHandler();
 		}
 	}}
 >
@@ -28,6 +34,8 @@
 
 <style lang="scss">
 	.card {
+		scroll-snap-align: start;
+
 		user-select: none;
 		height: var(--card-height, 20dvh);
 		aspect-ratio: 2.5 / 4;

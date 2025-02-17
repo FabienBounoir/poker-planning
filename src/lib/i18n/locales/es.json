@@ -127,7 +127,8 @@
         "pokerPlanningColor": "Color del poker planning",
         "autoRevealResults": "Revelar resultados automáticamente",
         "cancel": "Cancelar",
-        "save": "Guardar"
+        "save": "Guardar",
+        "voteOnResults": "Votar durante resultados"
     },
     "common": {
         "pokerPlanningDoesntExist": "Este poker planning no existe.",

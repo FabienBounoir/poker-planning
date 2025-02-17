@@ -11,11 +11,13 @@
 	import type { Socket } from 'socket.io-client';
 	import ioClient from 'socket.io-client';
 	import { _ } from 'svelte-i18n';
+	import ProgressBar from '$lib/components/ProgressBar.svelte';
 
 	let roomId = $page.params.id;
 	let io: Socket;
 
 	let pokerManager = $state(null);
+	let status = $state('waiting');
 	let hexcode = $state('');
 
 	let timeout: number | null;
@@ -33,9 +35,23 @@
 	let existingPositions: { top: number; left: number }[] = [];
 
 	onMount(() => {
-		if (window.localStorage.getItem('username')) {
-			username = window.localStorage.getItem('username');
+		try {
+			if (window.localStorage.getItem('username')) {
+				username = window.localStorage.getItem('username');
+			}
+
+			const url = new URL(window.location.href);
+			const hexcodeParam = url.searchParams.get('hexcode');
+			if (hexcodeParam) {
+				myshades({
+					primary: hexcodeParam
+				});
+			}
+		} catch (e) {
+			console.error('Error in RoomPage', e);
 		}
+
+		status = 'init';
 	});
 
 	onDestroy(() => {
@@ -67,7 +83,6 @@
 			});
 
 			io.on('game-update', (payload) => {
-				console.log('Payload', payload);
 				resultsItem = null;
 				resultDefender = null;
 
@@ -93,7 +108,6 @@
 			});
 
 			io.on('success', (payload) => {
-				console.log('Payload success', payload);
 				if (payload?.success) {
 					if (timeout) {
 						clearTimeout(timeout);
@@ -198,8 +212,8 @@
 	<meta name="theme-color" content={pokerManager?.hexcode || '#ff910a'} />
 </svelte:head>
 
-{#if pokerManager == null}
-	<div class="init-page">
+{#if status == 'init' && pokerManager == null}
+	<div class="init-page" in:scale={{ duration: 300, easing: quintOut }}>
 		<h1>
 			{$_('RoomPage.welcome')} <span class="rotateAnimation">👋</span> <br />{$_(
 				'RoomPage.whatIsYourName'
@@ -223,7 +237,7 @@
 			>
 		</form>
 	</div>
-{:else}
+{:else if pokerManager != null}
 	<main>
 		<form on:submit|preventDefault={sendHexa} style="display: none;">
 			<input type="text" bind:value={hexcode} placeholder="#FF00EE" disabled={submitting} />
@@ -286,31 +300,40 @@
 				{$_('RoomPage.voteButton', { values: { LETTER: selectedLetter } })}
 			</button>
 		{:else if pokerManager.state === 'result'}
-			<div class="result-container" in:fade={{ duration: 700, easing: quintInOut }}>
-				<h1>{$_('RoomPage.resultsTitle')}</h1>
+			<div class="results-container">
+				<div class="results" in:fade={{ duration: 700, easing: quintInOut }}>
+					<div class="header">
+						<h1>{$_('RoomPage.resultsTitle')}</h1>
 
-				{#if resultDefender}
-					{#key resultDefender}
-						<h3 transition:scale={{ delay: 2000, duration: 500, easing: quintInOut }}>
-							<div>
-								<img
-									alt="User-avatar"
-									src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
-										`?seed=${resultDefender.name}`}
-								/>
-								<span>{resultDefender.name}</span>
-							</div>
-							{$_('RoomPage.resultDefenderQuestion')}
-							<span> {resultDefender.item}</span> ?
-						</h3>
-					{/key}
-				{/if}
+						{#if resultDefender}
+							{#key resultDefender}
+								<h3
+									in:scale={{
+										delay: pokerManager?.voteOnResults ? 200 : 2000,
+										duration: 500,
+										easing: quintInOut
+									}}
+								>
+									<div>
+										<img
+											alt="User-avatar"
+											src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
+												`?seed=${resultDefender.name}`}
+										/>
+										<span>{resultDefender.name}</span>
+									</div>
+									{$_('RoomPage.resultDefenderQuestion')}
+									<span> {resultDefender.item}</span> ?
+								</h3>
+							{/key}
+						{/if}
+					</div>
 
-				<div class="result" style="--item:{resultsItem?.length > 4 ? 4 : resultsItem?.length}">
-					{#if resultsItem}
-						{#if resultsItem.length == 1 && resultsItem?.[0]?.players?.length > 1}
-							<div
-								style="
+					<div class="result">
+						{#if resultsItem}
+							{#if resultsItem.length == 1 && resultsItem?.[0]?.players?.length > 1}
+								<div
+									style="
 							position: fixed;
 							top: -50px;
 							left: 0;
@@ -320,116 +343,182 @@
 							justify-content: center;
 							overflow: hidden;
 							pointer-events: none;"
-							>
-								<Confetti
-									x={[-5, 5]}
-									y={[0, 0.1]}
-									delay={[500, 2000]}
-									infinite
-									duration={5000}
-									amount={200}
-									fallDistance="100dvh"
-								/>
-							</div>
-						{/if}
+								>
+									<Confetti
+										x={[-5, 5]}
+										y={[0, 0.1]}
+										delay={[500, 2000]}
+										infinite
+										duration={5000}
+										amount={200}
+										fallDistance="100dvh"
+									/>
+								</div>
+							{/if}
 
-						{#each resultsItem as { item, players, pourcentage }}
-							<div class="result-item">
-								<p class="pourcentage">{pourcentage}%</p>
-								<h1>{item}</h1>
-								{#if players?.length}
-									{#each players as player}
-										<p>{player}</p>
-									{/each}
-								{:else}
-									<p>{$_('RoomPage.noVote')}</p>
-								{/if}
-							</div>
-						{/each}
-					{:else}
-						<p class="no-vote">{$_('RoomPage.noVotesMessage')}</p>
-					{/if}
+							{#each resultsItem as { item, players, pourcentage }, i}
+								<div class="result-item">
+									<ProgressBar {pourcentage} {item} delay={i} />
+									<div class="players-container">
+										{#each players as player}
+											<span class="player">
+												<img
+													alt="User-avatar"
+													src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
+														`?seed=${player}`}
+												/>
+												{player}
+											</span>
+										{/each}
+									</div>
+								</div>
+							{/each}
+						{:else}
+							<p class="no-vote">{$_('RoomPage.noVotesMessage')}</p>
+						{/if}
+					</div>
 				</div>
+
+				<!-- //-------------- -->
+
+				{#if pokerManager?.voteOnResults}
+					<div class="cards" in:fade={{ duration: 500, easing: quintOut }}>
+						{#each pokerManager.cards as card}
+							<Card
+								height={'12dvh'}
+								style={'aspect-ratio: 4/2'}
+								content={card}
+								bind:cardSelected={selectedLetter}
+								bind:submittedLetter
+								clickHandler={() => {
+									sendVote();
+								}}
+							/>
+						{/each}
+					</div>
+				{/if}
 			</div>
 		{/if}
 	</main>
 {/if}
 
 <style lang="scss">
-	.result-container {
+	.results-container {
 		display: flex;
-		flex-direction: column;
-		gap: 3em;
-		justify-content: center;
+		max-width: 100dvw;
+		max-height: 100dvh;
+		overflow: hidden;
+
+		width: 100dvw;
 		align-items: center;
-		padding: 2em 0;
+		justify-content: space-evenly;
 
-		.no-vote {
-			font-size: 1.5em;
-			font-weight: 800;
-			color: var(--primary-600);
+		.cards {
+			display: flex;
+			flex-wrap: nowrap;
+			flex-direction: column;
+			row-gap: 1em;
+			padding: 0 10px;
+
+			height: 80vh;
+			overflow-y: auto;
+
+			scroll-snap-type: y mandatory;
+			scroll-behavior: smooth;
 		}
 
-		> h1 {
-			font-size: 1.2em;
-			color: var(--primary-800);
-		}
+		.results {
+			display: flex;
+			flex-direction: column;
 
-		> h3 {
-			font-size: 2em;
-
-			& > div {
+			.header {
 				display: flex;
 				align-items: center;
-				justify-content: center;
+				flex-direction: column;
+				min-height: 20dvh;
+				justify-content: space-evenly;
+
+				> h3 {
+					font-size: 2em;
+
+					& > div {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+					}
+
+					img {
+						width: 40px;
+						height: 40px;
+						margin-right: 12px;
+						border-radius: 100%;
+						border: 2px solid var(--primary-800);
+					}
+
+					span {
+						font-weight: 600;
+						color: var(--primary-700);
+					}
+				}
+
+				> h1 {
+					font-size: 2em;
+					color: var(--primary-800);
+					font-weight: 800;
+				}
 			}
 
-			img {
-				width: 40px;
-				height: 40px;
-				margin-right: 12px;
-				border-radius: 100%;
-				border: 2px solid var(--primary-800);
-			}
-
-			span {
-				font-weight: 600;
-				color: var(--primary-700);
-			}
-		}
-
-		.result {
-			gap: 5dvh;
-			display: grid;
-			grid-template-columns: repeat(var(--item, 3), 1fr);
-
-			.result-item {
-				border: 3px solid var(--primary-600);
-				background-color: var(--primary-200);
+			.result {
+				margin-top: 5dvh;
+				max-height: 75dvh;
+				overflow: auto;
+				padding: 1em 1em 3em 1em;
 				display: flex;
 				flex-direction: column;
-				text-align: center;
-				padding: 0.5em 0;
-				border-radius: 5px;
-				min-width: 18vw;
-				position: relative;
+				align-items: center;
+				scroll-behavior: smooth;
+			}
 
-				.pourcentage {
-					position: absolute;
-					top: -1.5em;
-					right: 0;
-					color: var(--primary-950);
-				}
+			.no-vote {
+				font-size: 1.5em;
+				font-weight: 800;
+				color: var(--primary-600);
+			}
 
-				h1 {
-					font-weight: 900;
-					font-size: 3em;
-					margin-bottom: 2vh;
-					color: var(--primary-600);
-				}
+			.result {
+				display: flex;
+				flex-direction: column;
+				gap: 1em;
 
-				p {
-					color: var(--primary-950);
+				.result-item {
+					border: 3px solid var(--primary-600);
+					padding: 0.5em;
+					border-radius: calc(20px + 0.5em);
+					display: flex;
+					flex-direction: column;
+					gap: 0.3em;
+					min-width: 98%;
+					max-width: 98%;
+
+					.players-container {
+						display: flex;
+						column-gap: 1em;
+						row-gap: 0.3em;
+						flex-direction: row;
+						flex-wrap: wrap;
+						align-items: center;
+						justify-content: center;
+						span.player {
+							display: flex;
+							gap: 0.3em;
+							align-items: center;
+
+							img {
+								height: 2em;
+								border-radius: 100%;
+							}
+						}
+					}
 				}
 			}
 		}
@@ -515,9 +604,15 @@
 			}
 		}
 
-		button:disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
+		button {
+			position: sticky;
+			bottom: 2em;
+
+			&:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+				position: initial;
+			}
 		}
 
 		.user-story {
@@ -542,10 +637,41 @@
 			gap: 2vw;
 			flex-wrap: wrap;
 			justify-content: center;
+
+			&.vertical {
+				flex-direction: column;
+				align-items: center;
+			}
 		}
 
 		.hidden {
 			visibility: hidden;
+		}
+	}
+
+	@media (min-width: 600px) {
+		.result-item {
+			width: 50vw;
+		}
+	}
+
+	@media (max-width: 599px) {
+		.results-container {
+			.cards {
+				display: none;
+			}
+		}
+	}
+
+	@media (min-width: 1100px) {
+		.result-item {
+			width: 40vw;
+		}
+	}
+
+	@media (min-width: 1300px) {
+		.result-item {
+			width: 30vw;
 		}
 	}
 
@@ -578,15 +704,11 @@
 	}
 
 	@media (prefers-color-scheme: dark) {
-		.result-container {
+		.results-container {
 			.result-item {
 				border-color: var(--primary-800);
 				background-color: var(--primary-800);
 				color: var(--primary-200);
-
-				.pourcentage {
-					color: var(--primary-200);
-				}
 			}
 		}
 
@@ -613,20 +735,23 @@
 			cursor: not-allowed;
 		}
 
-		.result-container {
-			h1 {
-				color: var(--primary-300);
-			}
+		.results-container {
+			.results {
+				.header {
+					h1 {
+						color: var(--primary-300);
+					}
+					h3 {
+						color: var(--primary-100);
 
-			h3 {
-				color: var(--primary-200);
+						span {
+							color: var(--primary-500);
+						}
 
-				span {
-					color: var(--primary-500);
-				}
-
-				img {
-					border-color: var(--primary-500);
+						img {
+							border-color: var(--primary-500);
+						}
+					}
 				}
 			}
 		}
@@ -635,7 +760,7 @@
 			.result-item {
 				border-color: var(--primary-500) !important;
 				background-color: var(--primary-800) !important;
-				color: var(--primary-200) !important;
+				color: var(--primary-100) !important;
 
 				.pourcentage {
 					color: var(--primary-200) !important;
@@ -643,7 +768,7 @@
 
 				h1,
 				p {
-					color: var(--primary-300) !important;
+					color: var(--primary-900) !important;
 				}
 			}
 		}
@@ -654,8 +779,8 @@
 			}
 
 			input {
-				color: var(--primary-950);
-				background-color: var(--primary-300);
+				background-color: var(--primary-800);
+				color: var(--primary-200);
 				border: 1px solid var(--primary-500);
 			}
 		}

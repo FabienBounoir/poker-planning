@@ -45,7 +45,7 @@ app.post('/feedback', (req, res) => {
 });
 
 app.post('/room', (req, res) => {
-    const { type, team, hexcode, avatar, autoReveal, cards } = req.body;
+    const { type, team, hexcode, avatar, autoReveal, cards, voteOnResults } = req.body;
 
     const roomId = createRoomId();
     const formattedTeam = (team || 'NFS').trim().charAt(0).toUpperCase() + (team || 'NFS').slice(1).toLowerCase();
@@ -54,7 +54,8 @@ app.post('/room', (req, res) => {
         team: formattedTeam,
         cards: [],
         state: 'waiting',
-        userStory: ''
+        userStory: '',
+        voteOnResults: false
     };
 
     switch (type) {
@@ -89,6 +90,10 @@ app.post('/room', (req, res) => {
 
     if (autoReveal) {
         roomData.autoReveal = autoReveal;
+    }
+
+    if (voteOnResults) {
+        roomData.voteOnResults = voteOnResults;
     }
 
     rooms.set(roomId, { initialisation: true, data: roomData });
