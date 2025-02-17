@@ -40,6 +40,7 @@
 
 	const create = async () => {
 		submitting = true;
+		checkDuplicate();
 		try {
 			const myHeaders = new Headers();
 			myHeaders.append('Content-Type', 'application/json');
@@ -152,6 +153,35 @@
 		}
 
 		status = 'create';
+	};
+
+	const checkDuplicate = () => {
+		const primaryColors = [
+			'--primary-50',
+			'--primary-100',
+			'--primary-200',
+			'--primary-300',
+			'--primary-400',
+			'--primary-500',
+			'--primary-600',
+			'--primary-700',
+			'--primary-800',
+			'--primary-900',
+			'--primary-950'
+		];
+
+		const colorValues = primaryColors.map((color) =>
+			getComputedStyle(document.documentElement).getPropertyValue(color).trim()
+		);
+
+		const duplicates = colorValues.filter((color, index) => colorValues.indexOf(color) !== index);
+
+		if (duplicates.length > 0) {
+			advancedSettingsObject.hexcode = '#ff8000';
+			myshades({
+				primary: '#ff8000'
+			});
+		}
 	};
 
 	$effect(() => {

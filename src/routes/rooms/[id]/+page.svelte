@@ -604,9 +604,15 @@
 			}
 		}
 
-		button:disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
+		button {
+			position: sticky;
+			bottom: 2em;
+
+			&:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+				position: initial;
+			}
 		}
 
 		.user-story {
@@ -646,6 +652,14 @@
 	@media (min-width: 600px) {
 		.result-item {
 			width: 50vw;
+		}
+	}
+
+	@media (max-width: 599px) {
+		.results-container {
+			.cards {
+				display: none;
+			}
 		}
 	}
 
@@ -695,10 +709,6 @@
 				border-color: var(--primary-800);
 				background-color: var(--primary-800);
 				color: var(--primary-200);
-
-				.pourcentage {
-					color: var(--primary-200);
-				}
 			}
 		}
 

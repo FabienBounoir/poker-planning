@@ -464,13 +464,6 @@
 							width: 40px;
 							height: 40px;
 						}
-
-						svg {
-							position: absolute;
-							top: 0;
-							left: 0;
-							width: 40px;
-						}
 					}
 
 					.img-skeleton {
