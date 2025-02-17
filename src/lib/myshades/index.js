@@ -18,11 +18,6 @@ const myshades = async (args = {}) => {
         shades.forEach((shade) => {
             document.documentElement.style.setProperty(`--${key}-${shade.number}`, shade.hexcode);
         });
-
-        //Create darkened shades
-        shades.forEach((shade) => {
-            document.documentElement.style.setProperty(`--${key}-${shade.number}-darkened`, chroma(shade.hexcode).set('luminosity', 'dark').hex());
-        });
     }
 };
 
