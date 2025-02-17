@@ -9,7 +9,9 @@
 		easing: cubicOut
 	});
 
-	progress.set(Number(pourcentage || 0));
+	$effect(() => {
+		progress.set(Number(pourcentage || 0));
+	});
 </script>
 
 <div class="progress-bar">
