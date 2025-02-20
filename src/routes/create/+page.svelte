@@ -116,7 +116,7 @@
 		type = window.localStorage.getItem('type') || 'TSHIRT';
 		team = window.localStorage.getItem('team') || '';
 
-		status == 'create';
+		status = 'create';
 	});
 
 	const addNewDeck = () => {
