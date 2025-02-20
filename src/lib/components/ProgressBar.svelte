@@ -24,18 +24,23 @@
 	.progress-bar {
 		display: flex;
 		justify-content: space-between;
+		border: 3px solid var(--primary-200);
 		align-items: center;
 		color: var(--primary-900);
 		background-color: var(--primary-200);
 		margin-bottom: 0.3em;
-		border-radius: 20px;
+		border-radius: 23px;
 
 		padding: 0.5em 1em;
 		position: relative;
 		overflow: hidden;
 
 		p {
-			color: var(--primary-900);
+			color: var(--primary-950);
+			text-shadow:
+				0 0 7px var(--primary-200),
+				0 0 7px var(--primary-200),
+				0 0 7px var(--primary-200);
 			z-index: 3;
 
 			&:first-of-type {
