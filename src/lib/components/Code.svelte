@@ -10,12 +10,12 @@
 		try {
 			await navigator.clipboard.writeText(urlFormatted());
 			copied = true;
-
+		} catch (error) {
+			console.error('Failed to copy!', error);
+		} finally {
 			setTimeout(() => {
 				copied = false;
 			}, 700);
-		} catch (error) {
-			console.error('Failed to copy!', error);
 		}
 	};
 
