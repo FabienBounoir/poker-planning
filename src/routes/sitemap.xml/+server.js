@@ -17,7 +17,7 @@ export async function GET() {
 
             <url>
                 <loc>https://anotherpp.vercel.app/create</loc>
-                <lastmod>2025-01-05T16:15:00+00:00</lastmod>
+                <lastmod>2025-02-20T11:15:00+00:00</lastmod>
             </url>
 
             <url>
@@ -27,17 +27,17 @@ export async function GET() {
 
             <url>
                 <loc>https://anotherpp.vercel.app/manager</loc>
-                <lastmod>2025-01-05T16:15:00+00:00</lastmod>
+                <lastmod>2025-02-20T11:15:00+00:00</lastmod>
             </url>
 
             <url>
                 <loc>https://anotherpp.vercel.app/rooms</loc>
-                <lastmod>2025-01-05T16:15:00+00:00</lastmod>
+                <lastmod>2025-02-20T11:15:00+00:00</lastmod>
             </url>
 
             <url>
                 <loc>https://anotherpp.vercel.app/feedback</loc>
-                <lastmod>2025-01-22T23:15:00+00:00</lastmod>
+                <lastmod>2025-02-20T11:15:00+00:00</lastmod>
             </url>
 
             <url>
