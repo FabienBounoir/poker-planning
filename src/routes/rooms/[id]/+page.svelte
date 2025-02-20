@@ -493,7 +493,7 @@
 				.result-item {
 					border: 3px solid var(--primary-600);
 					padding: 0.5em;
-					border-radius: calc(20px + 0.5em);
+					border-radius: calc(23px + 0.5em);
 					display: flex;
 					flex-direction: column;
 					gap: 0.3em;

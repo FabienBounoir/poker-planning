@@ -1,18 +1,18 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
-	let { code, url = 'https://bento.me/fabienbounoir', hexcode } = $props();
+	let { code = 'XXX-XXX', url = 'https://bento.me/fabienbounoir', hexcode } = $props();
 	import { _ } from 'svelte-i18n';
 
-	let displayText = $state(code);
 	let displayQrCode = $state(false);
+	let copied = $state(false);
 
 	const displayCopyToClipboard = async () => {
 		try {
 			await navigator.clipboard.writeText(urlFormatted());
-			displayText = $_('ManagerPage.copied');
+			copied = true;
 
 			setTimeout(() => {
-				displayText = code;
+				copied = false;
 			}, 700);
 		} catch (error) {
 			console.error('Failed to copy!', error);
@@ -45,7 +45,9 @@
 <p>{$_('ManagerPage.roomCode')}</p>
 <div class="code-element">
 	<div class="code-container" on:click={displayCopyToClipboard}>
-		<h3>{displayText}</h3>
+		<h3 class:copied style="--copy-text: '{$_('ManagerPage.copied')}';">
+			<span class="code__text">{code}</span>
+		</h3>
 	</div>
 	<button
 		aria-label="Display QrCode"
@@ -63,7 +65,7 @@
 			in:scale
 			src={`https://api.qrserver.com/v1/create-qr-code/?size=700x700&bgcolor=${getCssColor('--primary-200')}&margin=50&color=${getCssColor('--primary-950')}&data=${encodeURIComponent(urlFormatted())}`}
 		/>
-		<h3 in:scale>{displayText}</h3>
+		<h3 in:scale>{code}</h3>
 	</div>
 {/if}
 
@@ -110,6 +112,7 @@
 			border: 0px;
 			transition: scale 0.3s !important;
 			outline: none;
+
 			i {
 				font-size: 2em;
 				cursor: pointer;
@@ -135,14 +138,25 @@
 			}
 
 			h3 {
-				transition:
-					filter 0.3s,
-					color 3s !important;
-				filter: blur(7px);
+				position: relative;
 				font-size: 2em;
 				color: var(--primary-600);
 				font-weight: 900;
 				line-height: 14px;
+
+				&.copied {
+					.code__text {
+						visibility: hidden;
+					}
+
+					&::after {
+						content: var(--copy-text);
+						position: absolute;
+						top: 50%;
+						left: 50%;
+						transform: translate(-50%, -50%);
+					}
+				}
 			}
 		}
 	}
@@ -159,6 +173,16 @@
 			}
 
 			button {
+				color: var(--primary-200) !important;
+			}
+		}
+
+		p {
+			color: var(--primary-200) !important;
+		}
+
+		.fullscreen {
+			h3 {
 				color: var(--primary-200) !important;
 			}
 		}
