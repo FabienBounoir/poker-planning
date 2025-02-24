@@ -88,12 +88,13 @@
 	]);
 
 	onMount(() => {
-		if (window.localStorage.getItem('advancedSettings')) {
-			advancedSettingsObject = JSON.parse(window.localStorage.getItem('advancedSettings'));
+		if (window?.localStorage?.getItem?.('advancedSettings')) {
+			advancedSettingsObject = {...advancedSettingsObject, ...JSON.parse(window.localStorage.getItem('advancedSettings'))};
 			advancedSettings = true;
 		}
 
-		const getCustomDeck = Object.keys(window.localStorage).filter((key) =>
+
+		const getCustomDeck = Object.keys(window?.localStorage || {}).filter((key) =>
 			key.startsWith('CUSTOM-')
 		);
 
@@ -110,11 +111,12 @@
 				});
 			}
 		}
+		
 
 		choices.push({ id: 'CUSTOM', text: $_('selectCategories.types.CUSTOM') });
 
-		type = window.localStorage.getItem('type') || 'TSHIRT';
-		team = window.localStorage.getItem('team') || '';
+		type = window.localStorage?.getItem?.('type') || 'TSHIRT';
+		team = window.localStorage?.getItem?.('team') || '';
 
 		status = 'create';
 	});
