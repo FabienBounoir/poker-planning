@@ -95,7 +95,8 @@
         "resultDescriptionTitle": "Risultati della pianificazione",
         "noParticipantsMessage": "Nessun partecipante per la pianificazione del poker.",
         "noUserStoryDefined": "Non è stata definita alcuna User Story.",
-        "noParticipantsForVote": "Non sono stati trovati partecipanti per avviare il voto."
+        "noParticipantsForVote": "Non sono stati trovati partecipanti per avviare il voto.",
+        "firstVoterTooltip": "Prima persona a votare"
     },
     "selectCategories": {
         "types": {
