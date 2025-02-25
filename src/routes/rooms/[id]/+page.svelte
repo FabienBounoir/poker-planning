@@ -285,10 +285,19 @@
 
 			<div class="flex" in:fade={{ duration: 500, easing: quintOut }}>
 				{#each pokerManager.cards as card}
-					<Card content={card} bind:cardSelected={selectedLetter} bind:submittedLetter />
+					<Card
+						content={card}
+						bind:cardSelected={selectedLetter}
+						bind:submittedLetter
+						clickHandler={() => {
+							sendVote();
+						}}
+					/>
 				{/each}
 			</div>
 
+			<!-- 
+				Send automatic vote
 			<button
 				aria-label="Send vote"
 				class:hidden={selectedLetter === null}
@@ -298,7 +307,7 @@
 				}}
 			>
 				{$_('RoomPage.voteButton', { values: { LETTER: selectedLetter } })}
-			</button>
+			</button> -->
 		{:else if pokerManager.state === 'result'}
 			<div class="results-container">
 				<div class="results" in:fade={{ duration: 700, easing: quintInOut }}>
@@ -390,6 +399,7 @@
 								content={card}
 								bind:cardSelected={selectedLetter}
 								bind:submittedLetter
+								canRemove={false}
 								clickHandler={() => {
 									sendVote();
 								}}

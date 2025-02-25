@@ -6,7 +6,8 @@
 		height = '20vh',
 		interact = true,
 		style = '',
-		clickHandler = null
+		clickHandler = null,
+		canRemove = true
 	} = $props();
 </script>
 
@@ -18,7 +19,8 @@
 	class:interact
 	style="--card-height: {height}; {style}"
 	on:click={() => {
-		if (cardSelected === content && !clickHandler) {
+		if (cardSelected === content) {
+			if (!canRemove) return;
 			cardSelected = null;
 		} else {
 			cardSelected = content;
