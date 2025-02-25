@@ -112,3 +112,11 @@ const PORT = 5876;
 server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
+
+process.on("unhandledRejection", async (reason, promise) => {
+    console.error(`[UncaughtException_Logs]`, `[REASON] ${reason}`, `[PROMISE REJECT] ${promise}`, reason.stack);
+});
+
+process.on("uncaughtException", async (err, origin) => {
+    console.error(`[UncaughtException_Logs] ${err}`, `Exception origin: ${origin}`, err.stack);
+});
