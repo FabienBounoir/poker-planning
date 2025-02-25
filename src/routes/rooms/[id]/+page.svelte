@@ -193,6 +193,14 @@
 
 		return `--top: ${top}vh; --left: ${left}vw;`;
 	};
+
+	const formatName = (name) => {
+		return name
+			.trim()
+			.split(/[\s.]+/)
+			.map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+			.join(' ');
+	};
 </script>
 
 <svelte:head>
@@ -220,6 +228,11 @@
 			)}<br />
 		</h1>
 		<form on:submit|preventDefault={connect}>
+			<img
+				src="https://api.dicebear.com/9.x/dylan/svg?seed={formatName(username)}"
+				alt="User-avatar"
+			/>
+
 			<input
 				type="text"
 				bind:value={username}
@@ -567,6 +580,15 @@
 		form {
 			display: grid;
 			gap: 0.5em;
+
+			img {
+				border-radius: 100%;
+				border: 2px solid var(--primary-700);
+				width: 80px;
+				height: 80px;
+				margin-bottom: 1em;
+				justify-self: center;
+			}
 
 			input {
 				text-align: center;
