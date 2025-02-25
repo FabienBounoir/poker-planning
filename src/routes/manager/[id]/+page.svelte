@@ -219,7 +219,7 @@
 <main>
 	{#if editRoom}
 		<div class="manager">
-			<EditConfiguration bind:editRoom configuration={pokerManager} />
+			<EditConfiguration bind:editRoom {pokerManager} />
 		</div>
 	{:else}
 		<div class="manager">
@@ -324,8 +324,6 @@
 						<Valided valided={user.selectedCard != null} />
 					{:else if pokerManager.state === 'result'}
 						<p>{user.selectedCard}</p>
-					{:else}
-						<h3 class="no-vote">-</h3>
 					{/if}
 				</div>
 			{/each}

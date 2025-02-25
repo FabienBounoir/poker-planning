@@ -55,7 +55,8 @@ app.post('/room', (req, res) => {
         cards: [],
         state: 'waiting',
         userStory: '',
-        voteOnResults: false
+        voteOnResults: false,
+        type: type || "TSHIRT",
     };
 
     switch (type) {
