@@ -259,7 +259,7 @@ const createSocketIOServer = (server, rooms) => {
                 switch (type) {
                     case 'vote': {
                         const player = room.players.get(socket.id);
-                        if (!room?.data?.cards?.includes?.(data.card)) return;
+                        if (!room?.data?.cards?.includes?.(data.card) && data.card != null) return;
 
                         if (room.data.firstVoter === null) {
                             room.data.firstVoter = player.name;
