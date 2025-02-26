@@ -62,7 +62,7 @@
 </script>
 
 <main>
-	<h2 in:fly|local={{ easing: backOut, x: -25 }}>Edit Configuration</h2>
+	<h2 in:fly|local={{ easing: backOut, x: -25 }}>{$_('edit.title')}</h2>
 
 	<div class="avatar-container">
 		{#each avatarUrl as url}
@@ -99,11 +99,13 @@
 	</div>
 
 	<footer>
-		<button>Supprimé la room</button>
+		<button class="danger">{$_('edit.deleteRoom')}</button>
 
 		<div class="buttons">
-			<button> Save </button>
-			<button on:click={() => (editRoom = false)}> Cancel </button>
+			<button>{$_('edit.save')}</button>
+			<button on:click={() => (editRoom = false)}>
+				{$_('edit.cancel')}
+			</button>
 		</div>
 	</footer>
 </main>
@@ -135,21 +137,32 @@
 			display: flex;
 			justify-content: space-between;
 			flex-direction: row;
+			flex-wrap: wrap;
+			row-gap: 1rem;
 
 			.buttons {
 				display: flex;
 				justify-content: space-between;
 				flex-direction: row;
 				gap: 1rem;
+
+				& button:first-child {
+					background-color: var(--primary-400);
+				}
 			}
 
-			> button {
+			.danger {
 				background-color: red;
 				color: white;
 				border: none;
 				padding: 0.5rem 1rem;
 				border-radius: 0.5rem;
 				cursor: pointer;
+				transition: 0.3s ease opacity;
+
+				&:hover {
+					opacity: 0.8;
+				}
 			}
 		}
 	}

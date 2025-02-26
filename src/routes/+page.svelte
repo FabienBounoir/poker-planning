@@ -1,5 +1,4 @@
 <script>
-	import { goto } from '$app/navigation';
 	import { _ } from 'svelte-i18n';
 	import Blob1 from '$lib/components/blob/Blob1.svelte';
 	import Blob2 from '$lib/components/blob/blob2.svelte';

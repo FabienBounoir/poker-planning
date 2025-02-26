@@ -152,5 +152,11 @@
         "startSession": "Commencez une nouvelle session de poker pour la voir ici",
         "pokerFor": "Team {team}",
         "dateFormat": "{hour}:{minute} - {day}/{month}/{year}"
+    },
+    "edit": {
+        "title": "Modifier le Poker Planning",
+        "deleteRoom": "Supprimer la room",
+        "save": "Sauvegarder",
+        "cancel": "Annuler"
     }
 }

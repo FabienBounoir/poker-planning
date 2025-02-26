@@ -10,7 +10,7 @@
 	import myshades from '$lib/myshades';
 	import type { Socket } from 'socket.io-client';
 	import ioClient from 'socket.io-client';
-	import { _, json } from 'svelte-i18n';
+	import { _ } from 'svelte-i18n';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
 
 	let roomId: string;
