@@ -10,10 +10,11 @@
 	import myshades from '$lib/myshades';
 	import type { Socket } from 'socket.io-client';
 	import ioClient from 'socket.io-client';
-	import { _ } from 'svelte-i18n';
+	import { _, json } from 'svelte-i18n';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
 
-	let roomId = $page.params.id;
+	let roomId: string;
+	let avatarType = 'dylan';
 	let io: Socket;
 
 	let pokerManager = $state(null);
@@ -36,19 +37,26 @@
 
 	onMount(() => {
 		try {
-			if (window.localStorage.getItem('username')) {
+			if (window?.localStorage?.getItem?.('username')) {
 				username = window.localStorage.getItem('username');
 			}
 
-			const url = new URL(window.location.href);
-			const hexcodeParam = url.searchParams.get('hexcode');
-			if (hexcodeParam) {
+			const roomConfig = JSON.parse(atob($page.params.configuration));
+
+			roomId = roomConfig?.r;
+			avatarType = roomConfig?.a;
+
+			if (roomConfig?.c && roomConfig?.c?.length == 7 && roomConfig?.c?.startsWith?.('#')) {
 				myshades({
-					primary: hexcodeParam
+					primary: roomConfig.c
 				});
 			}
 		} catch (e) {
 			console.error('Error in RoomPage', e);
+		}
+
+		if (!roomId || /^\d{3}-\d{3}$/i.test(roomId) == false) {
+			return goto('/join');
 		}
 
 		status = 'init';
@@ -229,7 +237,7 @@
 		</h1>
 		<form on:submit|preventDefault={connect}>
 			<img
-				src="https://api.dicebear.com/9.x/dylan/svg?seed={formatName(username)}"
+				src="https://api.dicebear.com/9.x/{avatarType || 'dylan'}/svg?seed={formatName(username)}"
 				alt="User-avatar"
 			/>
 

@@ -25,8 +25,9 @@ app.use((req, res, next) => {
 app.get("/room", (req, res) => {
     const { roomId } = req.query;
 
-    if (rooms.get(roomId)) {
-        return res.json({ roomId });
+    const room = rooms.get(roomId);
+    if (room) {
+        return res.json(room?.data || {});
     }
 
     return res.status(400).json({ error: "Room doesn't exist." });
@@ -51,6 +52,7 @@ app.post('/room', (req, res) => {
     const formattedTeam = (team || 'NFS').trim().charAt(0).toUpperCase() + (team || 'NFS').slice(1).toLowerCase();
 
     const roomData = {
+        roomId,
         team: formattedTeam,
         cards: [],
         state: 'waiting',

@@ -15,6 +15,7 @@
 	import EditConfiguration from '$lib/components/EditConfiguration.svelte';
 	import Valided from '$lib/components/Valided.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
+	import { dataToShortBinary } from '$lib/utils';
 
 	let roomId = $page.params.id;
 	let url = $state('');
@@ -108,7 +109,7 @@
 
 					displayConfettiTimeout = setTimeout(() => {
 						displayConfetti = false;
-					}, 15000);
+					}, 10000);
 				}
 			}
 
@@ -123,7 +124,6 @@
 	};
 
 	onMount(() => {
-		url = `${window.location.protocol}//${window.location.host}/rooms/${roomId}`;
 		connect();
 	});
 
@@ -169,6 +169,10 @@
 		if (history.length > 0) {
 			saveHistory(history);
 		}
+	});
+
+	$effect(() => {
+		url = `${window.location.protocol}//${window.location.host}/rooms/${dataToShortBinary(pokerManager)}`;
 	});
 </script>
 
@@ -556,6 +560,7 @@
 			height: auto;
 
 			.information {
+				overflow-y: initial;
 				max-height: none;
 				padding: 0;
 			}
@@ -566,6 +571,12 @@
 
 				.container {
 					padding: 1rem 1rem 2rem 0;
+
+					> a {
+						span {
+							width: initial;
+						}
+					}
 				}
 			}
 		}

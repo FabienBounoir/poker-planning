@@ -23,7 +23,7 @@ const createSocketIOServer = (server, rooms) => {
                     cards: [],
                     state: 'waiting',
                     userStory: '',
-                    color: '#FF7F00',
+                    hexcode: '#FF7F00',
                     avatar: 'https://api.dicebear.com/9.x/dylan/svg',
                     autoReveal: false,
                     voteOnResults: false,
