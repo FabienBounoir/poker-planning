@@ -12,8 +12,10 @@
 	import ioClient from 'socket.io-client';
 	import { _ } from 'svelte-i18n';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
+	import { arraysAreEqual } from '$lib/utils';
 
-	let roomId = $page.params.id;
+	let roomId: string;
+	let avatarType = 'dylan';
 	let io: Socket;
 
 	let pokerManager = $state(null);
@@ -36,19 +38,26 @@
 
 	onMount(() => {
 		try {
-			if (window.localStorage.getItem('username')) {
+			if (window?.localStorage?.getItem?.('username')) {
 				username = window.localStorage.getItem('username');
 			}
 
-			const url = new URL(window.location.href);
-			const hexcodeParam = url.searchParams.get('hexcode');
-			if (hexcodeParam) {
+			const roomConfig = JSON.parse(atob($page.params.configuration));
+
+			roomId = roomConfig?.r;
+			avatarType = roomConfig?.a;
+
+			if (roomConfig?.c && roomConfig?.c?.length == 7 && roomConfig?.c?.startsWith?.('#')) {
 				myshades({
-					primary: hexcodeParam
+					primary: roomConfig.c
 				});
 			}
 		} catch (e) {
 			console.error('Error in RoomPage', e);
+		}
+
+		if (!roomId || /^\d{3}-\d{3}$/i.test(roomId) == false) {
+			return goto('/join');
 		}
 
 		status = 'init';
@@ -86,6 +95,11 @@
 				resultsItem = null;
 				resultDefender = null;
 
+				if (arraysAreEqual(pokerManager?.cards, payload?.cards) == false) {
+					selectedLetter = null;
+					submittedLetter = null;
+				}
+
 				if (payload.state == 'playing' && payload.state != pokerManager?.state) {
 					selectedLetter = null;
 					submittedLetter = null;
@@ -107,15 +121,6 @@
 				pokerManager = payload;
 			});
 
-			io.on('success', (payload) => {
-				if (payload?.success) {
-					if (timeout) {
-						clearTimeout(timeout);
-						timeout = null;
-					}
-				}
-			});
-
 			io.on('players', (payload) => {
 				players = payload;
 			});
@@ -124,6 +129,18 @@
 				myshades({
 					primary: payload.hexcode
 				});
+			});
+
+			io.on('message', (payload) => {
+				const type: keyof typeof toast = payload.type;
+				if (!['info', 'success', 'error', 'warning'].includes(type)) return;
+
+				(toast[type] as (message: string) => void)(payload.message);
+			});
+
+			io.on('delete-room', () => {
+				toast.info($_('RoomPage.RoomDeleted'));
+				goto('/join');
 			});
 
 			io.on('error', (e) => {
@@ -144,12 +161,20 @@
 
 	const sendVote = (forceValue = selectedLetter) => {
 		timeout = setTimeout(() => {
-			toast.error($_('RoomPage.ErrorWhenSendingVote'));
-			submittedLetter = null;
-			selectedLetter = null;
+			errorWhenSendingVote();
 		}, 2000);
 
-		io.send({ type: 'vote', data: { card: forceValue } });
+		io.send({ type: 'vote', data: { card: forceValue } }, (callback) => {
+			if (timeout) {
+				clearTimeout(timeout);
+				timeout = null;
+			}
+
+			if (!callback?.success) {
+				errorWhenSendingVote();
+			}
+		});
+
 		submittedLetter = forceValue;
 	};
 
@@ -172,6 +197,12 @@
 		io.send({ type: 'hexcode', data: { hexcode } });
 	};
 
+	const errorWhenSendingVote = () => {
+		toast.error($_('RoomPage.ErrorWhenSendingVote'));
+		submittedLetter = null;
+		selectedLetter = null;
+	};
+
 	const isPositionFree = (top: number, left: number) => {
 		return !existingPositions.some(
 			(pos) => Math.abs(pos.top - top) < 15 && Math.abs(pos.left - left) < 15
@@ -192,6 +223,14 @@
 		if (tries < maxTries) existingPositions.push({ top, left });
 
 		return `--top: ${top}vh; --left: ${left}vw;`;
+	};
+
+	const formatName = (name) => {
+		return name
+			.trim()
+			.split(/[\s.]+/)
+			.map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+			.join(' ');
 	};
 </script>
 
@@ -220,6 +259,11 @@
 			)}<br />
 		</h1>
 		<form on:submit|preventDefault={connect}>
+			<img
+				src="https://api.dicebear.com/9.x/{avatarType || 'dylan'}/svg?seed={formatName(username)}"
+				alt="User-avatar"
+			/>
+
 			<input
 				type="text"
 				bind:value={username}
@@ -285,20 +329,16 @@
 
 			<div class="flex" in:fade={{ duration: 500, easing: quintOut }}>
 				{#each pokerManager.cards as card}
-					<Card content={card} bind:cardSelected={selectedLetter} bind:submittedLetter />
+					<Card
+						content={card}
+						bind:cardSelected={selectedLetter}
+						bind:submittedLetter
+						clickHandler={() => {
+							sendVote();
+						}}
+					/>
 				{/each}
 			</div>
-
-			<button
-				aria-label="Send vote"
-				class:hidden={selectedLetter === null}
-				disabled={submittedLetter != null && selectedLetter == submittedLetter}
-				on:click={() => {
-					sendVote();
-				}}
-			>
-				{$_('RoomPage.voteButton', { values: { LETTER: selectedLetter } })}
-			</button>
 		{:else if pokerManager.state === 'result'}
 			<div class="results-container">
 				<div class="results" in:fade={{ duration: 700, easing: quintInOut }}>
@@ -390,6 +430,7 @@
 								content={card}
 								bind:cardSelected={selectedLetter}
 								bind:submittedLetter
+								canRemove={false}
 								clickHandler={() => {
 									sendVote();
 								}}
@@ -557,6 +598,15 @@
 		form {
 			display: grid;
 			gap: 0.5em;
+
+			img {
+				border-radius: 100%;
+				border: 2px solid var(--primary-700);
+				width: 80px;
+				height: 80px;
+				margin-bottom: 1em;
+				justify-self: center;
+			}
 
 			input {
 				text-align: center;

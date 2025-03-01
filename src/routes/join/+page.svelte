@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 	import { _ } from 'svelte-i18n';
+	import { dataToShortBinary } from '$lib/utils';
 
 	let roomId = $state('');
 	let submitting = $state(false);
@@ -20,7 +21,7 @@
 			.catch((error) => console.error(error));
 
 		if (res && res.roomId) {
-			return goto(`/rooms/${res.roomId}`);
+			return goto(`/rooms/${dataToShortBinary(res)}`);
 		}
 
 		toast.error($_('JoinPage.roomDoesntExist'));

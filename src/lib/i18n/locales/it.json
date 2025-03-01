@@ -82,7 +82,10 @@
         "noVote": "Nessun voto",
         "IWantYourName": "Mi piacerebbe sapere come ti chiami!",
         "ErrorWhenJoining": "Si è verificato un errore durante la connessione...",
-        "ErrorWhenSendingVote": "Si è verificato un errore durante l'invio del tuo voto."
+        "ErrorWhenSendingVote": "Si è verificato un errore durante l'invio del tuo voto.",
+        "SuccessfullyDeleted": "La stanza è stata eliminata con successo.",
+        "SuccessfullyUpdated": "La stanza è stata aggiornata con successo.",
+        "RoomDeleted": "La stanza è stata chiusa."
     },
     "ManagerPage": {
         "welcomeMessage": "Benvenuto {USER}!",
@@ -95,7 +98,8 @@
         "resultDescriptionTitle": "Risultati della pianificazione",
         "noParticipantsMessage": "Nessun partecipante per la pianificazione del poker.",
         "noUserStoryDefined": "Non è stata definita alcuna User Story.",
-        "noParticipantsForVote": "Non sono stati trovati partecipanti per avviare il voto."
+        "noParticipantsForVote": "Non sono stati trovati partecipanti per avviare il voto.",
+        "firstVoterTooltip": "Prima persona a votare"
     },
     "selectCategories": {
         "types": {
@@ -151,5 +155,11 @@
         "startSession": "Inizia una nuova sessione di poker per vederla qui",
         "pokerFor": "Team {team}",
         "dateFormat": "{hour}:{minute} - {day}/{month}/{year}"
+    },
+    "edit": {
+        "title": "Modifica la Pianificazione del Poker",
+        "deleteRoom": "Elimina la stanza",
+        "save": "Salva",
+        "cancel": "Annulla"
     }
 }

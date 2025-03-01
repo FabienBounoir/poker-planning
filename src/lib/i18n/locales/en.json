@@ -82,7 +82,10 @@
         "noVote": "No Vote",
         "IWantYourName": "I'd like to know your name!",
         "ErrorWhenJoining": "An error occurred while joining...",
-        "ErrorWhenSendingVote": "An error occurred while sending your vote."
+        "ErrorWhenSendingVote": "An error occurred while sending your vote.",
+        "SuccessfullyDeleted": "The room has been successfully deleted.",
+        "SuccessfullyUpdated": "The room has been successfully updated.",
+        "RoomDeleted": "The room has been deleted."
     },
     "ManagerPage": {
         "welcomeMessage": "Welcome {USER}!",
@@ -95,7 +98,8 @@
         "resultDescriptionTitle": "Planning results",
         "noParticipantsMessage": "No participants for the planning poker.",
         "noUserStoryDefined": "No User Story has been defined.",
-        "noParticipantsForVote": "No participants found to start the vote."
+        "noParticipantsForVote": "No participants found to start the vote.",
+        "firstVoterTooltip": "First person to vote"
     },
     "selectCategories": {
         "types": {
@@ -151,5 +155,11 @@
         "startSession": "Start a new poker session to see it here",
         "pokerFor": "Team {team}",
         "dateFormat": "{hour}:{minute} - {month}/{day}/{year}"
+    },
+    "edit": {
+        "title": "Edit Poker Planning",
+        "deleteRoom": "Delete the room",
+        "save": "Save",
+        "cancel": "Cancel"
     }
 }

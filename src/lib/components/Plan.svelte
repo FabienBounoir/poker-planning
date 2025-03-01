@@ -60,8 +60,6 @@
 		}
 
 		.card {
-			// max-height: 60vh;
-			// aspect-ratio: 2/2.7;
 			width: min-content;
 			border-radius: 1em;
 			background-color: var(--primary-50);
@@ -86,7 +84,6 @@
 				font-size: 1.5em;
 				color: var(--primary-950);
 				font-weight: 700;
-				// margin: 0.3em 0 1em 0;
 				text-align: left;
 			}
 

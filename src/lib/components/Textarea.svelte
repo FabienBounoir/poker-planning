@@ -38,7 +38,7 @@
 		font-family: inherit;
 		padding: 0.5em;
 		box-sizing: border-box;
-		border: 1px solid #eee;
+		border: 1px solid var(--primary-300);
 		line-height: 1.2;
 		overflow: hidden;
 		width: 100%;
@@ -49,6 +49,10 @@
 			filter: grayscale(0.8);
 			border-color: var(--primary-500);
 		}
+	}
+
+	pre {
+		border: 1px solid transparent;
 	}
 
 	textarea {
@@ -70,11 +74,7 @@
 		textarea {
 			background-color: var(--primary-800);
 			color: var(--primary-50);
-			border-color: var(--primary-950);
-		}
-
-		pre {
-			border: none;
+			border-color: var(--primary-600);
 		}
 	}
 </style>

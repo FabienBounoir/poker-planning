@@ -502,7 +502,6 @@
 
 				label {
 					display: block;
-					// margin-top: 0.5em;
 					cursor: pointer;
 					background-color: var(--custom-color);
 					border-radius: 0.5rem;
@@ -519,41 +518,6 @@
 
 			input {
 				width: 100%;
-			}
-
-			.avatar-container {
-				display: flex;
-				gap: 0.5em;
-				flex-wrap: wrap;
-				align-items: center;
-				justify-content: center;
-				height: 4em;
-
-				img {
-					border-radius: 50%;
-					border: 3px solid transparent;
-					cursor: pointer;
-					width: 3em;
-					aspect-ratio: 1 / 1;
-					background-color: var(--primary-200);
-					transition:
-						width 0.3s ease-in-out,
-						border 0.3s ease-in-out,
-						filter 0.3s ease-in-out;
-					filter: grayscale(50%);
-
-					&:hover {
-						width: 3.5em;
-						filter: grayscale(0%);
-						border: 3px solid var(--primary-300);
-					}
-
-					&.selected {
-						width: 4em;
-						border: 3px solid var(--primary-500);
-						filter: grayscale(0%);
-					}
-				}
 			}
 		}
 

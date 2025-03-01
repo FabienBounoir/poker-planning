@@ -130,6 +130,7 @@ const roomDeleted = async (pokerPlanning) => {
 }
 
 const stateUpdate = async (pokerPlanning, roomId, state) => {
+    if (!process.env.STATISTIC_API_URL) return;
     try {
         await fetch(process.env.STATISTIC_API_URL, {
             method: "POST",

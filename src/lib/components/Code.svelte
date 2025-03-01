@@ -1,14 +1,15 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
-	let { code = 'XXX-XXX', url = 'https://bento.me/fabienbounoir', hexcode } = $props();
+	let { code = 'XXX-XXX', url, hexcode } = $props();
 	import { _ } from 'svelte-i18n';
 
 	let displayQrCode = $state(false);
 	let copied = $state(false);
 
 	const displayCopyToClipboard = async () => {
+		if (!url) return;
 		try {
-			await navigator.clipboard.writeText(urlFormatted());
+			await navigator.clipboard.writeText(url);
 			copied = true;
 		} catch (error) {
 			console.error('Failed to copy!', error);
@@ -17,16 +18,6 @@
 				copied = false;
 			}, 700);
 		}
-	};
-
-	const urlFormatted = () => {
-		const uri = new URL(url);
-
-		if (hexcode) {
-			uri.searchParams.append('hexcode', hexcode);
-		}
-
-		return uri.href;
 	};
 
 	/**
@@ -63,7 +54,7 @@
 		<img
 			alt="QR Code for joining the room"
 			in:scale
-			src={`https://api.qrserver.com/v1/create-qr-code/?size=700x700&bgcolor=${getCssColor('--primary-200')}&margin=50&color=${getCssColor('--primary-950')}&data=${encodeURIComponent(urlFormatted())}`}
+			src={`https://api.qrserver.com/v1/create-qr-code/?size=700x700&bgcolor=${getCssColor('--primary-200')}&margin=50&color=${getCssColor('--primary-950')}&data=${encodeURIComponent(url)}`}
 		/>
 		<h3 in:scale>{code}</h3>
 	</div>

@@ -12,11 +12,16 @@
 	import ioClient from 'socket.io-client';
 	import Confetti from 'svelte-confetti';
 	import { _ } from 'svelte-i18n';
+	import EditConfiguration from '$lib/components/EditConfiguration.svelte';
+	import Valided from '$lib/components/Valided.svelte';
+	import Tooltip from '$lib/components/Tooltip.svelte';
+	import { dataToShortBinary } from '$lib/utils';
 
 	let roomId = $page.params.id;
 	let url = $state('');
 
 	let io: Socket;
+	let editRoom = $state(false);
 
 	let resultsItem = $state(null);
 	let resultDefender = $state(null);
@@ -104,11 +109,16 @@
 
 					displayConfettiTimeout = setTimeout(() => {
 						displayConfetti = false;
-					}, 15000);
+					}, 10000);
 				}
 			}
 
 			pokerManager = payload;
+		});
+
+		io.on('delete-room', () => {
+			toast.success($_('RoomPage.SuccessfullyDeleted'));
+			goto('/create');
 		});
 
 		io.on('hexcode', (payload) => {
@@ -119,7 +129,6 @@
 	};
 
 	onMount(() => {
-		url = `${window.location.protocol}//${window.location.host}/rooms/${roomId}`;
 		connect();
 	});
 
@@ -161,10 +170,33 @@
 		);
 	};
 
+	const deleteRoom = () => {
+		if (checkSocketConnected()) {
+			io.send({ type: 'delete-room' });
+		}
+	};
+
+	const updateRoom = (data) => {
+		if (checkSocketConnected()) {
+			io.send({ type: 'update-room', data }, (response) => {
+				if (response?.error) {
+					toast.error(response.error);
+				} else {
+					toast.success($_('RoomPage.SuccessfullyUpdated'));
+					editRoom = false;
+				}
+			});
+		}
+	};
+
 	$effect(() => {
 		if (history.length > 0) {
 			saveHistory(history);
 		}
+	});
+
+	$effect(() => {
+		url = `${window.location.protocol}//${window.location.host}/rooms/${dataToShortBinary(pokerManager)}`;
 	});
 </script>
 
@@ -213,57 +245,67 @@
 {/if}
 
 <main>
-	<div class="manager">
-		<div class="container">
-			<a href="/" title="Go to Home Page" rel="home">
-				<span in:fly|local={{ easing: backOut, x: -25 }}> Poker Planning </span>
-			</a>
+	{#if editRoom}
+		<div class="manager">
+			<EditConfiguration bind:editRoom {pokerManager} {deleteRoom} {updateRoom} />
+		</div>
+	{:else}
+		<div class="manager">
+			<div class="container">
+				<a href="/" title="Go to Home Page" rel="home">
+					<span in:fly|local={{ easing: backOut, x: -25 }}> Poker Planning </span>
+				</a>
 
-			<div class="me">
-				{$_('ManagerPage.welcomeMessage', { values: { USER: pokerManager.team || '' } })}
+				<div class="me">
+					{$_('ManagerPage.welcomeMessage', { values: { USER: pokerManager.team || '' } })}
+				</div>
+
+				<Code code={roomId} {url} hexcode={pokerManager?.hexcode} />
 			</div>
 
-			<Code code={roomId} {url} hexcode={pokerManager?.hexcode} />
-		</div>
+			<label for="userStory">{$_('ManagerPage.userStoryLabel')}</label>
+			<TextArea
+				bind:value={pokerManager.userStory}
+				disabled={pokerManager.state == 'result' || pokerManager.state == 'waiting'}
+				minRows={1}
+				maxRows={10}
+				placeholder="ManagerPage.textareaPlaceholder"
+			/>
 
-		<label for="userStory">{$_('ManagerPage.userStoryLabel')}</label>
-		<TextArea
-			bind:value={pokerManager.userStory}
-			disabled={pokerManager.state == 'result' || pokerManager.state == 'waiting'}
-			minRows={1}
-			maxRows={10}
-			placeholder="ManagerPage.textareaPlaceholder"
-		/>
+			<div class="buttons">
+				{#if pokerManager.state == 'playing'}
+					<button
+						class="danger"
+						aria-label="Terminer les votes"
+						on:click={() => {
+							changeState('result');
+						}}>{$_('ManagerPage.endVoteButton')}</button
+					>
+				{:else if pokerManager.state == 'result' || pokerManager.state == 'waiting'}
+					<button aria-label="Commencer les votes" on:click={canStarVote}
+						>{$_('ManagerPage.startVoteButton')}</button
+					>
+				{/if}
+				<button aria-label="menu-button" on:click={() => (editRoom = true)}>
+					<i class="fa-solid fa-edit"></i>
+				</button>
+			</div>
 
-		<div class="buttons">
-			{#if pokerManager.state == 'playing'}
-				<button
-					aria-label="Terminer les votes"
-					on:click={() => {
-						changeState('result');
-					}}>{$_('ManagerPage.endVoteButton')}</button
+			{#if resultsItem}
+				<div
+					class="resultDescription"
+					transition:slide={{ axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
 				>
-			{:else if pokerManager.state == 'result' || pokerManager.state == 'waiting'}
-				<button aria-label="Commencer les votes" on:click={canStarVote}
-					>{$_('ManagerPage.startVoteButton')}</button
-				>
+					{#each resultsItem as { item, pourcentage }}
+						<span
+							><h3>{item}</h3>
+							{pourcentage}%</span
+						>
+					{/each}
+				</div>
 			{/if}
 		</div>
-
-		{#if resultsItem}
-			<div
-				class="resultDescription"
-				transition:slide={{ axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
-			>
-				{#each resultsItem as { item, pourcentage }}
-					<span
-						><h3>{item}</h3>
-						{pourcentage}%</span
-					>
-				{/each}
-			</div>
-		{/if}
-	</div>
+	{/if}
 
 	<div class="information">
 		{#if users != null}
@@ -292,25 +334,25 @@
 							/>
 						</div>
 						<h2>{user.name}</h2>
-						{#if user?.firstVoter}
-							<svg width="25px" viewBox="0 0 24 24">
-								<path
-									d="M19.6872 14.0931L19.8706 12.3884C19.9684 11.4789 20.033 10.8783 19.9823 10.4999L20 10.5C20.8284 10.5 21.5 9.82843 21.5 9C21.5 8.17157 20.8284 7.5 20 7.5C19.1716 7.5 18.5 8.17157 18.5 9C18.5 9.37466 18.6374 9.71724 18.8645 9.98013C18.5384 10.1814 18.1122 10.606 17.4705 11.2451L17.4705 11.2451C16.9762 11.7375 16.729 11.9837 16.4533 12.0219C16.3005 12.043 16.1449 12.0213 16.0038 11.9592C15.7492 11.847 15.5794 11.5427 15.2399 10.934L13.4505 7.7254C13.241 7.34987 13.0657 7.03557 12.9077 6.78265C13.556 6.45187 14 5.77778 14 5C14 3.89543 13.1046 3 12 3C10.8954 3 10 3.89543 10 5C10 5.77778 10.444 6.45187 11.0923 6.78265C10.9343 7.03559 10.759 7.34984 10.5495 7.7254L8.76006 10.934C8.42056 11.5427 8.25081 11.847 7.99621 11.9592C7.85514 12.0213 7.69947 12.043 7.5467 12.0219C7.27097 11.9837 7.02381 11.7375 6.5295 11.2451C5.88787 10.606 5.46156 10.1814 5.13553 9.98012C5.36264 9.71724 5.5 9.37466 5.5 9C5.5 8.17157 4.82843 7.5 4 7.5C3.17157 7.5 2.5 8.17157 2.5 9C2.5 9.82843 3.17157 10.5 4 10.5L4.01771 10.4999C3.96702 10.8783 4.03162 11.4789 4.12945 12.3884L4.3128 14.0931C4.41458 15.0393 4.49921 15.9396 4.60287 16.75H19.3971C19.5008 15.9396 19.5854 15.0393 19.6872 14.0931Z"
-									fill="var(--primary-700)"
-								/>
-								<path
-									d="M10.9121 21H13.0879C15.9239 21 17.3418 21 18.2879 20.1532C18.7009 19.7835 18.9623 19.1172 19.151 18.25H4.84896C5.03765 19.1172 5.29913 19.7835 5.71208 20.1532C6.65817 21 8.07613 21 10.9121 21Z"
-									fill="var(--primary-900)"
-								/>
-							</svg>
+						{#if user?.firstVoter && pokerManager.state == 'result'}
+							<Tooltip title={$_('ManagerPage.firstVoterTooltip')}>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="25px"
+									viewBox="0 0 24 24"
+									fill="none"
+								>
+									<path
+										d="M20 15.0002C20 19.2547 17.3819 21.1216 15.3588 21.7512C14.9274 21.8854 14.6438 21.3825 14.9019 21.0116C15.7823 19.7464 16.8 17.8161 16.8 16.0002C16.8 14.0496 15.1559 11.7467 13.8721 10.3263C13.5786 10.0016 13.0667 10.2164 13.0507 10.6539C12.9976 12.1031 12.7689 14.042 11.7828 15.5616C11.6241 15.8062 11.2872 15.8264 11.1063 15.5977C10.7982 15.208 10.4901 14.7267 10.182 14.3464C10.016 14.1416 9.71604 14.1388 9.52461 14.32C8.77825 15.0267 7.73333 16.1288 7.73333 17.5002C7.73333 18.4301 8.0936 19.405 8.50007 20.1893C8.72368 20.6208 8.32607 21.1402 7.89573 20.9144C6.11307 19.9789 4 18.0838 4 15.0002C4 11.8538 8.31029 7.49503 9.95605 3.37712C10.2157 2.72733 11.0161 2.42199 11.5727 2.84603C14.9439 5.41409 20 10.3783 20 15.0002Z"
+									/>
+								</svg>
+							</Tooltip>
 						{/if}
 					</div>
 					{#if pokerManager.state === 'playing'}
-						<p class="skeleton" class:selectedLetter={user.selectedCard != null}></p>
+						<Valided valided={user.selectedCard != null} />
 					{:else if pokerManager.state === 'result'}
 						<p>{user.selectedCard}</p>
-					{:else}
-						<h3 class="no-vote">-</h3>
 					{/if}
 				</div>
 			{/each}
@@ -405,8 +447,18 @@
 				gap: 1em;
 				margin-top: 2em;
 
-				button {
+				button:first-child {
 					width: 100%;
+				}
+
+				button.danger {
+					background-color: var(--primary-300);
+				}
+
+				button:last-child {
+					i {
+						font-size: 1.2em;
+					}
 				}
 			}
 		}
@@ -454,6 +506,12 @@
 					gap: 0.5em;
 					align-items: center;
 
+					svg {
+						path {
+							fill: var(--primary-950);
+						}
+					}
+
 					.image-container {
 						position: relative;
 						width: 40px;
@@ -475,7 +533,6 @@
 					}
 
 					.name-skeleton {
-						background-color: var(--primary-500);
 						width: 100px;
 						height: 20px;
 						border-radius: 5px;
@@ -532,6 +589,7 @@
 			height: auto;
 
 			.information {
+				overflow-y: initial;
 				max-height: none;
 				padding: 0;
 			}
@@ -542,6 +600,12 @@
 
 				.container {
 					padding: 1rem 1rem 2rem 0;
+
+					> a {
+						span {
+							width: initial;
+						}
+					}
 				}
 			}
 		}
@@ -560,25 +624,53 @@
 			color: var(--primary-50);
 		}
 
-		.information {
-			p {
-				color: var(--primary-100);
-			}
+		main {
+			.information {
+				p {
+					color: var(--primary-100);
+				}
 
-			.user {
-				&.defender {
-					box-shadow: 0 0 5px var(--primary-600);
+				.user {
+					background-color: var(--primary-500);
 
-					@keyframes breathing {
-						0% {
-							box-shadow: 0 0 0 5px var(--primary-600);
+					&.defender {
+						box-shadow: 0 0 5px var(--primary-300);
+
+						@keyframes breathing {
+							0% {
+								box-shadow: 0 0 0 5px var(--primary-300);
+							}
+							50% {
+								box-shadow: 0 0 0 1px var(--primary-300);
+							}
+							100% {
+								box-shadow: 0 0 0 5px var(--primary-300);
+							}
 						}
-						50% {
-							box-shadow: 0 0 0 1px var(--primary-600);
+					}
+
+					.profile {
+						svg {
+							path {
+								fill: var(--primary-950);
+							}
 						}
-						100% {
-							box-shadow: 0 0 0 5px var(--primary-600);
+
+						.img-skeleton {
+							border: 2px solid var(--primary-900);
 						}
+
+						.name-skeleton {
+							background: linear-gradient(120deg, var(--primary-400), var(--primary-800));
+
+							background-size: 200% 200%;
+						}
+					}
+
+					p {
+						color: var(--primary-950);
+						font-weight: 700;
+						font-size: 1.3em;
 					}
 				}
 			}
