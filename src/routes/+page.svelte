@@ -185,7 +185,6 @@
 			align-items: center;
 
 			main {
-				// justify-content: space-evenly !important;
 				height: 50vh;
 
 				h1,

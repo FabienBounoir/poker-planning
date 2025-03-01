@@ -65,7 +65,7 @@
             },
             "securityAndEphemerality": {
                 "title": "Sécurité et Éphémérité",
-                "description": "Vos données, votre sérénité. Aucune information n'est sauvegardée, tout se fait en temps réel. Une fois le vote terminé, la room s’auto-détruit après quelques heures. Parce que vos échanges doivent rester aussi éphémères que vos décisions."
+                "description": "Vos données, votre sérénité. Aucune information n'est sauvegardée, tout se fait en temps réel. Une fois le vote terminé, la salle s’auto-détruit après quelques heures. Parce que vos échanges doivent rester aussi éphémères que vos décisions."
             }
         }
     },
@@ -82,7 +82,10 @@
         "noVote": "Aucun Vote",
         "IWantYourName": "J'aimerai savoir comment tu t'appelles !",
         "ErrorWhenJoining": "Une erreur c'est produite lors de la connection...",
-        "ErrorWhenSendingVote": "Une erreur s'est produite lors de l'envoi de votre vote."
+        "ErrorWhenSendingVote": "Une erreur s'est produite lors de l'envoi de votre vote.",
+        "SuccessfullyDeleted": "La salle a été supprimée avec succès.",
+        "SuccessfullyUpdated": "La salle a été mise à jour avec succès.",
+        "RoomDeleted": "La salle a été supprimée."
     },
     "ManagerPage": {
         "welcomeMessage": "Bienvenue {USER}!",
@@ -113,7 +116,7 @@
         "title": "Quel poker planning souhaites-tu rejoindre ?",
         "joinButton": "Rejoindre",
         "noCodeLink": "Pas de code ?",
-        "roomDoesntExist": "La room n'existe pas..."
+        "roomDoesntExist": "La salle n'existe pas..."
     },
     "CreatePage": {
         "title": "Créer un nouveau poker planning",
@@ -155,7 +158,7 @@
     },
     "edit": {
         "title": "Modifier le Poker Planning",
-        "deleteRoom": "Supprimer la room",
+        "deleteRoom": "Supprimer la salle",
         "save": "Sauvegarder",
         "cancel": "Annuler"
     }

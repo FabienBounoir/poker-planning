@@ -116,6 +116,11 @@
 			pokerManager = payload;
 		});
 
+		io.on('delete-room', () => {
+			toast.success($_('RoomPage.SuccessfullyDeleted'));
+			goto('/create');
+		});
+
 		io.on('hexcode', (payload) => {
 			myshades({
 				primary: payload.hexcode
@@ -163,6 +168,25 @@
 				date: pokerManager.date
 			})
 		);
+	};
+
+	const deleteRoom = () => {
+		if (checkSocketConnected()) {
+			io.send({ type: 'delete-room' });
+		}
+	};
+
+	const updateRoom = (data) => {
+		if (checkSocketConnected()) {
+			io.send({ type: 'update-room', data }, (response) => {
+				if (response?.error) {
+					toast.error(response.error);
+				} else {
+					toast.success($_('RoomPage.SuccessfullyUpdated'));
+					editRoom = false;
+				}
+			});
+		}
 	};
 
 	$effect(() => {
@@ -223,7 +247,7 @@
 <main>
 	{#if editRoom}
 		<div class="manager">
-			<EditConfiguration bind:editRoom {pokerManager} />
+			<EditConfiguration bind:editRoom {pokerManager} {deleteRoom} {updateRoom} />
 		</div>
 	{:else}
 		<div class="manager">
@@ -251,6 +275,7 @@
 			<div class="buttons">
 				{#if pokerManager.state == 'playing'}
 					<button
+						class="danger"
 						aria-label="Terminer les votes"
 						on:click={() => {
 							changeState('result');
@@ -424,6 +449,10 @@
 
 				button:first-child {
 					width: 100%;
+				}
+
+				button.danger {
+					background-color: var(--primary-300);
 				}
 
 				button:last-child {

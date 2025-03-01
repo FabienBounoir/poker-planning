@@ -500,7 +500,6 @@
 
 				label {
 					display: block;
-					// margin-top: 0.5em;
 					cursor: pointer;
 					background-color: var(--custom-color);
 					border-radius: 0.5rem;

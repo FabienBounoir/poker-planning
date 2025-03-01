@@ -1,6 +1,6 @@
 {
 	"name": "poker-planning",
-	"version": "1.3.1",
+	"version": "1.4.0",
 	"type": "module",
 	"scripts": {
 		"startserv": "node server.js",

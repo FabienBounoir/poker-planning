@@ -12,6 +12,7 @@
 	import ioClient from 'socket.io-client';
 	import { _ } from 'svelte-i18n';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
+	import { arraysAreEqual } from '$lib/utils';
 
 	let roomId: string;
 	let avatarType = 'dylan';
@@ -94,6 +95,11 @@
 				resultsItem = null;
 				resultDefender = null;
 
+				if (arraysAreEqual(pokerManager?.cards, payload?.cards) == false) {
+					selectedLetter = null;
+					submittedLetter = null;
+				}
+
 				if (payload.state == 'playing' && payload.state != pokerManager?.state) {
 					selectedLetter = null;
 					submittedLetter = null;
@@ -115,15 +121,6 @@
 				pokerManager = payload;
 			});
 
-			io.on('success', (payload) => {
-				if (payload?.success) {
-					if (timeout) {
-						clearTimeout(timeout);
-						timeout = null;
-					}
-				}
-			});
-
 			io.on('players', (payload) => {
 				players = payload;
 			});
@@ -132,6 +129,18 @@
 				myshades({
 					primary: payload.hexcode
 				});
+			});
+
+			io.on('message', (payload) => {
+				const type: keyof typeof toast = payload.type;
+				if (!['info', 'success', 'error', 'warning'].includes(type)) return;
+
+				(toast[type] as (message: string) => void)(payload.message);
+			});
+
+			io.on('delete-room', () => {
+				toast.info($_('RoomPage.RoomDeleted'));
+				goto('/join');
 			});
 
 			io.on('error', (e) => {
@@ -152,12 +161,20 @@
 
 	const sendVote = (forceValue = selectedLetter) => {
 		timeout = setTimeout(() => {
-			toast.error($_('RoomPage.ErrorWhenSendingVote'));
-			submittedLetter = null;
-			selectedLetter = null;
+			errorWhenSendingVote();
 		}, 2000);
 
-		io.send({ type: 'vote', data: { card: forceValue } });
+		io.send({ type: 'vote', data: { card: forceValue } }, (callback) => {
+			if (timeout) {
+				clearTimeout(timeout);
+				timeout = null;
+			}
+
+			if (!callback?.success) {
+				errorWhenSendingVote();
+			}
+		});
+
 		submittedLetter = forceValue;
 	};
 
@@ -178,6 +195,12 @@
 		}
 
 		io.send({ type: 'hexcode', data: { hexcode } });
+	};
+
+	const errorWhenSendingVote = () => {
+		toast.error($_('RoomPage.ErrorWhenSendingVote'));
+		submittedLetter = null;
+		selectedLetter = null;
 	};
 
 	const isPositionFree = (top: number, left: number) => {
@@ -316,19 +339,6 @@
 					/>
 				{/each}
 			</div>
-
-			<!-- 
-				Send automatic vote
-			<button
-				aria-label="Send vote"
-				class:hidden={selectedLetter === null}
-				disabled={submittedLetter != null && selectedLetter == submittedLetter}
-				on:click={() => {
-					sendVote();
-				}}
-			>
-				{$_('RoomPage.voteButton', { values: { LETTER: selectedLetter } })}
-			</button> -->
 		{:else if pokerManager.state === 'result'}
 			<div class="results-container">
 				<div class="results" in:fade={{ duration: 700, easing: quintInOut }}>

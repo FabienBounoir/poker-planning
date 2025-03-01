@@ -82,7 +82,10 @@
         "noVote": "Sin voto",
         "IWantYourName": "¡Me gustaría saber tu nombre!",
         "ErrorWhenJoining": "Se produjo un error al unirse...",
-        "ErrorWhenSendingVote": "Se produjo un error al enviar tu voto."
+        "ErrorWhenSendingVote": "Se produjo un error al enviar tu voto.",
+        "SuccessfullyDeleted": "La sala se ha eliminado correctamente.",
+        "SuccessfullyUpdated": "La sala se ha actualizado correctamente.",
+        "RoomDeleted": "La sala ha sido cerrada."
     },
     "ManagerPage": {
         "welcomeMessage": "¡Bienvenido {USER}!",

@@ -82,7 +82,10 @@
         "noVote": "Nessun voto",
         "IWantYourName": "Mi piacerebbe sapere come ti chiami!",
         "ErrorWhenJoining": "Si è verificato un errore durante la connessione...",
-        "ErrorWhenSendingVote": "Si è verificato un errore durante l'invio del tuo voto."
+        "ErrorWhenSendingVote": "Si è verificato un errore durante l'invio del tuo voto.",
+        "SuccessfullyDeleted": "La stanza è stata eliminata con successo.",
+        "SuccessfullyUpdated": "La stanza è stata aggiornata con successo.",
+        "RoomDeleted": "La stanza è stata chiusa."
     },
     "ManagerPage": {
         "welcomeMessage": "Benvenuto {USER}!",

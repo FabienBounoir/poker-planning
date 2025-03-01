@@ -5,15 +5,23 @@
 	import { fly } from 'svelte/transition';
 	import { _ } from 'svelte-i18n';
 
-	let { editRoom = $bindable(), pokerManager } = $props();
+	let {
+		editRoom = $bindable(),
+		pokerManager,
+		deleteRoom = () => {},
+		updateRoom = () => {}
+	} = $props();
 
 	let configuration = $state({
 		avatar: 'https://api.dicebear.com/9.x/dylan/svg',
+		team: '',
 		autoReveal: false,
 		voteOnResults: false,
 		type: 'room',
 		cards: undefined
 	});
+
+	let loadingType = $state(null);
 
 	let choices = $state([
 		{ id: 'TSHIRT', text: $_('selectCategories.types.TSHIRT') },
@@ -28,8 +36,7 @@
 		configuration.autoReveal = pokerManager.autoReveal;
 		configuration.voteOnResults = pokerManager.voteOnResults;
 		configuration.type = pokerManager.type;
-		configuration.cards = pokerManager.cards;
-		console.log(pokerManager);
+		configuration.team = pokerManager.team;
 
 		const getCustomDeck = Object.keys(window.localStorage).filter((key) =>
 			key.startsWith('CUSTOM-')
@@ -75,6 +82,12 @@
 		{/each}
 	</div>
 
+	<input
+		type="text"
+		bind:value={configuration.team}
+		placeholder={$_('CreatePage.teamInputPlaceholder')}
+	/>
+
 	<select bind:value={configuration.type} placeholder={$_('CreatePage.selectLabel')}>
 		{#each choices as choice}
 			<option value={choice.id}>
@@ -99,10 +112,27 @@
 	</div>
 
 	<footer>
-		<button class="danger">{$_('edit.deleteRoom')}</button>
+		<button
+			class="danger"
+			class:button--loading={loadingType == 'delete'}
+			disabled={loadingType == 'delete'}
+			on:click={() => {
+				loadingType = 'delete';
+				deleteRoom();
+			}}>{$_('edit.deleteRoom')}</button
+		>
 
 		<div class="buttons">
-			<button>{$_('edit.save')}</button>
+			<button
+				class:button--loading={loadingType == 'save'}
+				disabled={loadingType == 'save'}
+				on:click={() => {
+					loadingType = 'save';
+					updateRoom(configuration);
+				}}
+			>
+				<span class="button__text">{$_('edit.save')}</span></button
+			>
 			<button on:click={() => (editRoom = false)}>
 				{$_('edit.cancel')}
 			</button>
@@ -130,7 +160,7 @@
 		}
 
 		select {
-			max-width: 300px;
+			max-width: 38dvw;
 		}
 
 		footer {
@@ -138,13 +168,17 @@
 			justify-content: space-between;
 			flex-direction: row;
 			flex-wrap: wrap;
-			row-gap: 1rem;
+			gap: 1rem;
 
 			.buttons {
 				display: flex;
 				justify-content: space-between;
 				flex-direction: row;
-				gap: 1rem;
+				gap: 0.5rem;
+
+				button {
+					position: relative;
+				}
 
 				& button:first-child {
 					background-color: var(--primary-400);
@@ -152,7 +186,8 @@
 			}
 
 			.danger {
-				background-color: red;
+				position: relative;
+				background-color: #c12c2c;
 				color: white;
 				border: none;
 				padding: 0.5rem 1rem;
@@ -163,6 +198,20 @@
 				&:hover {
 					opacity: 0.8;
 				}
+			}
+		}
+	}
+
+	@media screen and (max-width: 950px) {
+		main {
+			.avatar-container {
+				display: flex;
+				justify-content: center;
+				gap: 1rem;
+			}
+
+			select {
+				max-width: 95dvw;
 			}
 		}
 	}
@@ -178,10 +227,9 @@
 				color: var(--primary-50);
 			}
 
-			footer {
-				// > button {
-				// 	background-color: var(--primary-50);
-				// }
+			input {
+				background-color: var(--primary-950);
+				color: var(--primary-50);
 			}
 		}
 	}
