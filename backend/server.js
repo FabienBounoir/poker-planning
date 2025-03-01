@@ -1,5 +1,6 @@
 const { Server } = require('socket.io');
 const { newUserJoined, roomDeleted, userLeft, stateUpdate } = require('./utils/statistics');
+const { arraysAreEqual } = require('./utils/utils');
 
 /**
  * @type {Server}
@@ -79,6 +80,17 @@ const createSocketIOServer = (server, rooms) => {
                     }
 
                     object.emit('game-update', element);
+                },
+                emitMessage(message, type = "info") {
+                    object.emit('message', {
+                        message,
+                        type
+                    });
+                },
+                emitDeleteRoom() {
+                    object.emit('delete-room');
+                    console.log(`Room ${roomId} deleted by manager.`);
+                    roomDeleted(room.data);
                 },
                 resetChoose() {
                     object.data.firstVoter = null;
@@ -255,27 +267,33 @@ const createSocketIOServer = (server, rooms) => {
                 }
             });
 
-            socket.on('message', ({ type, data }) => {
+            socket.on('message', ({ type, data }, callback) => {
                 switch (type) {
                     case 'vote': {
-                        const player = room.players.get(socket.id);
-                        if (!room?.data?.cards?.includes?.(data.card) && data.card != null) return;
+                        try {
+                            const player = room.players.get(socket.id);
+                            if (!room?.data?.cards?.includes?.(data.card) && data.card != null) return;
 
-                        if (room.data.firstVoter === null) {
-                            room.data.firstVoter = player.name;
-                            player.firstVoter = true;
+                            if (room.data.firstVoter === null) {
+                                room.data.firstVoter = player.name;
+                                player.firstVoter = true;
+                            }
+
+                            player.selectedCard = data.card;
+                            room.players.set(socket.id, player);
+                            room.emitPlayers(true);
+
+                            callback({ success: true });
+                            room.checkAllPlayersSelected();
+
+                            if (room.data.state === "result" && room?.data?.voteOnResults) {
+                                room.emitUpdateGame("result");
+                            }
                         }
-
-                        player.selectedCard = data.card;
-                        room.players.set(socket.id, player);
-                        room.emitPlayers(true);
-                        socket.emit("success", { success: true });
-                        room.checkAllPlayersSelected();
-
-                        if (room.data.state === "result" && room?.data?.voteOnResults) {
-                            room.emitUpdateGame("result");
+                        catch (e) {
+                            console.error("Error when voting", e);
+                            callback({ success: false, error: e.message });
                         }
-
                         break;
                     }
                     case 'state': {
@@ -295,6 +313,52 @@ const createSocketIOServer = (server, rooms) => {
                         room.data.hexcode = data.hexcode;
                         room.emit("hexcode", { hexcode: data.hexcode }, false);
                         break;
+                    case 'delete-room':
+                        if (player.manager) {
+                            rooms.delete(roomId);
+                            room.emitDeleteRoom();
+                        }
+                        break;
+                    case 'update-room':
+                        if (player.manager) {
+                            try {
+                                const { cards } = room.data;
+                                room.data = { ...room.data, ...data };
+
+                                switch (room.data.type) {
+                                    case "TSHIRT":
+                                        room.data.cards = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                                        break;
+                                    case "FIBONACCI":
+                                        room.data.cards = ["0", "1", "2", "3", "5", "8", "13", "21"];
+                                        break;
+                                    case "POWEROF2":
+                                        room.data.cards = ["1", "2", "4", "8", "16", "32", "64"];
+                                        break;
+                                    case "SEQUENTIAL":
+                                        room.data.cards = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+                                        break;
+                                    case "TSHIRT_HALF":
+                                        room.data.cards = ['XS', 'S', 'M', 'M/L', 'L', 'XL'];
+                                        break;
+                                    default:
+                                        console.log("Unknown room type", room?.data?.type);
+                                        if (!room?.data?.cards || room?.data?.cards?.length === 0) return
+                                }
+
+                                if (!arraysAreEqual(cards, room.data.cards)) {
+                                    room.resetChoose();
+                                }
+
+                                room.emitUpdateGame(room?.data?.state);
+                                callback({ success: true });
+                            }
+                            catch (e) {
+                                console.error("Error when updating room", e);
+                                callback({ success: false, error: e.message });
+                            }
+                        }
+                        break
                     default:
                         console.log(`EVENT ${type} doesn't exist`);
                 }
