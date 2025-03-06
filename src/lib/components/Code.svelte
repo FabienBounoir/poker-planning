@@ -88,6 +88,7 @@
 			width: 30vh;
 			height: 30vh;
 			cursor: pointer;
+			background: var(--primary-200);
 		}
 	}
 
