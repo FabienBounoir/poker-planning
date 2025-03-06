@@ -87,7 +87,7 @@
         "SuccessfullyUpdated": "La salle a été mise à jour avec succès.",
         "RoomDeleted": "La salle a été supprimée.",
         "observer": "Observateur",
-        "observerTooltip": "Un observateur peut uniquement voir et ne peut pas parier.",
+        "observerTooltip": "Un observateur peut uniquement regarder la session sans participer au vote.",
         "voteInProgress": "Vote en cours..."
     },
     "ManagerPage": {

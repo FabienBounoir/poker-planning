@@ -87,7 +87,7 @@
         "SuccessfullyUpdated": "La stanza è stata aggiornata con successo.",
         "RoomDeleted": "La stanza è stata chiusa.",
         "observer": "Osservatore",
-        "observerTooltip": "Un osservatore può solo vedere e non può votare.",
+        "observerTooltip": "Un osservatore può solo guardare la sessione e non può votare.",
         "voteInProgress": "Voto in corso..."
     },
     "ManagerPage": {

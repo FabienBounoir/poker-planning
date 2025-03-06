@@ -87,7 +87,7 @@
         "SuccessfullyUpdated": "The room has been successfully updated.",
         "RoomDeleted": "The room has been deleted.",
         "observer": "Observer",
-        "observerTooltip": "An observer can only see and cannot vote.",
+        "observerTooltip": "An observer can only watch the session and cannot vote.",
         "voteInProgress": "Vote in progress..."
     },
     "ManagerPage": {

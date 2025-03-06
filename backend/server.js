@@ -356,9 +356,6 @@ const createSocketIOServer = (server, rooms) => {
                                         if (!room?.data?.cards || room?.data?.cards?.length === 0) return
                                 }
 
-                                console.log("autoReveal", autoReveal)
-                                console.log("data.autoReveal", data?.autoReveal)
-
                                 if (!arraysAreEqual(cards, room.data.cards)) {
                                     room.resetChoose();
                                 }
