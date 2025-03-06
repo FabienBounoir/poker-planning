@@ -39,14 +39,15 @@
 		date: new Date().toISOString()
 	});
 
-	let users = $state(null);
+	let players = $state(null);
+	let observers = $state(null);
 
 	const canStarVote = () => {
 		if (pokerManager.userStory == '') {
 			return toast.error($_('ManagerPage.noUserStoryDefined'));
 		}
 
-		if (users?.length < 1) {
+		if (players?.length < 1) {
 			return toast.error($_('ManagerPage.noParticipantsForVote'));
 		}
 
@@ -57,7 +58,7 @@
 		io = ioClient(import.meta.env.VITE_BACKEND_URL);
 
 		io.on('connect', () => {
-			io.emit('join', { roomId, name: 'ADMIN', manager: true });
+			io.emit('join', { roomId, name: 'ADMIN', role: 'manager' });
 		});
 
 		io.on('error', (e) => {
@@ -68,7 +69,8 @@
 		});
 
 		io.on('players', (payload) => {
-			users = payload;
+			players = payload.players;
+			observers = payload.observers;
 		});
 
 		io.on('state', (payload) => {
@@ -308,16 +310,21 @@
 	{/if}
 
 	<div class="information">
-		{#if users != null}
-			{#if users?.length < 1}
+		{#if players != null}
+			{#if players?.length < 1}
 				<div>
 					<p style="text-align: center;">{$_('ManagerPage.noParticipantsMessage')}</p>
 				</div>
 			{:else}
-				<p style="text-align: end;">{users.length} player{users.length > 1 ? 's' : ''}</p>
+				<div class="header">
+					{#if observers && observers.length > 0}
+						<p>{observers?.length} observer{observers?.length > 1 ? 's' : ''}</p>
+					{/if}
+					<p style="margin-left: auto;">{players.length} player{players.length > 1 ? 's' : ''}</p>
+				</div>
 			{/if}
 
-			{#each users as user (user.id)}
+			{#each players as user (user.id)}
 				<div
 					class="user"
 					class:defender={resultDefender?.name == user?.name &&
@@ -469,6 +476,12 @@
 			overflow-y: auto;
 			display: flex;
 			flex-direction: column;
+
+			.header {
+				display: flex;
+				align-items: end;
+				justify-content: space-between;
+			}
 
 			.user {
 				display: flex;
