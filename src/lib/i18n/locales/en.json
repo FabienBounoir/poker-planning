@@ -85,7 +85,10 @@
         "ErrorWhenSendingVote": "An error occurred while sending your vote.",
         "SuccessfullyDeleted": "The room has been successfully deleted.",
         "SuccessfullyUpdated": "The room has been successfully updated.",
-        "RoomDeleted": "The room has been deleted."
+        "RoomDeleted": "The room has been deleted.",
+        "observer": "Observer",
+        "observerTooltip": "An observer can only watch the session and cannot vote.",
+        "voteInProgress": "Vote in progress..."
     },
     "ManagerPage": {
         "welcomeMessage": "Welcome {USER}!",

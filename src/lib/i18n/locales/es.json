@@ -85,7 +85,10 @@
         "ErrorWhenSendingVote": "Se produjo un error al enviar tu voto.",
         "SuccessfullyDeleted": "La sala se ha eliminado correctamente.",
         "SuccessfullyUpdated": "La sala se ha actualizado correctamente.",
-        "RoomDeleted": "La sala ha sido cerrada."
+        "RoomDeleted": "La sala ha sido cerrada.",
+        "observer": "Observador",
+        "observerTooltip": "Un observador solo puede ver la sesión y no puede votar.",
+        "voteInProgress": "Votación en curso..."
     },
     "ManagerPage": {
         "welcomeMessage": "¡Bienvenido {USER}!",

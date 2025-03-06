@@ -1,6 +1,7 @@
 const { Server } = require('socket.io');
 const { newUserJoined, roomDeleted, userLeft, stateUpdate } = require('./utils/statistics');
 const { arraysAreEqual } = require('./utils/utils');
+const { UserRole, isValidRole } = require('./utils/roles');
 
 /**
  * @type {Server}
@@ -36,7 +37,7 @@ const createSocketIOServer = (server, rooms) => {
                 emit(type, data, manager) {
                     object.players.forEach((player) => {
                         if (manager) {
-                            if (player.manager) {
+                            if (player.role === UserRole.MANAGER) {
                                 player.socket.emit(type, data);
                             }
                         } else {
@@ -46,32 +47,38 @@ const createSocketIOServer = (server, rooms) => {
                 },
                 emitPlayers(manager = false) {
                     const players = [];
+                    const observers = [];
                     object.players.forEach((player, id) => {
-                        if (!player.manager) {
+                        if (player.role === UserRole.PLAYER) {
                             players.push({ ...player, id, socket: undefined });
+                        }
+                        else if (player.role === UserRole.OBSERVER) {
+                            observers.push({ ...player, id, socket: undefined });
                         }
                     });
 
                     object.players.forEach((player) => {
                         if (manager) {
-                            if (player.manager) {
-                                player.socket.emit("players", players);
+                            if (player.role === UserRole.MANAGER) {
+                                player.socket.emit("players", { players, observers });
                             }
                         }
                         else {
-                            player.socket.emit("players", players);
+                            player.socket.emit("players", { players, observers });
                         }
                     });
                 },
-                emitUpdateGame(state) {
+                emitUpdateGame(state, configUpdate = false) {
                     let element = { ...object.data };
 
-                    if (this.timeout) {
-                        clearTimeout(this.timeout);
-                        delete this.timeout;
-                    }
+                    if (!configUpdate) {
+                        if (this.timeout) {
+                            clearTimeout(this.timeout);
+                            delete this.timeout;
+                        }
 
-                    stateUpdate(element, roomId, state);
+                        stateUpdate(element, roomId, state);
+                    }
 
                     if (state == "result") {
                         processResultState(this, element, roomId);
@@ -104,22 +111,20 @@ const createSocketIOServer = (server, rooms) => {
                     if (!this.data.autoReveal) return false;
                     console.log("Auto reveal is enabled");
 
+
                     if (this.timeout) {
                         clearTimeout(this.timeout);
                         delete this.timeout;
                     }
 
                     this.timeout = setTimeout(() => {
-                        for (let player of object.players.values()) {
+                        for (const player of object.players.values()) {
                             console.log("Check player", player.name, player.selectedCard);
-                            if (!player.manager && !player.selectedCard) {
+                            if (player.role === UserRole.PLAYER && !player.selectedCard) {
                                 console.log("Not all players have selected a card");
                                 return;
                             }
                         }
-
-                        console.log("All players have selected a card");
-                        console.log("Timeout to reveal result");
                         this.data.state = "result";
                         this.emitUpdateGame("result");
                     }, 2000);
@@ -152,7 +157,7 @@ const createSocketIOServer = (server, rooms) => {
 
         object.players.forEach((player) => {
             const selectedCard = player?.selectedCard?.toUpperCase?.();
-            if (!player.manager && selectedCard) {
+            if (player.role !== UserRole.MANAGER && selectedCard) {
                 totalPlayers++;
                 if (!resultsByItem.has(selectedCard)) {
                     resultsByItem.set(selectedCard, []);
@@ -204,10 +209,10 @@ const createSocketIOServer = (server, rooms) => {
     io = new Server(server, { cors: { origin: "*" } });
 
     io.on('connection', (socket) => {
-        socket.on('join', ({ roomId, name, manager }) => {
+        socket.on('join', ({ roomId, name, role = "player" }) => {
             const room = getRooms(roomId);
 
-            console.log(roomId, name, manager)
+            console.log(roomId, name, role)
 
             if (!room) {
                 console.warn("Room doesn't exist");
@@ -216,6 +221,11 @@ const createSocketIOServer = (server, rooms) => {
 
             if (!name) {
                 console.warn("User without name");
+                return socket.disconnect(true);
+            }
+
+            if (!isValidRole(role)) {
+                console.warn("Invalid role");
                 return socket.disconnect(true);
             }
 
@@ -235,7 +245,7 @@ const createSocketIOServer = (server, rooms) => {
                 socket,
                 name: formatName(name),
                 selectedCard: null,
-                manager,
+                role
             };
 
             room.players.set(socket.id, player);
@@ -314,15 +324,15 @@ const createSocketIOServer = (server, rooms) => {
                         room.emit("hexcode", { hexcode: data.hexcode }, false);
                         break;
                     case 'delete-room':
-                        if (player.manager) {
+                        if (player.role === UserRole.MANAGER) {
                             rooms.delete(roomId);
                             room.emitDeleteRoom();
                         }
                         break;
                     case 'update-room':
-                        if (player.manager) {
+                        if (player.role === UserRole.MANAGER) {
                             try {
-                                const { cards } = room.data;
+                                const { cards, autoReveal } = room.data;
                                 room.data = { ...room.data, ...data };
 
                                 switch (room.data.type) {
@@ -349,8 +359,11 @@ const createSocketIOServer = (server, rooms) => {
                                 if (!arraysAreEqual(cards, room.data.cards)) {
                                     room.resetChoose();
                                 }
+                                else if (autoReveal != data?.autoReveal && data?.autoReveal) {
+                                    room.checkAllPlayersSelected();
+                                }
 
-                                room.emitUpdateGame(room?.data?.state);
+                                room.emitUpdateGame(room?.data?.state, true);
                                 callback({ success: true });
                             }
                             catch (e) {

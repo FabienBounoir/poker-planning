@@ -119,7 +119,7 @@
 			on:click={() => {
 				loadingType = 'delete';
 				deleteRoom();
-			}}>{$_('edit.deleteRoom')}</button
+			}}><span class="button__text">{$_('edit.deleteRoom')}</span></button
 		>
 
 		<div class="buttons">
@@ -128,6 +128,14 @@
 				disabled={loadingType == 'save'}
 				on:click={() => {
 					loadingType = 'save';
+
+					if (configuration?.type?.startsWith?.('CUSTOM-')) {
+						configuration = {
+							...configuration,
+							cards: choices.find((choice) => choice.id === configuration?.type)?.cards
+						};
+					}
+
 					updateRoom(configuration);
 				}}
 			>
@@ -197,6 +205,10 @@
 
 				&:hover {
 					opacity: 0.8;
+				}
+
+				span {
+					color: white;
 				}
 			}
 		}
