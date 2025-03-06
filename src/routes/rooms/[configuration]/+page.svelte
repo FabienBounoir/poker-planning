@@ -13,9 +13,12 @@
 	import { _ } from 'svelte-i18n';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
 	import { arraysAreEqual } from '$lib/utils';
+	import Tooltip from '$lib/components/Tooltip.svelte';
+
+	const ROOM_ID_REGEX = /^\d{3}-\d{3}$/i;
 
 	let roomId: string;
-	let avatarType = 'dylan';
+	let avatarType: string | null = $state('dylan');
 	let io: Socket;
 
 	let pokerManager = $state(null);
@@ -26,6 +29,8 @@
 
 	let selectedLetter = $state(null);
 	let username: string | null = $state('');
+	let isObserver = $state(false);
+	let observers = $state(null);
 	let submitting = $state(false);
 	let submittedLetter = $state(null);
 
@@ -42,21 +47,27 @@
 				username = window.localStorage.getItem('username');
 			}
 
-			const roomConfig = JSON.parse(atob($page.params.configuration));
+			// Old configuration format (many user like this format)
+			if ($page.params.configuration && ROOM_ID_REGEX.test($page.params.configuration)) {
+				roomId = $page.params.configuration;
+				avatarType = null;
+			} else {
+				const roomConfig = JSON.parse(atob($page.params.configuration));
 
-			roomId = roomConfig?.r;
-			avatarType = roomConfig?.a;
+				roomId = roomConfig?.r;
+				avatarType = roomConfig?.a;
 
-			if (roomConfig?.c && roomConfig?.c?.length == 7 && roomConfig?.c?.startsWith?.('#')) {
-				myshades({
-					primary: roomConfig.c
-				});
+				if (roomConfig?.c && roomConfig?.c?.length == 7 && roomConfig?.c?.startsWith?.('#')) {
+					myshades({
+						primary: roomConfig.c
+					});
+				}
 			}
 		} catch (e) {
 			console.error('Error in RoomPage', e);
 		}
 
-		if (!roomId || /^\d{3}-\d{3}$/i.test(roomId) == false) {
+		if (!roomId || !ROOM_ID_REGEX.test(roomId)) {
 			return goto('/join');
 		}
 
@@ -84,7 +95,7 @@
 			io = ioClient(import.meta.env.VITE_BACKEND_URL);
 
 			io.on('connect', () => {
-				io.emit('join', { roomId, name: username });
+				io.emit('join', { roomId, name: username, role: isObserver ? 'observer' : 'player' });
 
 				if (submittedLetter != null) {
 					sendVote(submittedLetter);
@@ -122,7 +133,8 @@
 			});
 
 			io.on('players', (payload) => {
-				players = payload;
+				players = payload.players;
+				observers = payload.observer;
 			});
 
 			io.on('hexcode', (payload) => {
@@ -259,10 +271,12 @@
 			)}<br />
 		</h1>
 		<form on:submit|preventDefault={connect}>
-			<img
-				src="https://api.dicebear.com/9.x/{avatarType || 'dylan'}/svg?seed={formatName(username)}"
-				alt="User-avatar"
-			/>
+			{#if avatarType != null}
+				<img
+					src="https://api.dicebear.com/9.x/{avatarType || 'dylan'}/svg?seed={formatName(username)}"
+					alt="User-avatar"
+				/>
+			{/if}
 
 			<input
 				type="text"
@@ -271,6 +285,16 @@
 				disabled={submitting}
 				maxlength="32"
 			/>
+			<div class="observer">
+				<input type="checkbox" bind:checked={isObserver} />
+				<Tooltip title={$_('RoomPage.observerTooltip')}>
+					<label
+						on:click={() => {
+							isObserver = !isObserver;
+						}}>{$_('RoomPage.observer')}</label
+					>
+				</Tooltip>
+			</div>
 			<button
 				class:button--loading={submitting}
 				aria-label="Validate your name"
@@ -289,7 +313,9 @@
 
 		{#if pokerManager.state === 'waiting'}
 			<h3 class="player-count-display">
-				{players?.length || 0} player{players?.length > 1 ? 's' : ''}
+				{players && players.length > 0 ? `${players.length} player` : ''}
+				{players && players.length > 0 && observers && observers.length > 0 ? ' + ' : ''}
+				{observers && observers.length > 0 ? `${observers?.length} observer` : ''}
 			</h3>
 
 			<h1>{$_('RoomPage.waitingForVotes')}</h1>
@@ -327,18 +353,22 @@
 				</div>
 			{/if}
 
-			<div class="flex" in:fade={{ duration: 500, easing: quintOut }}>
-				{#each pokerManager.cards as card}
-					<Card
-						content={card}
-						bind:cardSelected={selectedLetter}
-						bind:submittedLetter
-						clickHandler={() => {
-							sendVote();
-						}}
-					/>
-				{/each}
-			</div>
+			{#if isObserver}
+				<h1>{$_('RoomPage.voteInProgress')}</h1>
+			{:else}
+				<div class="flex" in:fade={{ duration: 500, easing: quintOut }}>
+					{#each pokerManager.cards as card}
+						<Card
+							content={card}
+							bind:cardSelected={selectedLetter}
+							bind:submittedLetter
+							clickHandler={() => {
+								sendVote();
+							}}
+						/>
+					{/each}
+				</div>
+			{/if}
 		{:else if pokerManager.state === 'result'}
 			<div class="results-container">
 				<div class="results" in:fade={{ duration: 700, easing: quintInOut }}>
@@ -346,26 +376,24 @@
 						<h1>{$_('RoomPage.resultsTitle')}</h1>
 
 						{#if resultDefender}
-							{#key resultDefender}
-								<h3
-									in:scale={{
-										delay: pokerManager?.voteOnResults ? 200 : 2000,
-										duration: 500,
-										easing: quintInOut
-									}}
-								>
-									<div>
-										<img
-											alt="User-avatar"
-											src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
-												`?seed=${resultDefender.name}`}
-										/>
-										<span>{resultDefender.name}</span>
-									</div>
-									{$_('RoomPage.resultDefenderQuestion')}
-									<span> {resultDefender.item}</span> ?
-								</h3>
-							{/key}
+							<h3
+								in:scale={{
+									delay: 200,
+									duration: 500,
+									easing: quintInOut
+								}}
+							>
+								<div>
+									<img
+										alt="User-avatar"
+										src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
+											`?seed=${resultDefender.name}`}
+									/>
+									<span>{resultDefender.name}</span>
+								</div>
+								{$_('RoomPage.resultDefenderQuestion')}
+								<span> {resultDefender.item}</span> ?
+							</h3>
 						{/if}
 					</div>
 
@@ -421,7 +449,7 @@
 
 				<!-- //-------------- -->
 
-				{#if pokerManager?.voteOnResults}
+				{#if pokerManager?.voteOnResults && !isObserver}
 					<div class="cards" in:fade={{ duration: 500, easing: quintOut }}>
 						{#each pokerManager.cards as card}
 							<Card
@@ -573,6 +601,29 @@
 		height: 100dvh;
 		text-align: center;
 
+		.observer {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.5em;
+			margin-bottom: 1em;
+			color: var(--primary-800);
+			user-select: none;
+			cursor: pointer;
+
+			input {
+				accent-color: var(--primary-500);
+
+				outline: none;
+				box-shadow: none;
+			}
+
+			label {
+				font-weight: 600;
+				cursor: pointer;
+			}
+		}
+
 		.rotateAnimation {
 			display: inline-block;
 			animation: coucou 1s infinite;
@@ -597,7 +648,7 @@
 
 		form {
 			display: grid;
-			gap: 0.5em;
+			gap: 0.3em;
 
 			img {
 				border-radius: 100%;
@@ -832,6 +883,10 @@
 				background-color: var(--primary-800);
 				color: var(--primary-200);
 				border: 1px solid var(--primary-500);
+			}
+
+			.observer {
+				color: var(--primary-200);
 			}
 		}
 	}
