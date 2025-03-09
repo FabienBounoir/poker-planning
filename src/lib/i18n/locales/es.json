@@ -88,7 +88,9 @@
         "RoomDeleted": "La sala ha sido cerrada.",
         "observer": "Observador",
         "observerTooltip": "Un observador solo puede ver la sesión y no puede votar.",
-        "voteInProgress": "Votación en curso..."
+        "voteInProgress": "Votación en curso...",
+        "fileTooLarge": "El archivo excede el tamaño máximo permitido de 5 MB.",
+        "errorUploadingFile": "Ocurrió un error al subir el archivo."
     },
     "ManagerPage": {
         "welcomeMessage": "¡Bienvenido {USER}!",

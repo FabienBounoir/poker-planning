@@ -1,50 +1,64 @@
 <script lang="ts">
-	import Card from '$lib/components/Card.svelte';
-	import { fade, scale } from 'svelte/transition';
-	import { page } from '$app/stores';
-	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
-	import { onDestroy, onMount } from 'svelte';
-	import { quintInOut, quintOut } from 'svelte/easing';
-	import { Confetti } from 'svelte-confetti';
+	import { page } from '$app/stores';
+	import AvatarCreation from '$lib/components/AvatarCreation.svelte';
+	import Card from '$lib/components/Card.svelte';
+	import ConfettiFullscreen from '$lib/components/ConfettiFullscreen.svelte';
+	import ProgressBar from '$lib/components/ProgressBar.svelte';
+	import Tooltip from '$lib/components/Tooltip.svelte';
+	import type { PokerManager } from '$lib/components/types/PokerManager';
+	import type { ResultDefender } from '$lib/components/types/ResultDefender';
+	import type { ResultItems } from '$lib/components/types/ResultItems';
+	import type { Users } from '$lib/components/types/Users';
 	import myshades from '$lib/myshades';
+	import { arraysAreEqual } from '$lib/utils';
 	import type { Socket } from 'socket.io-client';
 	import ioClient from 'socket.io-client';
+	import { onDestroy, onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
-	import ProgressBar from '$lib/components/ProgressBar.svelte';
-	import { arraysAreEqual } from '$lib/utils';
-	import Tooltip from '$lib/components/Tooltip.svelte';
+	import { toast } from 'svelte-sonner';
+	import { quintInOut, quintOut } from 'svelte/easing';
+	import { fade, scale } from 'svelte/transition';
 
 	const ROOM_ID_REGEX = /^\d{3}-\d{3}$/i;
+	const DEFAUT_AVATAR_URL = 'https://api.dicebear.com/9.x/dylan/svg';
+
+	let io: Socket;
 
 	let roomId: string;
 	let avatarType: string | null = $state('dylan');
-	let io: Socket;
-
-	let pokerManager = $state(null);
-	let status = $state('waiting');
 	let hexcode = $state('');
+
+	let pokerManager: PokerManager | null = $state(null);
+	let status = $state('waiting');
 
 	let timeout: number | null;
 
+	let username: string = $state('');
+	let customAvatarUrl: string | null = $state('');
+	let loadingCustomAvatar = $state(false);
 	let selectedLetter = $state(null);
-	let username: string | null = $state('');
 	let isObserver = $state(false);
-	let observers = $state(null);
+
 	let submitting = $state(false);
 	let submittedLetter = $state(null);
 
-	let resultsItem = $state(null);
-	let resultDefender = $state(null);
+	let resultItems: ResultItems = $state(null);
+	let resultDefender: ResultDefender = $state(null);
 
-	let players = $state(null);
+	let players: Users = $state(null);
+	let observers: Users = $state(null);
 
 	let existingPositions: { top: number; left: number }[] = [];
 
 	onMount(() => {
 		try {
 			if (window?.localStorage?.getItem?.('username')) {
-				username = window.localStorage.getItem('username');
+				username = window.localStorage.getItem('username') || '';
+			}
+
+			if (window?.localStorage?.getItem?.('avatar')) {
+				customAvatarUrl = window.localStorage.getItem('avatar') || '';
 			}
 
 			// Old configuration format (many user like this format)
@@ -95,7 +109,12 @@
 			io = ioClient(import.meta.env.VITE_BACKEND_URL);
 
 			io.on('connect', () => {
-				io.emit('join', { roomId, name: username, role: isObserver ? 'observer' : 'player' });
+				io.emit('join', {
+					roomId,
+					name: username,
+					avatar: customAvatarUrl,
+					role: isObserver ? 'observer' : 'player'
+				});
 
 				if (submittedLetter != null) {
 					sendVote(submittedLetter);
@@ -103,7 +122,7 @@
 			});
 
 			io.on('game-update', (payload) => {
-				resultsItem = null;
+				resultItems = null;
 				resultDefender = null;
 
 				if (arraysAreEqual(pokerManager?.cards, payload?.cards) == false) {
@@ -116,7 +135,7 @@
 					submittedLetter = null;
 				} else if (payload?.state == 'result') {
 					if (payload?.result) {
-						resultsItem = payload.result;
+						resultItems = payload.result;
 					}
 
 					if (payload?.defender) {
@@ -176,7 +195,7 @@
 			errorWhenSendingVote();
 		}, 2000);
 
-		io.send({ type: 'vote', data: { card: forceValue } }, (callback) => {
+		io.send({ type: 'vote', data: { card: forceValue } }, (callback: { success: boolean }) => {
 			if (timeout) {
 				clearTimeout(timeout);
 				timeout = null;
@@ -236,14 +255,6 @@
 
 		return `--top: ${top}vh; --left: ${left}vw;`;
 	};
-
-	const formatName = (name) => {
-		return name
-			.trim()
-			.split(/[\s.]+/)
-			.map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-			.join(' ');
-	};
 </script>
 
 <svelte:head>
@@ -272,9 +283,11 @@
 		</h1>
 		<form on:submit|preventDefault={connect}>
 			{#if avatarType != null}
-				<img
-					src="https://api.dicebear.com/9.x/{avatarType || 'dylan'}/svg?seed={formatName(username)}"
-					alt="User-avatar"
+				<AvatarCreation
+					bind:customAvatarUrl
+					bind:loading={loadingCustomAvatar}
+					{avatarType}
+					{username}
 				/>
 			{/if}
 
@@ -299,7 +312,7 @@
 				class:button--loading={submitting}
 				aria-label="Validate your name"
 				type="submit"
-				disabled={submitting}
+				disabled={submitting || (customAvatarUrl != null && loadingCustomAvatar)}
 			>
 				<span class="button__text">{$_('RoomPage.validateButton')}</span></button
 			>
@@ -328,8 +341,8 @@
 					>
 						<img
 							alt="User-avatar"
-							src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
-								`?seed=${player.name}`}
+							src={player?.avatar ||
+								(pokerManager?.avatar || DEFAUT_AVATAR_URL) + `?seed=${player.name}`}
 						/>
 						<span>{player.name}</span>
 					</div>
@@ -386,45 +399,24 @@
 								<div>
 									<img
 										alt="User-avatar"
-										src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
-											`?seed=${resultDefender.name}`}
+										src={resultDefender?.avatar ||
+											(pokerManager?.avatar || DEFAUT_AVATAR_URL) + `?seed=${resultDefender?.name}`}
 									/>
-									<span>{resultDefender.name}</span>
+									<span>{resultDefender?.name}</span>
 								</div>
 								{$_('RoomPage.resultDefenderQuestion')}
-								<span> {resultDefender.item}</span> ?
+								<span> {resultDefender?.item}</span> ?
 							</h3>
 						{/if}
 					</div>
 
 					<div class="result">
-						{#if resultsItem}
-							{#if resultsItem.length == 1 && resultsItem?.[0]?.players?.length > 1}
-								<div
-									style="
-							position: fixed;
-							top: -50px;
-							left: 0;
-							height: 100dvh;
-							width: 100dvw;
-							display: flex;
-							justify-content: center;
-							overflow: hidden;
-							pointer-events: none;"
-								>
-									<Confetti
-										x={[-5, 5]}
-										y={[0, 0.1]}
-										delay={[500, 2000]}
-										infinite
-										duration={5000}
-										amount={200}
-										fallDistance="100dvh"
-									/>
-								</div>
+						{#if resultItems}
+							{#if resultItems?.length == 1 && resultItems?.[0]?.players?.length > 1}
+								<ConfettiFullscreen />
 							{/if}
 
-							{#each resultsItem as { item, players, pourcentage }, i}
+							{#each resultItems as { item, players, pourcentage }, i}
 								<div class="result-item">
 									<ProgressBar {pourcentage} {item} delay={i} />
 									<div class="players-container">
@@ -432,10 +424,10 @@
 											<span class="player">
 												<img
 													alt="User-avatar"
-													src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
-														`?seed=${player}`}
+													src={player?.avatar ||
+														(pokerManager?.avatar || DEFAUT_AVATAR_URL) + `?seed=${player?.name}`}
 												/>
-												{player}
+												{player?.name}
 											</span>
 										{/each}
 									</div>

@@ -1,15 +1,15 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { quintOut } from 'svelte/easing';
-	import { fade, scale } from 'svelte/transition';
-	import { _ } from 'svelte-i18n';
 	import { accordion } from '$lib/animations/accordion';
 	import Switch from '$lib/components/Switch.svelte';
 	import myshades from '$lib/myshades';
+	import { onMount } from 'svelte';
+	import { _ } from 'svelte-i18n';
 	import { toast } from 'svelte-sonner';
+	import { quintOut } from 'svelte/easing';
+	import { fade, scale } from 'svelte/transition';
 
-	let type = $state();
+	let type = $state('TSHIRT');
 	let team = $state('');
 
 	let status = $state('init');
@@ -47,7 +47,8 @@
 
 			let bodyBuilder = {
 				type,
-				team
+				team,
+				cards: undefined
 			};
 
 			if (advancedSettings) {
@@ -89,10 +90,12 @@
 
 	onMount(() => {
 		if (window?.localStorage?.getItem?.('advancedSettings')) {
-			advancedSettingsObject = {...advancedSettingsObject, ...JSON.parse(window.localStorage.getItem('advancedSettings'))};
+			advancedSettingsObject = {
+				...advancedSettingsObject,
+				...JSON.parse(window.localStorage.getItem('advancedSettings'))
+			};
 			advancedSettings = true;
 		}
-
 
 		const getCustomDeck = Object.keys(window?.localStorage || {}).filter((key) =>
 			key.startsWith('CUSTOM-')
@@ -111,7 +114,6 @@
 				});
 			}
 		}
-		
 
 		choices.push({ id: 'CUSTOM', text: $_('selectCategories.types.CUSTOM') });
 

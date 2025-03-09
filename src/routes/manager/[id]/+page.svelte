@@ -2,36 +2,40 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Code from '$lib/components/Code.svelte';
+	import ConfettiFullscreen from '$lib/components/ConfettiFullscreen.svelte';
+	import EditConfiguration from '$lib/components/EditConfiguration.svelte';
 	import TextArea from '$lib/components/Textarea.svelte';
+	import Tooltip from '$lib/components/Tooltip.svelte';
+	import type { PokerManager } from '$lib/components/types/PokerManager';
+	import type { ResultDefender } from '$lib/components/types/ResultDefender';
+	import type { ResultItems } from '$lib/components/types/ResultItems';
+	import type { Users } from '$lib/components/types/Users';
+	import Valided from '$lib/components/Valided.svelte';
 	import myshades from '$lib/myshades';
+	import { dataToShortBinary } from '$lib/utils';
 	import type { Socket } from 'socket.io-client';
+	import ioClient from 'socket.io-client';
 	import { onDestroy, onMount } from 'svelte';
+	import { _ } from 'svelte-i18n';
 	import { toast } from 'svelte-sonner';
 	import { backOut, cubicInOut } from 'svelte/easing';
 	import { fly, slide } from 'svelte/transition';
-	import ioClient from 'socket.io-client';
-	import Confetti from 'svelte-confetti';
-	import { _ } from 'svelte-i18n';
-	import EditConfiguration from '$lib/components/EditConfiguration.svelte';
-	import Valided from '$lib/components/Valided.svelte';
-	import Tooltip from '$lib/components/Tooltip.svelte';
-	import { dataToShortBinary } from '$lib/utils';
 
-	let roomId = $page.params.id;
+	const roomId = $page.params.id;
 	let url = $state('');
 
 	let io: Socket;
 	let editRoom = $state(false);
 
-	let resultsItem = $state(null);
-	let resultDefender = $state(null);
+	let resultsItem: ResultItems = $state(null);
+	let resultDefender: ResultDefender = $state(null);
 
 	let history: object[] = $state([]);
 
 	let displayConfetti = $state(false);
-	let displayConfettiTimeout: NodeJS.Timeout | null = null;
+	let displayConfettiTimeout: ReturnType<typeof setTimeout> | null = null;
 
-	let pokerManager = $state({
+	let pokerManager: PokerManager = $state({
 		team: '',
 		cards: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
 		state: 'waiting',
@@ -39,15 +43,15 @@
 		date: new Date().toISOString()
 	});
 
-	let players = $state(null);
-	let observers = $state(null);
+	let players: Users = $state(null);
+	let observers: Users = $state(null);
 
 	const canStarVote = () => {
-		if (pokerManager.userStory == '') {
+		if (pokerManager?.userStory == '') {
 			return toast.error($_('ManagerPage.noUserStoryDefined'));
 		}
 
-		if (players?.length < 1) {
+		if (players && players.length < 1) {
 			return toast.error($_('ManagerPage.noParticipantsForVote'));
 		}
 
@@ -130,22 +134,7 @@
 		});
 	};
 
-	onMount(() => {
-		connect();
-	});
-
-	onDestroy(() => {
-		if (io) {
-			io.removeAllListeners();
-			io.disconnect();
-		}
-
-		if (displayConfettiTimeout) {
-			clearTimeout(displayConfettiTimeout);
-		}
-	});
-
-	const changeState = (state) => {
+	const changeState = (state: string) => {
 		if (checkSocketConnected()) {
 			io.send({ type: 'state', data: { state, userStory: pokerManager.userStory } });
 		}
@@ -160,7 +149,7 @@
 		return true;
 	};
 
-	const saveHistory = (test) => {
+	const saveHistory = () => {
 		window.localStorage.setItem(
 			`PP_HISTORY_${pokerManager?.date}`,
 			JSON.stringify({
@@ -178,9 +167,9 @@
 		}
 	};
 
-	const updateRoom = (data) => {
+	const updateRoom = (data: PokerManager) => {
 		if (checkSocketConnected()) {
-			io.send({ type: 'update-room', data }, (response) => {
+			io.send({ type: 'update-room', data }, (response: { error: string; success: boolean }) => {
 				if (response?.error) {
 					toast.error(response.error);
 				} else {
@@ -191,9 +180,24 @@
 		}
 	};
 
+	onMount(() => {
+		connect();
+	});
+
+	onDestroy(() => {
+		if (io) {
+			io.removeAllListeners();
+			io.disconnect();
+		}
+
+		if (displayConfettiTimeout) {
+			clearTimeout(displayConfettiTimeout);
+		}
+	});
+
 	$effect(() => {
-		if (history.length > 0) {
-			saveHistory(history);
+		if (history && history.length > 0) {
+			saveHistory();
 		}
 	});
 
@@ -221,28 +225,7 @@
 
 {#if resultsItem}
 	{#if displayConfetti}
-		<div
-			style="
-				position: fixed;
-				top: -50px;
-				left: 0;
-				height: 100dvh;
-				width: 100dvw;
-				display: flex;
-				justify-content: center;
-				overflow: hidden;
-				pointer-events: none;"
-		>
-			<Confetti
-				x={[-5, 5]}
-				y={[0, 0.1]}
-				delay={[500, 2000]}
-				infinite
-				duration={5000}
-				amount={100}
-				fallDistance="100dvh"
-			/>
-		</div>
+		<ConfettiFullscreen />
 	{/if}
 {/if}
 
@@ -336,8 +319,9 @@
 						<div class="image-container">
 							<img
 								alt={'avatar for ' + user.name}
-								src={(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
-									`?seed=${user.name}`}
+								src={user?.avatar ||
+									(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
+										`?seed=${user.name}`}
 							/>
 						</div>
 						<h2>{user.name}</h2>
