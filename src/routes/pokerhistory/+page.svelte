@@ -1,36 +1,10 @@
-<script>
+<script lang="ts">
+	import type { PokerManager } from '$lib/components/types/PokerManager';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 
-	/**
-	 * @typedef {Object} PokerResult
-	 * @property {string} name - The name of the player.
-	 * @property {string} card - The card selected by the player.
-	 */
-
-	/**
-	 * @typedef {Object} PokerHistoryItem
-	 * @property {string} story - The story associated with the poker session.
-	 * @property {string} winner - The winning card.
-	 * @property {PokerResult[]} results - The results of the poker session.
-	 */
-
-	/**
-	 * @typedef {Object} Poker
-	 * @property {PokerHistoryItem[]} history - The history of poker sessions.
-	 * @property {string} team - The team name.
-	 * @property {string[]} cards - The cards used in the poker session.
-	 * @property {string} date - The date of the poker session.
-	 */
-
-	/**
-	 * @type {Poker[]}
-	 */
-	let pokerHistory = $state([]);
-	/**
-	 * @type {Poker | null}
-	 */
-	let poker = $state(null);
+	let pokerHistory: PokerManager[] = $state([]);
+	let poker: PokerManager | null = $state(null);
 
 	onMount(() => {
 		const sortedHistoryKeys = getSortedHistoryKeys();
@@ -54,10 +28,7 @@
 		return sortedKeys;
 	};
 
-	/**
-	 * @param {Poker} history - The poker session to display.
-	 */
-	const setPoker = (history) => {
+	const setPoker = (history: PokerManager) => {
 		poker = history;
 		window.scrollTo(0, 0);
 	};

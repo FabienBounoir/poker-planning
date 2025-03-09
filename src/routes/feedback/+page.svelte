@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Textarea from '$lib/components/Textarea.svelte';
 	import { toast } from 'svelte-sonner';
 	import { quintOut } from 'svelte/easing';
@@ -31,7 +31,7 @@
 		step = 'thankyou';
 	};
 
-	const validEmail = (email) => {
+	const validEmail = (email: string) => {
 		const re = /\S+@\S+\.\S+/;
 		return re.test(email);
 	};

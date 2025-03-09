@@ -1,6 +1,6 @@
 const { Server } = require('socket.io');
 const { newUserJoined, roomDeleted, userLeft, stateUpdate } = require('./utils/statistics');
-const { arraysAreEqual } = require('./utils/utils');
+const { arraysAreEqual, validateAvatar } = require('./utils/utils');
 const { UserRole, isValidRole } = require('./utils/roles');
 
 /**
@@ -162,7 +162,7 @@ const createSocketIOServer = (server, rooms) => {
                 if (!resultsByItem.has(selectedCard)) {
                     resultsByItem.set(selectedCard, []);
                 }
-                resultsByItem.get(selectedCard).push(player.name);
+                resultsByItem.get(selectedCard).push({ name: player.name, avatar: player.avatar });
 
                 history.results.push({ name: player.name, card: selectedCard });
             }
@@ -182,7 +182,7 @@ const createSocketIOServer = (server, rooms) => {
                 if (resultsByItem.size > 1) {
                     const lastItem = result[result.length - 1];
                     const userSelected = lastItem.players[Math.floor(Math.random() * lastItem.players.length)];
-                    object.data.defender = element.defender = { name: userSelected, item: lastItem.item };
+                    object.data.defender = element.defender = { ...userSelected, item: lastItem.item };
                 }
                 else {
                     object.data.defender = element.defender = null;
@@ -209,7 +209,7 @@ const createSocketIOServer = (server, rooms) => {
     io = new Server(server, { cors: { origin: "*" } });
 
     io.on('connection', (socket) => {
-        socket.on('join', ({ roomId, name, role = "player" }) => {
+        socket.on('join', ({ roomId, name, avatar, role = "player" }) => {
             const room = getRooms(roomId);
 
             console.log(roomId, name, role)
@@ -245,7 +245,8 @@ const createSocketIOServer = (server, rooms) => {
                 socket,
                 name: formatName(name),
                 selectedCard: null,
-                role
+                role,
+                avatar: validateAvatar(avatar)
             };
 
             room.players.set(socket.id, player);

@@ -88,7 +88,9 @@
         "RoomDeleted": "La salle a été supprimée.",
         "observer": "Observateur",
         "observerTooltip": "Un observateur peut uniquement regarder la session sans participer au vote.",
-        "voteInProgress": "Vote en cours..."
+        "voteInProgress": "Vote en cours...",
+        "fileTooLarge": "Le fichier dépasse la taille maximale autorisée de 5 Mo.",
+        "errorUploadingFile": "Une erreur s'est produite lors du téléchargement du fichier."
     },
     "ManagerPage": {
         "welcomeMessage": "Bienvenue {USER}!",

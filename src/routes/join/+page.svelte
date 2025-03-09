@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
-	import { toast } from 'svelte-sonner';
-	import { _ } from 'svelte-i18n';
 	import { dataToShortBinary } from '$lib/utils';
+	import { _ } from 'svelte-i18n';
+	import { toast } from 'svelte-sonner';
 
 	let roomId = $state('');
 	let submitting = $state(false);
@@ -29,8 +29,8 @@
 		submitting = false;
 	};
 
-	function handleInput(event) {
-		const input = event.target;
+	function handleInput(event: InputEvent) {
+		const input = event.target as HTMLInputElement;
 		const cursorPosition = input.selectionStart;
 		const originalValue = input.value;
 
@@ -44,7 +44,7 @@
 
 		const adjustment = value.length - originalValue.length;
 
-		const newCursorPosition = Math.min(cursorPosition + adjustment, value.length);
+		const newCursorPosition = Math.min((cursorPosition ?? 0) + adjustment, value.length);
 		input.setSelectionRange(newCursorPosition, newCursorPosition);
 
 		roomId = value;
