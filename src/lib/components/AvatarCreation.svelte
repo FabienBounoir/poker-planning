@@ -9,18 +9,18 @@
 		loading = $bindable(true)
 	} = $props();
 
-	let isCustomAvatarDisabled = $state(false);
+	let isCustomAvatarEnabled = $state(
+		import.meta.env.VITE_CUSTOM_AVATAR_ENABLED
+			? import.meta.env.VITE_CUSTOM_AVATAR_ENABLED === 'true'
+			: true
+	);
 
 	onMount(() => {
-		//check if customAvtar exist in internet with status code
-		console.log(customAvatarUrl);
-		if (!customAvatarUrl) return;
+		if (!customAvatarUrl || !isCustomAvatarEnabled) return;
 
 		fetch(customAvatarUrl)
 			.then((response) => {
-				console.log(response);
-				console.log(response.ok);
-				if (!response.ok || response.url.includes('removed')) {
+				if (!response?.ok || response?.url?.includes?.('removed')) {
 					customAvatarUrl = '';
 				}
 			})
@@ -89,7 +89,7 @@
 	};
 
 	const disableCustomAvatar = () => {
-		isCustomAvatarDisabled = true;
+		isCustomAvatarEnabled = false;
 
 		toast.error($_('RoomPage.errorUploadingFile'));
 
@@ -108,7 +108,7 @@
 		on:load={() => (loading = false)}
 		on:error={(customAvatarUrl = '')}
 	/>
-	<div class="edit" style={isCustomAvatarDisabled ? 'display: none' : ''}>
+	<div class="edit" style={isCustomAvatarEnabled ? '' : 'display: none'}>
 		<svg
 			width="30"
 			height="30"
