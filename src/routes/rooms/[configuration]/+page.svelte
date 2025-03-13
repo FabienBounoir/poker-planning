@@ -153,7 +153,7 @@
 
 			io.on('players', (payload) => {
 				players = payload.players;
-				observers = payload.observer;
+				observers = payload.observers;
 			});
 
 			io.on('hexcode', (payload) => {
