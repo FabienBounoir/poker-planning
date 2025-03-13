@@ -514,6 +514,7 @@
 						margin-right: 12px;
 						border-radius: 100%;
 						border: 2px solid var(--primary-800);
+						object-fit: cover;
 					}
 
 					span {
@@ -577,6 +578,7 @@
 							img {
 								height: 2em;
 								border-radius: 100%;
+								object-fit: cover;
 							}
 						}
 					}
@@ -694,6 +696,7 @@
 				border: 2px solid var(--primary-700);
 				width: 50px;
 				height: 50px;
+				object-fit: cover;
 			}
 		}
 

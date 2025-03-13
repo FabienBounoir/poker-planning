@@ -518,6 +518,7 @@
 							border: 2px solid var(--primary-700);
 							width: 40px;
 							height: 40px;
+							object-fit: cover;
 						}
 					}
 
