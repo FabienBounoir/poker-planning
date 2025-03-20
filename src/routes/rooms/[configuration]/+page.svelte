@@ -579,6 +579,7 @@
 								height: 2em;
 								border-radius: 100%;
 								object-fit: cover;
+								aspect-ratio: 1;
 							}
 						}
 					}
