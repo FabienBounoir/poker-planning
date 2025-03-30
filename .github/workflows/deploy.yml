@@ -1,25 +1,45 @@
-name: Deploie new backend version
+name: Deploy new backend version
 
 on:
   release:
     types: [published]
+
 jobs:
-  build:
+  deploy-planning-poker:
     runs-on: ubuntu-latest
     steps:
       - name: Update planning poker files
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
-          USERNAME: ${{ secrets.USERNAME }}
-          PORT: ${{ secrets.PORT }}
-          KEY: ${{ secrets.SSHKEY }}
-          script: cd /opt/poker-planning/ && git stash && git pull
-      - name: Restart planning poker server
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          key: ${{ secrets.SSHKEY }}
+          script: |
+            cd /opt/poker-planning/
+            git fetch origin
+            CHANGES=$(git diff --name-only HEAD origin/main -- backend/)
+            if [ -n "$CHANGES" ]; then
+              echo "Changes detected in backend, updating..."
+              git reset --hard HEAD
+              git pull --rebase
+              echo "restart" > restart_needed
+            else
+              echo "No changes in backend, skipping update."
+            fi
+
+      - name: Restart planning poker server (if needed)
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
-          USERNAME: ${{ secrets.USERNAME }}
-          PORT: ${{ secrets.PORT }}
-          KEY: ${{ secrets.SSHKEY }}
-          script: pm2 restart PP-server
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          key: ${{ secrets.SSHKEY }}
+          script: |
+            cd /opt/poker-planning/
+            if [ -f restart_needed ]; then
+              pm2 restart PP-server
+              rm restart_needed
+            else
+              echo "No restart needed."
+            fi
