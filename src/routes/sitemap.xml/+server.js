@@ -12,37 +12,37 @@ export async function GET() {
 		>
 			<url>
                 <loc>https://anotherpp.vercel.app/</loc>
-                <lastmod>2025-01-05T16:15:00+00:00</lastmod>
+                <lastmod>2025-03-28T16:15:00+00:00</lastmod>
             </url>
 
             <url>
                 <loc>https://anotherpp.vercel.app/create</loc>
-                <lastmod>2025-02-20T23:15:00+00:00</lastmod>
+                <lastmod>2025-03-28T23:15:00+00:00</lastmod>
             </url>
 
             <url>
                 <loc>https://anotherpp.vercel.app/join</loc>
-                <lastmod>2025-01-05T16:15:00+00:00</lastmod>
+                <lastmod>2025-03-28T16:15:00+00:00</lastmod>
             </url>
 
             <url>
                 <loc>https://anotherpp.vercel.app/manager</loc>
-                <lastmod>2025-02-20T23:15:00+00:00</lastmod>
+                <lastmod>2025-03-28T23:15:00+00:00</lastmod>
             </url>
 
             <url>
                 <loc>https://anotherpp.vercel.app/rooms</loc>
-                <lastmod>2025-02-20T23:15:00+00:00</lastmod>
+                <lastmod>2025-03-28T23:15:00+00:00</lastmod>
             </url>
 
             <url>
                 <loc>https://anotherpp.vercel.app/feedback</loc>
-                <lastmod>2025-02-20T11:15:00+00:00</lastmod>
+                <lastmod>2025-03-28T11:15:00+00:00</lastmod>
             </url>
 
             <url>
                 <loc>https://anotherpp.vercel.app/pokerhistory</loc>
-                <lastmod>2025-01-25T23:15:00+00:00</lastmod>
+                <lastmod>2025-03-28T23:15:00+00:00</lastmod>
             </url>
 		</urlset>`.trim(),
         {
