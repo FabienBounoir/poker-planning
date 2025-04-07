@@ -388,7 +388,7 @@
 		{#if players != null}
 			{#if players?.length < 1}
 				<div>
-					<p style="text-align: center;">{$_('ManagerPage.noParticipantsMessage')}</p>
+					<p class="tooltip">{$_('ManagerPage.noParticipantsMessage')}</p>
 				</div>
 			{:else}
 				<div class="header">
@@ -747,8 +747,9 @@
 			}
 
 			.information {
-				p {
+				.tooltip {
 					color: var(--primary-50);
+					text-align: center;
 				}
 				.header {
 					p {
