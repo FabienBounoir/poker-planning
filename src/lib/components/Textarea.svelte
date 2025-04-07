@@ -53,6 +53,8 @@
 
 	pre {
 		border: 1px solid transparent;
+		white-space: pre-wrap;
+		word-wrap: break-word;
 	}
 
 	textarea {
