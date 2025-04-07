@@ -104,6 +104,7 @@
 			return toast.info($_('RoomPage.IWantYourName'));
 		}
 
+		if (submitting) return;
 		try {
 			submitting = true;
 			io = ioClient(import.meta.env.VITE_BACKEND_URL);
@@ -119,6 +120,8 @@
 				if (submittedLetter != null) {
 					sendVote(submittedLetter);
 				}
+
+				submitting = false;
 			});
 
 			io.on('game-update', (payload) => {
@@ -181,11 +184,12 @@
 					toast.error($_('common.pokerPlanningDoesntExist'));
 					goto('/join');
 				}
+
+				submitting = false;
 			});
 		} catch (e) {
 			console.error('Websocket error', e);
 			toast.error($_('RoomPage.ErrorWhenJoining'));
-		} finally {
 			submitting = false;
 		}
 	};
@@ -211,7 +215,7 @@
 
 	const includeUS_ID = (userStory: string) => {
 		const match = userStory.match(/NFS-\d+/i);
-		return match ? `https://portail.agir.orange.com/browse/${match[0]}` : false;
+		return match ? `https://portail.agir.orange.com/browse/${match[0]}` : null;
 	};
 
 	const sendHexa = () => {
@@ -352,7 +356,7 @@
 			{#if pokerManager?.userStory}
 				<div class="user-story" transition:scale={{ duration: 500 }}>
 					<h3>User story</h3>
-					{#if includeUS_ID(pokerManager.userStory)}
+					{#if includeUS_ID(pokerManager.userStory) !== null}
 						<h1>
 							<a
 								title="Open User story on jira"
@@ -722,6 +726,7 @@
 
 			h1 {
 				font-size: 2em;
+				white-space: pre-line;
 			}
 
 			h3 {

@@ -46,6 +46,11 @@
 	let players: Users = $state(null);
 	let observers: Users = $state(null);
 
+	let viewCards = $state(null);
+
+	let moyenne = $state(null);
+	let mediane = $state(null);
+
 	const canStarVote = () => {
 		if (pokerManager?.userStory == '') {
 			return toast.error($_('ManagerPage.noUserStoryDefined'));
@@ -54,6 +59,9 @@
 		if (players && players.length < 1) {
 			return toast.error($_('ManagerPage.noParticipantsForVote'));
 		}
+
+		moyenne = null;
+		mediane = null;
 
 		changeState('playing');
 	};
@@ -78,6 +86,7 @@
 		});
 
 		io.on('state', (payload) => {
+			viewCards = null;
 			pokerManager.state = payload.state;
 		});
 
@@ -98,6 +107,8 @@
 			}
 
 			if (payload?.state == 'result') {
+				viewCards = null;
+
 				if (payload?.result) {
 					resultsItem = payload.result;
 				}
@@ -116,6 +127,16 @@
 					displayConfettiTimeout = setTimeout(() => {
 						displayConfetti = false;
 					}, 10000);
+				}
+
+				if (resultsItem && resultsItem?.length > 0) {
+					if (checkOnlyNumbersCards()) {
+						calculMoyenne();
+						calculMediane();
+					} else {
+						mediane = null;
+						moyenne = null;
+					}
 				}
 			}
 
@@ -176,6 +197,47 @@
 					toast.success($_('RoomPage.SuccessfullyUpdated'));
 					editRoom = false;
 				}
+			});
+		}
+	};
+
+	const calculMoyenne = () => {
+		if (players && players.length > 0) {
+			const total = players.reduce((acc, player) => {
+				if (player.selectedCard) {
+					return acc + parseInt(player.selectedCard);
+				}
+				return acc;
+			}, 0);
+			const count = players.filter((player) => player.selectedCard).length;
+			moyenne = Math.round((total / count) * 100) / 100;
+		} else {
+			moyenne = 0;
+		}
+	};
+
+	const calculMediane = () => {
+		if (players && players.length > 0) {
+			const selectedCards = players
+				.map((player) => player.selectedCard)
+				.filter((card) => card !== null)
+				.sort((a, b) => a - b);
+
+			const mid = Math.floor(selectedCards.length / 2);
+			if (selectedCards.length % 2 === 0) {
+				mediane = (parseInt(selectedCards[mid - 1]) + parseInt(selectedCards[mid])) / 2;
+			} else {
+				mediane = parseInt(selectedCards[mid]);
+			}
+		} else {
+			mediane = 0;
+		}
+	};
+
+	const checkOnlyNumbersCards = () => {
+		if (pokerManager.cards) {
+			return pokerManager.cards.every((card) => {
+				return /^[0-9]+$/.test(card);
 			});
 		}
 	};
@@ -249,13 +311,35 @@
 			</div>
 
 			<label for="userStory">{$_('ManagerPage.userStoryLabel')}</label>
-			<TextArea
-				bind:value={pokerManager.userStory}
-				disabled={pokerManager.state == 'result' || pokerManager.state == 'waiting'}
-				minRows={1}
-				maxRows={10}
-				placeholder="ManagerPage.textareaPlaceholder"
-			/>
+			<div class="container-info">
+				<TextArea
+					bind:value={pokerManager.userStory}
+					disabled={pokerManager.state == 'result' || pokerManager.state == 'waiting'}
+					minRows={1}
+					maxRows={10}
+					placeholder="ManagerPage.textareaPlaceholder"
+				/>
+				{#if moyenne || mediane}
+					<div
+						class="stats-label"
+						transition:slide={{ axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
+					>
+						{#if moyenne}
+							<span>
+								{$_('ManagerPage.moyenneLabel')}:
+								{moyenne}
+							</span>
+						{/if}
+
+						{#if mediane}
+							<span>
+								{$_('ManagerPage.medianeLabel')}:
+								{mediane}
+							</span>
+						{/if}
+					</div>
+				{/if}
+			</div>
 
 			<div class="buttons">
 				{#if pokerManager.state == 'playing'}
@@ -283,6 +367,14 @@
 				>
 					{#each resultsItem as { item, pourcentage }}
 						<span
+							on:click={() => {
+								if (viewCards == item) {
+									viewCards = null;
+								} else {
+									viewCards = item;
+								}
+							}}
+							class:active={viewCards == item}
 							><h3>{item}</h3>
 							{pourcentage}%</span
 						>
@@ -314,6 +406,9 @@
 						resultDefender?.item == user?.selectedCard}
 					out:slide={{ axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
 					in:slide={{ axis: 'x', duration: 300, delay: 0, easing: cubicInOut }}
+					class:Lowlight={viewCards != null &&
+						viewCards != user?.selectedCard &&
+						pokerManager.state == 'result'}
 				>
 					<div class="profile">
 						<div class="image-container">
@@ -378,6 +473,7 @@
 			column-gap: 1.5em;
 			row-gap: 1em;
 			margin-top: 2em;
+			box-sizing: border-box;
 
 			span {
 				display: flex;
@@ -387,9 +483,17 @@
 				align-items: center;
 				justify-content: center;
 				background-color: var(--primary-800);
-				padding: 0.5em 1em;
-				border-radius: 99999px;
+				padding: 0.3em 0.8em;
+				border-radius: 0.5em;
 				font-size: 1em;
+				cursor: pointer;
+				border: 3px solid transparent;
+
+				&.active {
+					background-color: var(--primary-700);
+					color: var(--primary-100);
+					border: 3px solid var(--primary-100);
+				}
 				h3 {
 					font-size: 1.3em;
 					color: var(--primary-50);
@@ -399,7 +503,7 @@
 		}
 
 		.manager {
-			padding: 5vw;
+			padding: 5vw 5vw 0 5vw;
 			max-height: 100dvh;
 
 			.container {
@@ -415,6 +519,7 @@
 					line-height: 37px;
 					cursor: pointer;
 					text-decoration: none;
+					width: max-content;
 
 					span {
 						display: block;
@@ -428,6 +533,26 @@
 
 					margin-bottom: 3rem;
 					opacity: 0.75;
+				}
+			}
+
+			.container-info {
+				display: flex;
+				flex-direction: column;
+				gap: 0;
+				background-color: var(--primary-200);
+				border-radius: 0.5rem;
+
+				.stats-label {
+					display: flex;
+					flex-direction: row;
+					justify-content: space-between;
+					align-items: center;
+
+					span {
+						color: var(--primary-950);
+						padding: 0.2em 0.5em;
+					}
 				}
 			}
 
@@ -480,6 +605,10 @@
 				font-weight: 600;
 				color: var(--primary-950);
 				box-sizing: border-box;
+
+				&.Lowlight {
+					opacity: 0.5;
+				}
 
 				&.defender {
 					box-shadow: 0 0 5px var(--primary-800);
@@ -554,23 +683,6 @@
 					}
 				}
 
-				.no-vote {
-					font-size: 2em;
-					color: var(--primary-800);
-				}
-
-				.skeleton {
-					width: 1.5em;
-					aspect-ratio: 1;
-					background-color: red;
-					border-radius: 999999px;
-					transition: background-color 0.3s !important;
-
-					&.selectedLetter {
-						background-color: green;
-					}
-				}
-
 				p:not(.skeleton) {
 					font-weight: 700;
 					color: var(--primary-950);
@@ -625,7 +737,33 @@
 		main {
 			.information {
 				p {
+					color: var(--primary-50);
+				}
+				.header {
+					p {
+						color: var(--primary-50);
+					}
+				}
+			}
+
+			.manager {
+				p {
 					color: var(--primary-100);
+				}
+
+				.container-info {
+					display: flex;
+					flex-direction: column;
+					gap: 0;
+					background-color: var(--primary-900);
+					border-radius: 0.5rem;
+
+					.stats-label {
+						span {
+							color: var(--primary-50);
+							padding: 0.2em 0.5em;
+						}
+					}
 				}
 
 				.user {

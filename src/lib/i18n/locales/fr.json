@@ -104,7 +104,9 @@
         "noParticipantsMessage": "Pas de participants pour la planification du poker.",
         "noUserStoryDefined": "Aucune User Story n'a été définie.",
         "noParticipantsForVote": "Aucune participant trouvé pour pouvoir lancer le vote.",
-        "firstVoterTooltip": "Première personne à voter"
+        "firstVoterTooltip": "Première personne à voter",
+        "moyenneLabel": "Moyenne",
+        "medianeLabel": "Médiane"
     },
     "selectCategories": {
         "types": {
