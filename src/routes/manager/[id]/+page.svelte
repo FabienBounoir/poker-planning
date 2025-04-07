@@ -129,7 +129,7 @@
 					}, 10000);
 				}
 
-				if (resultsItem && resultsItem?.length > 0) {
+				if (resultsItem && resultsItem?.length > 0 && players?.length > 1) {
 					if (checkOnlyNumbersCards()) {
 						calculMoyenne();
 						calculMediane();
@@ -479,10 +479,10 @@
 				display: flex;
 				flex-direction: row;
 				gap: 0.7em;
-				color: var(--primary-50);
+				color: var(--primary-900);
 				align-items: center;
 				justify-content: center;
-				background-color: var(--primary-800);
+				background-color: var(--primary-200);
 				padding: 0.3em 0.8em;
 				border-radius: 0.5em;
 				font-size: 1em;
@@ -490,13 +490,12 @@
 				border: 3px solid transparent;
 
 				&.active {
-					background-color: var(--primary-700);
-					color: var(--primary-100);
-					border: 3px solid var(--primary-100);
+					background-color: var(--primary-300);
+					border: 3px solid var(--primary-700);
 				}
+
 				h3 {
 					font-size: 1.3em;
-					color: var(--primary-50);
 					font-weight: 800;
 				}
 			}
@@ -735,6 +734,18 @@
 		}
 
 		main {
+			.resultDescription {
+				span {
+					background-color: var(--primary-700);
+					color: var(--primary-100);
+
+					&.active {
+						background-color: var(--primary-700);
+						border: 3px solid var(--primary-100);
+					}
+				}
+			}
+
 			.information {
 				p {
 					color: var(--primary-50);
