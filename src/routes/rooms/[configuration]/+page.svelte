@@ -187,6 +187,12 @@
 
 				submitting = false;
 			});
+
+			io.on('connect_error', function (err) {
+				io.disconnect();
+				io.removeAllListeners();
+				submitting = false;
+			});
 		} catch (e) {
 			console.error('Websocket error', e);
 			toast.error($_('RoomPage.ErrorWhenJoining'));
@@ -660,6 +666,10 @@
 
 			input {
 				text-align: center;
+			}
+
+			button {
+				position: relative;
 			}
 		}
 	}
