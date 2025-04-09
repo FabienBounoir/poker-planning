@@ -161,12 +161,20 @@
         "noHistory": "Nessuna storia di sessione di poker trovata",
         "startSession": "Inizia una nuova sessione di poker per vederla qui",
         "pokerFor": "Team {team}",
-        "dateFormat": "{hour}:{minute} - {day}/{month}/{year}"
+        "dateFormat": "{hour}:{minute} - {day}/{month}/{year}",
+        "deleteSuccess": "La sessione è stata eliminata con successo",
+        "noVoteCarriedOut": "Nessun voto effettuato"
     },
     "edit": {
         "title": "Modifica la Pianificazione del Poker",
         "deleteRoom": "Elimina la stanza",
         "save": "Salva",
         "cancel": "Annulla"
+    },
+    "layout": {
+        "versionLink": "Vedi su GitHub",
+        "homeLink": "Vai alla Home",
+        "historyLink": "Visualizza cronologia",
+        "feedbackLink": "Invia un feedback"
     }
 }

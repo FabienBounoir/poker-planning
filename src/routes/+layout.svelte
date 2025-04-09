@@ -5,6 +5,7 @@
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { _ } from 'svelte-i18n';
 	let { children } = $props();
 	let hasPokerHistory = $state(false);
 
@@ -25,7 +26,7 @@
 <div class="menu">
 	{#if PACKAGE_JSON?.version}
 		<a
-			title="View on GitHub"
+			title={$_('layout.versionLink')}
 			href="https://github.com/FabienBounoir/poker-planning"
 			class="version"
 			target="_blank"
@@ -33,14 +34,18 @@
 		>
 	{/if}
 
+	{#if $page.route.id !== '/'}
+		<a title={$_('layout.homeLink')} href="/" class="version"><i class="fa-solid fa-house"></i></a>
+	{/if}
+
 	{#if hasPokerHistory}
-		<a title="View history" href="/pokerhistory" class="version"
+		<a title={$_('layout.historyLink')} href="/pokerhistory" class="version"
 			><i class="fa-solid fa-history"></i></a
 		>
 	{/if}
 
 	{#if $page.route.id !== '/feedback'}
-		<a title="Send a feedback" target="_blank" href="/feedback" class="version"
+		<a title={$_('layout.feedbackLink')} target="_blank" href="/feedback" class="version"
 			><i class="fa-solid fa-question"></i></a
 		>
 	{/if}

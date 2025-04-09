@@ -161,12 +161,20 @@
         "noHistory": "Aucun historique de session de poker trouvé",
         "startSession": "Commencez une nouvelle session de poker pour la voir ici",
         "pokerFor": "Team {team}",
-        "dateFormat": "{hour}:{minute} - {day}/{month}/{year}"
+        "dateFormat": "{hour}:{minute} - {day}/{month}/{year}",
+        "deleteSuccess": "La session a été supprimée avec succès",
+        "noVoteCarriedOut": "Aucun vote effectué"
     },
     "edit": {
         "title": "Modifier le Poker Planning",
         "deleteRoom": "Supprimer la salle",
         "save": "Sauvegarder",
         "cancel": "Annuler"
+    },
+    "layout": {
+        "versionLink": "Voir sur GitHub",
+        "homeLink": "Aller à l’accueil",
+        "historyLink": "Voir l’historique",
+        "feedbackLink": "Envoyer un retour"
     }
 }
