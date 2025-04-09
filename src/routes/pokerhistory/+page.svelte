@@ -2,6 +2,7 @@
 	import type { PokerManager } from '$lib/components/types/PokerManager';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
+	import { toast } from 'svelte-sonner';
 
 	let pokerHistory: PokerManager[] = $state([]);
 	let poker: PokerManager | null = $state(null);
@@ -31,6 +32,27 @@
 	const setPoker = (history: PokerManager) => {
 		poker = history;
 		window.scrollTo(0, 0);
+	};
+
+	const deletePokerHistory = (history: PokerManager) => {
+		const historyKey = `PP_HISTORY_${history.date}`;
+		localStorage.removeItem(historyKey);
+		pokerHistory = pokerHistory.filter((h) => h.date !== history.date);
+
+		toast.success(
+			$_('history.deleteSuccess', {
+				values: { team: history.team }
+			}),
+			{
+				duration: 3000,
+				position: 'top-center'
+			}
+		);
+
+		if (poker !== null) {
+			poker = null;
+			window.scrollTo(0, 0);
+		}
 	};
 </script>
 
@@ -65,6 +87,17 @@
 					})}
 					<i class="fa-solid fa-calendar-days"></i>
 				</p>
+
+				<p
+					class="delete"
+					on:click={(e) => {
+						e.stopPropagation();
+						deletePokerHistory(history);
+					}}
+					aria-label="delete poker history"
+				>
+					<i class="fa-solid fa-trash"></i>
+				</p>
 			</div>
 		{/each}
 	{:else}
@@ -84,6 +117,17 @@
 					}
 				})} <i class="fa-solid fa-calendar-days"></i>
 			</p>
+
+			<p
+				class="delete"
+				aria-label="delete poker history"
+				on:click={(e) => {
+					e.stopPropagation();
+					deletePokerHistory(history);
+				}}
+			>
+				<i class="fa-solid fa-trash"></i>
+			</p>
 		</div>
 
 		{#each poker.history as play, index}
@@ -91,24 +135,31 @@
 				<div class="story">
 					<h2>{play.story || `Story ${index + 1}`}</h2>
 				</div>
-				<div class="results-container">
-					<div class="winner">
-						<h3>{play.winner}</h3>
+
+				{#if play?.winner == null && play?.results?.length === 0}
+					<div class="empty-result-container">
+						<p>{$_('history.noVoteCarriedOut')}</p>
 					</div>
-					<div class="result-container">
-						<div class="result">
-							{#each play.results as result}
-								<p>
-									<img
-										src="https://api.dicebear.com/9.x/dylan/svg?seed={result.name}"
-										alt={result.name}
-									/>
-									{result.name} - {result.card}
-								</p>
-							{/each}
+				{:else}
+					<div class="results-container">
+						<div class="winner">
+							<h3>{play.winner}</h3>
+						</div>
+						<div class="result-container">
+							<div class="result">
+								{#each play.results as result}
+									<p>
+										<img
+											src="https://api.dicebear.com/9.x/dylan/svg?seed={result.name}"
+											alt={result.name}
+										/>
+										{result.name} - {result.card}
+									</p>
+								{/each}
+							</div>
 						</div>
 					</div>
-				</div>
+				{/if}
 			</div>
 		{/each}
 	{/if}
@@ -143,6 +194,17 @@
 				h2 {
 					font-size: 1.5em;
 					padding: 0.5em;
+				}
+			}
+
+			.empty-result-container {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: var(--primary-950);
+				p {
+					font-size: 1.2em;
+					padding: 0.5em 0;
 				}
 			}
 			.results-container {
@@ -206,12 +268,22 @@
 			color: var(--primary-950);
 			transition:
 				border-color 0.3s,
-				background-color 0.3s;
+				background-color 0.3s,
+				filter 0.3s;
 			align-items: center;
 
 			&:hover {
 				background-color: var(--primary-400);
 				border-color: var(--primary-500);
+			}
+
+			&:has(.delete:hover) {
+				filter: grayscale(100%);
+			}
+
+			.delete {
+				color: red;
+				cursor: no-drop;
 			}
 		}
 	}
