@@ -84,6 +84,14 @@
 		io.on('players', (payload) => {
 			players = payload.players;
 			observers = payload.observers;
+
+			if (players.length == 0 && observers.length > 0) {
+				displayUserType = 'OBSERVERS';
+			} else if (players.length > 0 && observers.length == 0) {
+				displayUserType = 'PLAYERS';
+			} else if (players.length == 0 && observers.length == 0) {
+				displayUserType = 'PLAYERS';
+			}
 		});
 
 		io.on('state', (payload) => {
@@ -388,32 +396,32 @@
 
 	<div class="information">
 		{#if players != null}
-			{#if players?.length < 1}
+			<div class="header" in:fade={{ duration: 3000, delay: 200, easing: elasticOut }}>
+				<div class="button-user-type-container">
+					<div
+						class="player"
+						class:active={displayUserType == 'PLAYERS'}
+						on:click={() => (displayUserType = 'PLAYERS')}
+					>
+						<i class="fa-solid fa-user"></i>
+						{players.length || 0}
+					</div>
+					{#if observers?.length > 0}
+						<div
+							class="observer"
+							class:active={displayUserType == 'OBSERVERS'}
+							on:click={() => (displayUserType = 'OBSERVERS')}
+						>
+							<i class="fa-solid fa-eye"></i>
+							{observers.length || 0}
+						</div>
+					{/if}
+				</div>
+			</div>
+
+			{#if players?.length < 1 && displayUserType == 'PLAYERS'}
 				<div>
 					<p class="tooltip">{$_('ManagerPage.noParticipantsMessage')}</p>
-				</div>
-			{:else}
-				<div class="header" in:fade={{ duration: 3000, delay: 200, easing: elasticOut }}>
-					<div class="button-user-type-container">
-						<div
-							class="player"
-							class:active={displayUserType == 'PLAYERS'}
-							on:click={() => (displayUserType = 'PLAYERS')}
-						>
-							<i class="fa-solid fa-user"></i>
-							{players.length || 0}
-						</div>
-						{#if observers?.length > 0}
-							<div
-								class="observer"
-								class:active={displayUserType == 'OBSERVERS'}
-								on:click={() => (displayUserType = 'OBSERVERS')}
-							>
-								<i class="fa-solid fa-eye"></i>
-								{observers.length || 0}
-							</div>
-						{/if}
-					</div>
 				</div>
 			{/if}
 
@@ -646,13 +654,6 @@
 							filter: brightness(1);
 						}
 					}
-
-					div.observer {
-					}
-
-					div.player {
-						// background-color: var(--primary-500);
-					}
 				}
 			}
 
@@ -700,6 +701,12 @@
 						path {
 							fill: var(--primary-950);
 						}
+					}
+
+					h2 {
+						max-width: 30vw;
+						overflow: hidden;
+						text-overflow: ellipsis;
 					}
 
 					.image-container {
@@ -766,6 +773,14 @@
 				overflow-y: initial;
 				max-height: none;
 				padding: 0;
+
+				.user {
+					.profile {
+						h2 {
+							max-width: 50vw;
+						}
+					}
+				}
 			}
 
 			.manager {
@@ -773,7 +788,7 @@
 				padding: 0;
 
 				.container {
-					padding: 1rem 1rem 2rem 0;
+					padding: 3rem 0 2rem 0;
 
 					> a {
 						span {

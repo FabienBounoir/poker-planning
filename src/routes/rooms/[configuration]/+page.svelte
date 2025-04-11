@@ -106,7 +106,7 @@
 	});
 
 	$effect(() => {
-		window.localStorage.setItem('observer', true);
+		window.localStorage.setItem('observer', isObserver.toString());
 	});
 
 	const connect = () => {
@@ -280,9 +280,10 @@
 	};
 
 	const roleChange = () => {
+		if (waitingChangeRole) return;
+
 		waitingChangeRole = true;
 		io.send({ type: 'toggleRole' }, (callback: { success: boolean }) => {
-			console.log('callback', callback);
 			if (callback?.success) {
 				selectedLetter = null;
 				submittedLetter = null;

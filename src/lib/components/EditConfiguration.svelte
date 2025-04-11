@@ -154,6 +154,7 @@
 		gap: 1.5rem;
 		flex-direction: column;
 		justify-content: space-between;
+		padding: 3rem 0 2rem 0;
 
 		.avatar-container {
 			justify-content: left;
