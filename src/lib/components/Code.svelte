@@ -116,7 +116,7 @@
 		}
 
 		.code-container {
-			border: 1px solid #ddd;
+			border: 1px solid var(--primary-200);
 			width: max-content;
 			padding: 1em;
 			border-radius: 8px;
@@ -157,7 +157,7 @@
 		.code-element {
 			color: var(--primary-200) !important;
 			.code-container {
-				border-color: #333;
+				border-color: var(--primary-700);
 				color: var(--primary-200) !important;
 				h3 {
 					color: var(--primary-200) !important;

@@ -18,8 +18,8 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import { toast } from 'svelte-sonner';
-	import { backOut, cubicInOut } from 'svelte/easing';
-	import { fly, slide } from 'svelte/transition';
+	import { backOut, cubicInOut, elasticInOut, elasticOut } from 'svelte/easing';
+	import { fade, fly, slide } from 'svelte/transition';
 
 	const roomId = $page.params.id;
 	let url = $state('');
@@ -43,8 +43,9 @@
 		date: new Date().toISOString()
 	});
 
-	let players: Users = $state(null);
-	let observers: Users = $state(null);
+	let displayUserType = $state('PLAYERS');
+	let players: Users = $state([]);
+	let observers: Users = $state([]);
 
 	let viewCards = $state(null);
 
@@ -83,6 +84,14 @@
 		io.on('players', (payload) => {
 			players = payload.players;
 			observers = payload.observers;
+
+			if (players.length == 0 && observers.length > 0) {
+				displayUserType = 'OBSERVERS';
+			} else if (players.length > 0 && observers.length == 0) {
+				displayUserType = 'PLAYERS';
+			} else if (players.length == 0 && observers.length == 0) {
+				displayUserType = 'PLAYERS';
+			}
 		});
 
 		io.on('state', (payload) => {
@@ -141,6 +150,7 @@
 			}
 
 			pokerManager = payload;
+			displayUserType = 'PLAYERS';
 		});
 
 		io.on('delete-room', () => {
@@ -386,26 +396,42 @@
 
 	<div class="information">
 		{#if players != null}
-			{#if players?.length < 1}
+			<div class="header" in:fade={{ duration: 3000, delay: 200, easing: elasticOut }}>
+				<div class="button-user-type-container">
+					<div
+						class="player"
+						class:active={displayUserType == 'PLAYERS'}
+						on:click={() => (displayUserType = 'PLAYERS')}
+					>
+						<i class="fa-solid fa-user"></i>
+						{players.length || 0}
+					</div>
+					{#if observers?.length > 0}
+						<div
+							class="observer"
+							class:active={displayUserType == 'OBSERVERS'}
+							on:click={() => (displayUserType = 'OBSERVERS')}
+						>
+							<i class="fa-solid fa-eye"></i>
+							{observers.length || 0}
+						</div>
+					{/if}
+				</div>
+			</div>
+
+			{#if players?.length < 1 && displayUserType == 'PLAYERS'}
 				<div>
 					<p class="tooltip">{$_('ManagerPage.noParticipantsMessage')}</p>
 				</div>
-			{:else}
-				<div class="header">
-					{#if observers && observers.length > 0}
-						<p>{observers?.length} observer{observers?.length > 1 ? 's' : ''}</p>
-					{/if}
-					<p style="margin-left: auto;">{players.length} player{players.length > 1 ? 's' : ''}</p>
-				</div>
 			{/if}
 
-			{#each players as user (user.id)}
+			{#each displayUserType == 'PLAYERS' ? players : observers as user (user.id)}
 				<div
 					class="user"
 					class:defender={resultDefender?.name == user?.name &&
 						resultDefender?.item == user?.selectedCard}
 					out:slide={{ axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
-					in:slide={{ axis: 'x', duration: 300, delay: 0, easing: cubicInOut }}
+					in:slide={{ axis: 'x', duration: 500, delay: 0, easing: cubicInOut }}
 					class:Lowlight={viewCards != null &&
 						viewCards != user?.selectedCard &&
 						pokerManager.state == 'result'}
@@ -420,7 +446,7 @@
 							/>
 						</div>
 						<h2>{user.name}</h2>
-						{#if user?.firstVoter && pokerManager.state == 'result'}
+						{#if user?.firstVoter && pokerManager.state == 'result' && displayUserType == 'PLAYERS'}
 							<Tooltip title={$_('ManagerPage.firstVoterTooltip')}>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
@@ -435,9 +461,9 @@
 							</Tooltip>
 						{/if}
 					</div>
-					{#if pokerManager.state === 'playing'}
+					{#if pokerManager.state === 'playing' && displayUserType == 'PLAYERS'}
 						<Valided valided={user.selectedCard != null} />
-					{:else if pokerManager.state === 'result'}
+					{:else if pokerManager.state === 'result' && displayUserType == 'PLAYERS'}
 						<p>{user.selectedCard}</p>
 					{/if}
 				</div>
@@ -518,7 +544,6 @@
 					line-height: 37px;
 					cursor: pointer;
 					text-decoration: none;
-					width: max-content;
 
 					span {
 						display: block;
@@ -541,6 +566,7 @@
 				gap: 0;
 				background-color: var(--primary-200);
 				border-radius: 0.5rem;
+				max-width: 95vw;
 
 				.stats-label {
 					display: flex;
@@ -561,6 +587,10 @@
 				justify-content: space-between;
 				gap: 1em;
 				margin-top: 2em;
+
+				button {
+					background-color: var(--primary-400);
+				}
 
 				button:first-child {
 					width: 100%;
@@ -589,6 +619,42 @@
 				display: flex;
 				align-items: end;
 				justify-content: space-between;
+				padding-bottom: 0.5em;
+
+				.button-user-type-container {
+					display: flex;
+					flex-direction: row;
+					border-radius: 5px;
+					background-color: var(--primary-200);
+					overflow: hidden;
+
+					> div {
+						cursor: pointer;
+						padding: 0.2em 0.5em;
+						background-color: var(--primary-100);
+						color: var(--primary-950);
+						transition: background-color 0.3s ease-in-out;
+						display: flex;
+						align-items: center;
+						flex-wrap: nowrap;
+						gap: 0.5em;
+						align-items: center;
+						justify-content: center;
+						font-weight: bold;
+
+						&.active {
+							background-color: var(--primary-400);
+							color: var(--primary-950);
+							filter: brightness(1);
+						}
+
+						&:hover {
+							background-color: var(--primary-500);
+							color: var(--primary-950);
+							filter: brightness(1);
+						}
+					}
+				}
 			}
 
 			.user {
@@ -637,6 +703,12 @@
 						}
 					}
 
+					h2 {
+						max-width: 30vw;
+						overflow: hidden;
+						text-overflow: ellipsis;
+					}
+
 					.image-container {
 						position: relative;
 						width: 40px;
@@ -682,7 +754,7 @@
 					}
 				}
 
-				p:not(.skeleton) {
+				p {
 					font-weight: 700;
 					color: var(--primary-950);
 					font-size: 1.5em;
@@ -701,6 +773,14 @@
 				overflow-y: initial;
 				max-height: none;
 				padding: 0;
+
+				.user {
+					.profile {
+						h2 {
+							max-width: 50vw;
+						}
+					}
+				}
 			}
 
 			.manager {
@@ -708,7 +788,7 @@
 				padding: 0;
 
 				.container {
-					padding: 1rem 1rem 2rem 0;
+					padding: 3rem 0 2rem 0;
 
 					> a {
 						span {
@@ -733,6 +813,12 @@
 			color: var(--primary-50);
 		}
 
+		.buttons {
+			button {
+				background-color: var(--primary-400);
+			}
+		}
+
 		main {
 			.resultDescription {
 				span {
@@ -752,8 +838,28 @@
 					text-align: center;
 				}
 				.header {
-					p {
-						color: var(--primary-50);
+					color: var(--primary-50);
+
+					.button-user-type-container {
+						background-color: var(--primary-200);
+
+						> div {
+							background-color: var(--primary-950);
+							color: var(--primary-200);
+							filter: brightness(0.7);
+
+							&.active {
+								background-color: var(--primary-400);
+								color: var(--primary-950);
+								filter: brightness(1);
+							}
+
+							&:hover {
+								background-color: var(--primary-300);
+								color: var(--primary-950);
+								filter: brightness(1);
+							}
+						}
 					}
 				}
 			}

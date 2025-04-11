@@ -72,8 +72,8 @@
 			background: linear-gradient(
 				120deg,
 				var(--primary-200),
-				var(--primary-500),
-				var(--primary-800)
+				var(--primary-400),
+				var(--primary-700)
 			);
 			background-size: 200% 200%;
 			animation: shimmer 5s infinite alternate;

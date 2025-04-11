@@ -17,8 +17,8 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import { toast } from 'svelte-sonner';
-	import { quintInOut, quintOut } from 'svelte/easing';
-	import { fade, scale } from 'svelte/transition';
+	import { cubicInOut, quintInOut, quintOut } from 'svelte/easing';
+	import { fade, scale, slide } from 'svelte/transition';
 
 	const ROOM_ID_REGEX = /^\d{3}-\d{3}$/i;
 	const DEFAUT_AVATAR_URL = 'https://api.dicebear.com/9.x/dylan/svg';
@@ -51,6 +51,8 @@
 
 	let existingPositions: { top: number; left: number }[] = [];
 
+	let waitingChangeRole = $state(false);
+
 	onMount(() => {
 		try {
 			if (window?.localStorage?.getItem?.('username')) {
@@ -59,6 +61,10 @@
 
 			if (window?.localStorage?.getItem?.('avatar')) {
 				customAvatarUrl = window.localStorage.getItem('avatar') || '';
+			}
+
+			if (window?.localStorage?.getItem?.('observer')) {
+				isObserver = window.localStorage.getItem('observer') == 'true';
 			}
 
 			// Old configuration format (many user like this format)
@@ -99,6 +105,10 @@
 		window.localStorage.setItem('username', username);
 	});
 
+	$effect(() => {
+		window.localStorage.setItem('observer', isObserver.toString());
+	});
+
 	const connect = () => {
 		if (username?.trim?.() == '') {
 			return toast.info($_('RoomPage.IWantYourName'));
@@ -120,8 +130,6 @@
 				if (submittedLetter != null) {
 					sendVote(submittedLetter);
 				}
-
-				submitting = false;
 			});
 
 			io.on('game-update', (payload) => {
@@ -155,8 +163,13 @@
 			});
 
 			io.on('players', (payload) => {
-				players = payload.players;
-				observers = payload.observers;
+				if (payload.players) {
+					players = payload.players;
+				}
+
+				if (payload.observers) {
+					observers = payload.observers;
+				}
 			});
 
 			io.on('hexcode', (payload) => {
@@ -265,6 +278,23 @@
 
 		return `--top: ${top}vh; --left: ${left}vw;`;
 	};
+
+	const roleChange = () => {
+		if (waitingChangeRole) return;
+
+		waitingChangeRole = true;
+		io.send({ type: 'toggleRole' }, (callback: { success: boolean }) => {
+			if (callback?.success) {
+				selectedLetter = null;
+				submittedLetter = null;
+				isObserver = callback?.role == 'observer';
+			} else {
+				toast.error($_('RoomPage.ErrorWhenChangingRole'));
+			}
+
+			waitingChangeRole = false;
+		});
+	};
 </script>
 
 <svelte:head>
@@ -333,6 +363,36 @@
 		<form on:submit|preventDefault={sendHexa} style="display: none;">
 			<input type="text" bind:value={hexcode} placeholder="#FF00EE" disabled={submitting} />
 		</form>
+
+		<div class="observer-container">
+			<div class="manage-state" on:click={roleChange}>
+				{#if isObserver}
+					<i class="fa-solid fa-right-from-bracket"></i>
+					<span>{$_('RoomPage.leaveObserver')}</span>
+				{:else}
+					<i class="fa-solid fa-eye"></i>
+					<span>{$_('RoomPage.becomeObserver')}</span>
+				{/if}
+			</div>
+
+			{#if observers && observers.length > 0}
+				<span class="separator"></span>
+
+				{#each observers as observer}
+					<div
+						class="observer-display"
+						transition:slide={{ axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
+					>
+						<img
+							alt="User-avatar"
+							src={observer?.avatar ||
+								(pokerManager?.avatar || DEFAUT_AVATAR_URL) + `?seed=${observer.name}`}
+						/>
+						<span>{observer.name}</span>
+					</div>
+				{/each}
+			{/if}
+		</div>
 
 		{#if pokerManager.state === 'waiting'}
 			<h3 class="player-count-display">
@@ -683,6 +743,98 @@
 		min-height: 100dvh;
 		gap: 5dvh;
 
+		.observer-container {
+			position: fixed;
+			top: 20vh;
+			left: 0;
+
+			background-color: var(--primary-200);
+
+			max-height: calc(100dvh - 40vh);
+
+			border-top-right-radius: 1em;
+			border-bottom-right-radius: 1em;
+			padding: 0.5em;
+			display: flex;
+			flex-direction: column;
+			gap: 0.5em;
+
+			display: flex;
+			align-items: center;
+			// overflow-y: auto; compliquer on voit plus le span...
+
+			.separator {
+				width: 80%;
+				min-height: 0.3em;
+				border-radius: 5px;
+				background-color: var(--primary-500);
+			}
+
+			.manage-state {
+				width: 40px;
+				min-height: 40px;
+				border-radius: 100%;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				background-color: var(--primary-700);
+				color: var(--primary-200);
+				position: relative;
+
+				&:hover span {
+					opacity: 1;
+				}
+
+				span {
+					position: absolute;
+					opacity: 0;
+					pointer-events: none;
+					font-size: 1em;
+					width: max-content;
+					left: 50px;
+					background-color: var(--primary-900);
+					color: var(--primary-200);
+					padding: 0.2em 0.5em;
+					border-radius: 5px;
+					transition: opacity 0.2s ease-in-out;
+				}
+			}
+
+			.observer-display {
+				position: relative;
+
+				img {
+					width: 40px;
+					height: 40px;
+					border-radius: 100%;
+					border: 2px solid var(--primary-700);
+					object-fit: cover;
+					cursor: pointer;
+				}
+
+				&:hover span {
+					opacity: 1;
+				}
+
+				span {
+					position: absolute;
+					transform: translate(0, 25%);
+					opacity: 0;
+					pointer-events: none;
+					font-size: 1em;
+					width: max-content;
+					left: 50px;
+					background-color: var(--primary-900);
+					color: var(--primary-200);
+					padding: 0.2em 0.5em;
+					border-radius: 5px;
+					transition: opacity 0.2s ease-in-out;
+				}
+			}
+		}
+
 		.player-count-display {
 			position: fixed;
 			transform: translate(-50%, 0);
@@ -733,6 +885,7 @@
 			justify-content: center;
 			gap: 0.5em;
 			color: var(--primary-950);
+			width: 85vw;
 
 			h1 {
 				font-size: 2em;
@@ -749,6 +902,7 @@
 			gap: 2vw;
 			flex-wrap: wrap;
 			justify-content: center;
+			max-width: 80vw;
 
 			&.vertical {
 				flex-direction: column;
@@ -784,6 +938,18 @@
 	@media (min-width: 1300px) {
 		.result-item {
 			width: 30vw;
+		}
+	}
+
+	@media screen and (max-width: 1100px) {
+		main {
+			.observer-container {
+				display: none;
+			}
+
+			.flex {
+				max-width: 100vw;
+			}
 		}
 	}
 
@@ -831,6 +997,42 @@
 
 			h1 {
 				color: var(--primary-100);
+			}
+
+			.observer-container {
+				position: fixed;
+				top: 20vh;
+				left: 0;
+
+				background-color: var(--primary-800);
+				border-top: 3px solid var(--primary-600);
+				border-right: 3px solid var(--primary-600);
+				border-bottom: 3px solid var(--primary-600);
+
+				.manage-state {
+					background-color: var(--primary-200);
+					color: var(--primary-700);
+
+					span {
+						background-color: var(--primary-200);
+						color: var(--primary-900);
+					}
+				}
+
+				.separator {
+					background-color: var(--primary-300);
+				}
+
+				.observer-display {
+					span {
+						background-color: var(--primary-200);
+						color: var(--primary-900);
+					}
+
+					img {
+						border-color: var(--primary-100);
+					}
+				}
 			}
 		}
 

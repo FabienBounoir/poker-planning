@@ -41,6 +41,7 @@
 		padding: 4px;
 		position: absolute;
 		color: var(--primary-900);
+		z-index: 9999;
 	}
 
 	@media (prefers-color-scheme: dark) {
