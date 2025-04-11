@@ -62,6 +62,9 @@ const createSocketIOServer = (server, rooms) => {
                             if (player.role === UserRole.MANAGER) {
                                 player.socket.emit("players", { players, observers });
                             }
+                            else {
+                                player.socket.emit("players", { observers });
+                            }
                         }
                         else {
                             player.socket.emit("players", { players, observers });
@@ -118,13 +121,21 @@ const createSocketIOServer = (server, rooms) => {
                     }
 
                     this.timeout = setTimeout(() => {
+                        let playerPlay = false
+
                         for (const player of object.players.values()) {
                             console.log("Check player", player.name, player.selectedCard);
-                            if (player.role === UserRole.PLAYER && !player.selectedCard) {
-                                console.log("Not all players have selected a card");
-                                return;
+                            if (player.role === UserRole.PLAYER) {
+                                playerPlay = true
+                                if (!player.selectedCard) {
+                                    console.log("Not all players have selected a card");
+                                    return;
+                                }
                             }
                         }
+
+                        if (!playerPlay) return
+
                         this.data.state = "result";
                         this.emitUpdateGame("result");
                     }, 2000);
@@ -250,7 +261,7 @@ const createSocketIOServer = (server, rooms) => {
             };
 
             room.players.set(socket.id, player);
-            room.emitPlayers(false); //room.data.state != "waiting"
+            room.emitPlayers(room.data.state != "waiting");
 
             socket.on('disconnect', () => {
                 console.log(`User ${socket.id} disconnected`);
@@ -343,6 +354,7 @@ const createSocketIOServer = (server, rooms) => {
                             room.emitPlayers();
 
                             callback({ success: true, role: player.role });
+                            room.checkAllPlayersSelected();
                         }
                         else {
                             callback({ success: false, error: "Role not changed" });

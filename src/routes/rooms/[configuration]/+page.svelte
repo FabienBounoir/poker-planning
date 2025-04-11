@@ -130,8 +130,6 @@
 				if (submittedLetter != null) {
 					sendVote(submittedLetter);
 				}
-
-				submitting = false;
 			});
 
 			io.on('game-update', (payload) => {
@@ -165,9 +163,13 @@
 			});
 
 			io.on('players', (payload) => {
-				players = payload.players;
-				observers = payload.observers;
-				console.log('observers', observers);
+				if (payload.players) {
+					players = payload.players;
+				}
+
+				if (payload.observers) {
+					observers = payload.observers;
+				}
 			});
 
 			io.on('hexcode', (payload) => {
@@ -282,6 +284,8 @@
 		io.send({ type: 'toggleRole' }, (callback: { success: boolean }) => {
 			console.log('callback', callback);
 			if (callback?.success) {
+				selectedLetter = null;
+				submittedLetter = null;
 				isObserver = callback?.role == 'observer';
 			} else {
 				toast.error($_('RoomPage.ErrorWhenChangingRole'));
@@ -744,6 +748,7 @@
 			left: 0;
 
 			background-color: var(--primary-200);
+
 			max-height: calc(100dvh - 40vh);
 
 			border-top-right-radius: 1em;
@@ -991,6 +996,42 @@
 
 			h1 {
 				color: var(--primary-100);
+			}
+
+			.observer-container {
+				position: fixed;
+				top: 20vh;
+				left: 0;
+
+				background-color: var(--primary-800);
+				border-top: 3px solid var(--primary-600);
+				border-right: 3px solid var(--primary-600);
+				border-bottom: 3px solid var(--primary-600);
+
+				.manage-state {
+					background-color: var(--primary-200);
+					color: var(--primary-700);
+
+					span {
+						background-color: var(--primary-200);
+						color: var(--primary-900);
+					}
+				}
+
+				.separator {
+					background-color: var(--primary-300);
+				}
+
+				.observer-display {
+					span {
+						background-color: var(--primary-200);
+						color: var(--primary-900);
+					}
+
+					img {
+						border-color: var(--primary-100);
+					}
+				}
 			}
 		}
 

@@ -518,7 +518,6 @@
 					line-height: 37px;
 					cursor: pointer;
 					text-decoration: none;
-					width: max-content;
 
 					span {
 						display: block;
@@ -541,6 +540,7 @@
 				gap: 0;
 				background-color: var(--primary-200);
 				border-radius: 0.5rem;
+				max-width: 95vw;
 
 				.stats-label {
 					display: flex;
@@ -682,7 +682,7 @@
 					}
 				}
 
-				p:not(.skeleton) {
+				p {
 					font-weight: 700;
 					color: var(--primary-950);
 					font-size: 1.5em;
@@ -731,6 +731,12 @@
 
 		label {
 			color: var(--primary-50);
+		}
+
+		.buttons {
+			button {
+				background-color: var(--primary-400);
+			}
 		}
 
 		main {
