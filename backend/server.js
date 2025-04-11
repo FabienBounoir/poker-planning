@@ -121,12 +121,12 @@ const createSocketIOServer = (server, rooms) => {
                     }
 
                     this.timeout = setTimeout(() => {
-                        let playerPlay = false
+                        let hasActivePlayer = false
 
                         for (const player of object.players.values()) {
                             console.log("Check player", player.name, player.selectedCard);
                             if (player.role === UserRole.PLAYER) {
-                                playerPlay = true
+                                hasActivePlayer = true
                                 if (!player.selectedCard) {
                                     console.log("Not all players have selected a card");
                                     return;
@@ -134,7 +134,7 @@ const createSocketIOServer = (server, rooms) => {
                             }
                         }
 
-                        if (!playerPlay) return
+                        if (!hasActivePlayer) return
 
                         this.data.state = "result";
                         this.emitUpdateGame("result");
