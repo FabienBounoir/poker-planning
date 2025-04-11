@@ -90,7 +90,9 @@
         "observerTooltip": "Un osservatore può solo guardare la sessione e non può votare.",
         "voteInProgress": "Voto in corso...",
         "fileTooLarge": "Il file supera la dimensione massima consentita di 5 MB.",
-        "errorUploadingFile": "Si è verificato un errore durante il caricamento del file."
+        "errorUploadingFile": "Si è verificato un errore durante il caricamento del file.",
+        "becomeObserver": "Diventa osservatore",
+        "leaveObserver": "Esci dalla modalità osservatore"
     },
     "ManagerPage": {
         "welcomeMessage": "Benvenuto {USER}!",

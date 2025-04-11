@@ -8,9 +8,6 @@ export default defineConfig({
 	optimizeDeps: {
 		include: ['svelte-sonner']
 	},
-	server: {
-		port: 34568,
-	},
 	define: {
 		PACKAGE_JSON: packageJson
 	}

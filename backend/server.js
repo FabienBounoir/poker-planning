@@ -250,7 +250,7 @@ const createSocketIOServer = (server, rooms) => {
             };
 
             room.players.set(socket.id, player);
-            room.emitPlayers(room.data.state != "waiting");
+            room.emitPlayers(false); //room.data.state != "waiting"
 
             socket.on('disconnect', () => {
                 console.log(`User ${socket.id} disconnected`);
@@ -323,6 +323,30 @@ const createSocketIOServer = (server, rooms) => {
                     case 'hexcode':
                         room.data.hexcode = data.hexcode;
                         room.emit("hexcode", { hexcode: data.hexcode }, false);
+                        break;
+                    case 'toggleRole':
+                        let change = false
+
+                        if (player.role == UserRole.OBSERVER) {
+                            player.role = UserRole.PLAYER;
+                            change = true;
+                        }
+                        else if (player.role == UserRole.PLAYER) {
+                            player.role = UserRole.OBSERVER;
+                            player.selectedCard = null;
+                            player.firstVoter = false;
+                            change = true;
+                        }
+
+                        if (change) {
+                            room.players.set(socket.id, player);
+                            room.emitPlayers();
+
+                            callback({ success: true, role: player.role });
+                        }
+                        else {
+                            callback({ success: false, error: "Role not changed" });
+                        }
                         break;
                     case 'delete-room':
                         if (player.role === UserRole.MANAGER) {

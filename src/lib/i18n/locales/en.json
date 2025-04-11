@@ -90,7 +90,9 @@
         "observerTooltip": "An observer can only watch the session and cannot vote.",
         "voteInProgress": "Vote in progress...",
         "fileTooLarge": "The file exceeds the maximum allowed size of 5 MB.",
-        "errorUploadingFile": "An error occurred while uploading the file."
+        "errorUploadingFile": "An error occurred while uploading the file.",
+        "becomeObserver": "Become an observer",
+        "leaveObserver": "Leave observer mode"
     },
     "ManagerPage": {
         "welcomeMessage": "Welcome {USER}!",
