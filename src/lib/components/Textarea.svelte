@@ -42,7 +42,7 @@
 		line-height: 1.2;
 		overflow: hidden;
 		width: 100%;
-		max-width: 40vw;
+		// max-width: 40vw;
 
 		&:disabled {
 			cursor: not-allowed;
