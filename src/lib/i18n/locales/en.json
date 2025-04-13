@@ -92,7 +92,8 @@
         "fileTooLarge": "The file exceeds the maximum allowed size of 5 MB.",
         "errorUploadingFile": "An error occurred while uploading the file.",
         "becomeObserver": "Become an observer",
-        "leaveObserver": "Leave observer mode"
+        "leaveObserver": "Leave observer mode",
+        "copyError": "An error occurred while copying the room code."
     },
     "ManagerPage": {
         "welcomeMessage": "Welcome {USER}!",

@@ -2,6 +2,7 @@
 	import { fade, scale } from 'svelte/transition';
 	let { code = 'XXX-XXX', url, hexcode } = $props();
 	import { _ } from 'svelte-i18n';
+	import { toast } from 'svelte-sonner';
 
 	let displayQrCode = $state(false);
 	let copied = $state(false);
@@ -12,6 +13,7 @@
 			await navigator.clipboard.writeText(url);
 			copied = true;
 		} catch (error) {
+			toast.error($_('RoomPage.copyError'));
 			console.error('Failed to copy!', error);
 		} finally {
 			setTimeout(() => {

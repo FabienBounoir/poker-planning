@@ -92,7 +92,8 @@
         "fileTooLarge": "El archivo excede el tamaño máximo permitido de 5 MB.",
         "errorUploadingFile": "Ocurrió un error al subir el archivo.",
         "becomeObserver": "Convertirse en observador",
-        "leaveObserver": "Dejar el modo observador"
+        "leaveObserver": "Dejar el modo observador",
+        "copyError": "Se produjo un error al copiar el código de la sala."
     },
     "ManagerPage": {
         "welcomeMessage": "¡Bienvenido {USER}!",
