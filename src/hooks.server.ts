@@ -13,5 +13,5 @@ const get_lang = (event: RequestEvent) => {
         return acceptLanguage[0]
     }
 
-    return "en"
+    return "en-US"
 }

@@ -1,4 +1,6 @@
-export async function GET() {
+export async function GET({ request, url }) {
+    console.log("request", request, url.origin)
+
     return new Response(
         `
 		<?xml version="1.0" encoding="UTF-8" ?>
@@ -11,40 +13,43 @@ export async function GET() {
 			xmlns:video="https://www.google.com/schemas/sitemap-video/1.1"
 		>
 			<url>
-                <loc>https://anotherpp.vercel.app/</loc>
-                <lastmod>2025-03-28T16:15:00+00:00</lastmod>
+                <loc>%DOMAIN%/</loc>
+                <lastmod>2025-04-13T12:05:00+00:00</lastmod>
             </url>
 
             <url>
-                <loc>https://anotherpp.vercel.app/create</loc>
-                <lastmod>2025-03-28T23:15:00+00:00</lastmod>
+                <loc>%DOMAIN%/create</loc>
+                <lastmod>2025-04-13T12:05:00+00:00</lastmod>
             </url>
 
             <url>
-                <loc>https://anotherpp.vercel.app/join</loc>
-                <lastmod>2025-03-28T16:15:00+00:00</lastmod>
+                <loc>%DOMAIN%/join</loc>
+                <lastmod>2025-04-13T12:05:00+00:00</lastmod>
             </url>
 
             <url>
-                <loc>https://anotherpp.vercel.app/manager</loc>
-                <lastmod>2025-03-28T23:15:00+00:00</lastmod>
+                <loc>%DOMAIN%/manager</loc>
+                <lastmod>2025-04-13T12:05:00+00:00</lastmod>
             </url>
 
             <url>
-                <loc>https://anotherpp.vercel.app/rooms</loc>
-                <lastmod>2025-03-28T23:15:00+00:00</lastmod>
+                <loc>%DOMAIN%/rooms</loc>
+                <lastmod>2025-04-13T12:05:00+00:00</lastmod>
             </url>
 
             <url>
-                <loc>https://anotherpp.vercel.app/feedback</loc>
-                <lastmod>2025-03-28T11:15:00+00:00</lastmod>
+                <loc>%DOMAIN%/feedback</loc>
+                <lastmod>2025-04-13T12:05:00+00:00</lastmod>
             </url>
 
             <url>
-                <loc>https://anotherpp.vercel.app/pokerhistory</loc>
-                <lastmod>2025-03-28T23:15:00+00:00</lastmod>
+                <loc>%DOMAIN%/pokerhistory</loc>
+                <lastmod>2025-04-13T12:05:00+00:00</lastmod>
             </url>
-		</urlset>`.trim(),
+		</urlset>`.trim().replace(
+            /%DOMAIN%/g,
+            url.origin
+        ),
         {
             headers: {
                 'Content-Type': 'application/xml'
