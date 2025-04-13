@@ -52,6 +52,9 @@
 	let moyenne = $state(null);
 	let mediane = $state(null);
 
+	let animatePlayer = true;
+	let timeoutDisableAnimation: ReturnType<typeof setTimeout> | null = null;
+
 	const canStarVote = () => {
 		if (pokerManager?.userStory == '') {
 			return toast.error($_('ManagerPage.noUserStoryDefined'));
@@ -252,6 +255,22 @@
 		}
 	};
 
+	const maybe = (node, options) => {
+		if (animatePlayer) {
+			return options.fn(node, options);
+		}
+	};
+
+	const changeDisplayUserType = (type: string) => {
+		animatePlayer = false;
+
+		timeoutDisableAnimation = setTimeout(() => {
+			animatePlayer = true;
+		}, 100);
+
+		displayUserType = type;
+	};
+
 	onMount(() => {
 		connect();
 	});
@@ -401,7 +420,7 @@
 					<div
 						class="player"
 						class:active={displayUserType == 'PLAYERS'}
-						on:click={() => (displayUserType = 'PLAYERS')}
+						on:click={() => changeDisplayUserType('PLAYERS')}
 					>
 						<i class="fa-solid fa-user"></i>
 						{players.length || 0}
@@ -410,7 +429,7 @@
 						<div
 							class="observer"
 							class:active={displayUserType == 'OBSERVERS'}
-							on:click={() => (displayUserType = 'OBSERVERS')}
+							on:click={() => changeDisplayUserType('OBSERVERS')}
 						>
 							<i class="fa-solid fa-eye"></i>
 							{observers.length || 0}
@@ -430,8 +449,8 @@
 					class="user"
 					class:defender={resultDefender?.name == user?.name &&
 						resultDefender?.item == user?.selectedCard}
-					out:slide={{ axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
-					in:slide={{ axis: 'x', duration: 500, delay: 0, easing: cubicInOut }}
+					out:maybe={{ fn: slide, axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
+					in:maybe={{ fn: slide, axis: 'x', duration: 500, delay: 0, easing: cubicInOut }}
 					class:Lowlight={viewCards != null &&
 						viewCards != user?.selectedCard &&
 						pokerManager.state == 'result'}
@@ -625,7 +644,6 @@
 					display: flex;
 					flex-direction: row;
 					border-radius: 5px;
-					background-color: var(--primary-200);
 					overflow: hidden;
 
 					> div {
@@ -841,8 +859,6 @@
 					color: var(--primary-50);
 
 					.button-user-type-container {
-						background-color: var(--primary-200);
-
 						> div {
 							background-color: var(--primary-950);
 							color: var(--primary-200);

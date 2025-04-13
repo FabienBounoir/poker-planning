@@ -2,8 +2,10 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import AvatarCreation from '$lib/components/AvatarCreation.svelte';
-	import Card from '$lib/components/Card.svelte';
+	import Card from '$lib/components/cards/Card.svelte';
 	import ConfettiFullscreen from '$lib/components/ConfettiFullscreen.svelte';
+	import Observers from '$lib/components/Observers.svelte';
+	import UserStory from '$lib/components/UserStory.svelte';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import type { PokerManager } from '$lib/components/types/PokerManager';
@@ -17,8 +19,10 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import { toast } from 'svelte-sonner';
-	import { cubicInOut, quintInOut, quintOut } from 'svelte/easing';
-	import { fade, scale, slide } from 'svelte/transition';
+	import { quintInOut, quintOut } from 'svelte/easing';
+	import { fade, scale } from 'svelte/transition';
+	import Cards from '$lib/components/cards/Cards.svelte';
+	import Waiting from '$lib/components/Waiting.svelte';
 
 	const ROOM_ID_REGEX = /^\d{3}-\d{3}$/i;
 	const DEFAUT_AVATAR_URL = 'https://api.dicebear.com/9.x/dylan/svg';
@@ -48,8 +52,6 @@
 
 	let players: Users = $state(null);
 	let observers: Users = $state(null);
-
-	let existingPositions: { top: number; left: number }[] = [];
 
 	let waitingChangeRole = $state(false);
 
@@ -232,9 +234,10 @@
 		submittedLetter = forceValue;
 	};
 
-	const includeUS_ID = (userStory: string) => {
-		const match = userStory.match(/NFS-\d+/i);
-		return match ? `https://portail.agir.orange.com/browse/${match[0]}` : null;
+	const errorWhenSendingVote = () => {
+		toast.error($_('RoomPage.ErrorWhenSendingVote'));
+		submittedLetter = null;
+		selectedLetter = null;
 	};
 
 	const sendHexa = () => {
@@ -249,34 +252,6 @@
 		}
 
 		io.send({ type: 'hexcode', data: { hexcode } });
-	};
-
-	const errorWhenSendingVote = () => {
-		toast.error($_('RoomPage.ErrorWhenSendingVote'));
-		submittedLetter = null;
-		selectedLetter = null;
-	};
-
-	const isPositionFree = (top: number, left: number) => {
-		return !existingPositions.some(
-			(pos) => Math.abs(pos.top - top) < 15 && Math.abs(pos.left - left) < 15
-		);
-	};
-
-	const getRandomPosition = () => {
-		let top, left;
-		let tries = 0;
-		const maxTries = 15;
-
-		do {
-			top = Math.random() < 0.5 ? Math.random() * 20 + 20 : Math.random() * 20 + 60;
-			left = Math.random() < 0.5 ? Math.random() * 20 + 20 : Math.random() * 20 + 60;
-			tries++;
-		} while (!isPositionFree(top, left) && tries < maxTries);
-
-		if (tries < maxTries) existingPositions.push({ top, left });
-
-		return `--top: ${top}vh; --left: ${left}vw;`;
 	};
 
 	const roleChange = () => {
@@ -364,94 +339,26 @@
 			<input type="text" bind:value={hexcode} placeholder="#FF00EE" disabled={submitting} />
 		</form>
 
-		<div class="observer-container">
-			<div class="manage-state" on:click={roleChange}>
-				{#if isObserver}
-					<i class="fa-solid fa-right-from-bracket"></i>
-					<span>{$_('RoomPage.leaveObserver')}</span>
-				{:else}
-					<i class="fa-solid fa-eye"></i>
-					<span>{$_('RoomPage.becomeObserver')}</span>
-				{/if}
-			</div>
-
-			{#if observers && observers.length > 0}
-				<span class="separator"></span>
-
-				{#each observers as observer}
-					<div
-						class="observer-display"
-						transition:slide={{ axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
-					>
-						<img
-							alt="User-avatar"
-							src={observer?.avatar ||
-								(pokerManager?.avatar || DEFAUT_AVATAR_URL) + `?seed=${observer.name}`}
-						/>
-						<span>{observer.name}</span>
-					</div>
-				{/each}
-			{/if}
-		</div>
+		<Observers
+			pokerAvatarType={pokerManager?.avatar}
+			{DEFAUT_AVATAR_URL}
+			{roleChange}
+			{observers}
+			{isObserver}
+		/>
 
 		{#if pokerManager.state === 'waiting'}
-			<h3 class="player-count-display">
-				{players && players.length > 0 ? `${players.length} player` : ''}
-				{players && players.length > 0 && observers && observers.length > 0 ? ' + ' : ''}
-				{observers && observers.length > 0 ? `${observers?.length} observer` : ''}
-			</h3>
-
-			<h1>{$_('RoomPage.waitingForVotes')}</h1>
-			{#if players}
-				{#each players as player}
-					<div
-						class="player-display"
-						style={getRandomPosition()}
-						transition:scale={{ duration: 500 }}
-					>
-						<img
-							alt="User-avatar"
-							src={player?.avatar ||
-								(pokerManager?.avatar || DEFAUT_AVATAR_URL) + `?seed=${player.name}`}
-						/>
-						<span>{player.name}</span>
-					</div>
-				{/each}
-			{/if}
+			<Waiting {DEFAUT_AVATAR_URL} {observers} {players} pokerAvatarType={pokerManager?.avatar} />
 		{:else if pokerManager.state === 'playing'}
-			{#if pokerManager?.userStory}
-				<div class="user-story" transition:scale={{ duration: 500 }}>
-					<h3>User story</h3>
-					{#if includeUS_ID(pokerManager.userStory) !== null}
-						<h1>
-							<a
-								title="Open User story on jira"
-								target="_blank"
-								href={includeUS_ID(pokerManager.userStory)}>{pokerManager.userStory}</a
-							>
-						</h1>
-					{:else}
-						<h1>{pokerManager.userStory}</h1>
-					{/if}
-				</div>
-			{/if}
+			<UserStory userStory={pokerManager?.userStory} />
 
-			{#if isObserver}
-				<h1>{$_('RoomPage.voteInProgress')}</h1>
-			{:else}
-				<div class="flex" in:fade={{ duration: 500, easing: quintOut }}>
-					{#each pokerManager.cards as card}
-						<Card
-							content={card}
-							bind:cardSelected={selectedLetter}
-							bind:submittedLetter
-							clickHandler={() => {
-								sendVote();
-							}}
-						/>
-					{/each}
-				</div>
-			{/if}
+			<Cards
+				cards={pokerManager?.cards || []}
+				{isObserver}
+				bind:selectedLetter
+				bind:submittedLetter
+				{sendVote}
+			/>
 		{:else if pokerManager.state === 'result'}
 			<div class="results-container">
 				<div class="results" in:fade={{ duration: 700, easing: quintInOut }}>
@@ -486,7 +393,7 @@
 								<ConfettiFullscreen />
 							{/if}
 
-							{#each resultItems as { item, players, pourcentage }, i}
+							{#each resultItems as { item, players, pourcentage }, i (item)}
 								<div class="result-item">
 									<ProgressBar {pourcentage} {item} delay={i} />
 									<div class="players-container">
@@ -743,130 +650,6 @@
 		min-height: 100dvh;
 		gap: 5dvh;
 
-		.observer-container {
-			position: fixed;
-			top: 20vh;
-			left: 0;
-
-			background-color: var(--primary-200);
-
-			max-height: calc(100dvh - 40vh);
-
-			border-top-right-radius: 1em;
-			border-bottom-right-radius: 1em;
-			padding: 0.5em;
-			display: flex;
-			flex-direction: column;
-			gap: 0.5em;
-
-			display: flex;
-			align-items: center;
-			// overflow-y: auto; compliquer on voit plus le span...
-
-			.separator {
-				width: 80%;
-				min-height: 0.3em;
-				border-radius: 5px;
-				background-color: var(--primary-500);
-			}
-
-			.manage-state {
-				width: 40px;
-				min-height: 40px;
-				border-radius: 100%;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				cursor: pointer;
-				background-color: var(--primary-700);
-				color: var(--primary-200);
-				position: relative;
-
-				&:hover span {
-					opacity: 1;
-				}
-
-				span {
-					position: absolute;
-					opacity: 0;
-					pointer-events: none;
-					font-size: 1em;
-					width: max-content;
-					left: 50px;
-					background-color: var(--primary-900);
-					color: var(--primary-200);
-					padding: 0.2em 0.5em;
-					border-radius: 5px;
-					transition: opacity 0.2s ease-in-out;
-				}
-			}
-
-			.observer-display {
-				position: relative;
-
-				img {
-					width: 40px;
-					height: 40px;
-					border-radius: 100%;
-					border: 2px solid var(--primary-700);
-					object-fit: cover;
-					cursor: pointer;
-				}
-
-				&:hover span {
-					opacity: 1;
-				}
-
-				span {
-					position: absolute;
-					transform: translate(0, 25%);
-					opacity: 0;
-					pointer-events: none;
-					font-size: 1em;
-					width: max-content;
-					left: 50px;
-					background-color: var(--primary-900);
-					color: var(--primary-200);
-					padding: 0.2em 0.5em;
-					border-radius: 5px;
-					transition: opacity 0.2s ease-in-out;
-				}
-			}
-		}
-
-		.player-count-display {
-			position: fixed;
-			transform: translate(-50%, 0);
-			padding: 1em;
-			top: 0;
-			left: 50%;
-			color: var(--primary-700);
-			font-weight: 800;
-			font-size: 1.5em;
-			border-radius: 5px;
-			background-color: var();
-		}
-
-		.player-display {
-			position: fixed;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			gap: 0.5em;
-			transform: translate(-50%, -50%);
-			top: var(--top, 30);
-			left: var(--left, 50);
-
-			img {
-				border-radius: 100%;
-				border: 2px solid var(--primary-700);
-				width: 50px;
-				height: 50px;
-				object-fit: cover;
-			}
-		}
-
 		button {
 			position: sticky;
 			bottom: 2em;
@@ -875,38 +658,6 @@
 				opacity: 0.5;
 				cursor: not-allowed;
 				position: initial;
-			}
-		}
-
-		.user-story {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			gap: 0.5em;
-			color: var(--primary-950);
-			width: 85vw;
-
-			h1 {
-				font-size: 2em;
-				white-space: pre-line;
-			}
-
-			h3 {
-				color: var(--primary-700);
-			}
-		}
-
-		.flex {
-			display: flex;
-			gap: 2vw;
-			flex-wrap: wrap;
-			justify-content: center;
-			max-width: 80vw;
-
-			&.vertical {
-				flex-direction: column;
-				align-items: center;
 			}
 		}
 
@@ -941,18 +692,6 @@
 		}
 	}
 
-	@media screen and (max-width: 1100px) {
-		main {
-			.observer-container {
-				display: none;
-			}
-
-			.flex {
-				max-width: 100vw;
-			}
-		}
-	}
-
 	@media screen and (max-width: 500px) {
 		main {
 			display: flex;
@@ -964,14 +703,6 @@
 			gap: 3em;
 			padding: 3em 0 0 0;
 			text-align: center;
-
-			.flex {
-				display: flex;
-				flex-direction: column;
-				gap: 1em;
-				flex-wrap: wrap;
-				justify-content: center;
-			}
 
 			button {
 				position: sticky;
@@ -991,56 +722,8 @@
 		}
 
 		main {
-			.player-count-display {
-				color: var(--primary-300);
-			}
-
 			h1 {
 				color: var(--primary-100);
-			}
-
-			.observer-container {
-				position: fixed;
-				top: 20vh;
-				left: 0;
-
-				background-color: var(--primary-800);
-				border-top: 3px solid var(--primary-600);
-				border-right: 3px solid var(--primary-600);
-				border-bottom: 3px solid var(--primary-600);
-
-				.manage-state {
-					background-color: var(--primary-200);
-					color: var(--primary-700);
-
-					span {
-						background-color: var(--primary-200);
-						color: var(--primary-900);
-					}
-				}
-
-				.separator {
-					background-color: var(--primary-300);
-				}
-
-				.observer-display {
-					span {
-						background-color: var(--primary-200);
-						color: var(--primary-900);
-					}
-
-					img {
-						border-color: var(--primary-100);
-					}
-				}
-			}
-		}
-
-		.player-display {
-			color: var(--primary-400);
-
-			img {
-				background-color: var(--primary-800);
 			}
 		}
 
