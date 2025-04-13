@@ -100,6 +100,7 @@ const createSocketIOServer = (server, rooms) => {
                 emitDeleteRoom() {
                     object.emit('delete-room');
                     console.log(`Room ${roomId} deleted by manager.`);
+                    room.data.state = "deleted";
                     roomDeleted(room.data);
                 },
                 resetChoose() {
@@ -265,6 +266,9 @@ const createSocketIOServer = (server, rooms) => {
 
             socket.on('disconnect', () => {
                 console.log(`User ${socket.id} disconnected`);
+                if (room?.data?.state === "deleted") {
+                    return // Don't do anything if the room is already deleted
+                }
 
                 userLeft(room.players.get(socket.id)?.name || "Unknown", room.data, roomId);
                 room.players.delete(socket.id);
