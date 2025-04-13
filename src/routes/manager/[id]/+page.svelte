@@ -88,9 +88,7 @@
 			players = payload.players;
 			observers = payload.observers;
 
-			if (players.length == 0 && observers.length > 0) {
-				displayUserType = 'OBSERVERS';
-			} else if (players.length > 0 && observers.length == 0) {
+			if (players.length > 0 && observers.length == 0) {
 				displayUserType = 'PLAYERS';
 			} else if (players.length == 0 && observers.length == 0) {
 				displayUserType = 'PLAYERS';
@@ -439,7 +437,7 @@
 			</div>
 
 			{#if players?.length < 1 && displayUserType == 'PLAYERS'}
-				<div>
+				<div class="no-participants">
 					<p class="tooltip">{$_('ManagerPage.noParticipantsMessage')}</p>
 				</div>
 			{/if}
@@ -854,6 +852,7 @@
 				.tooltip {
 					color: var(--primary-50);
 					text-align: center;
+					padding-top: 2em;
 				}
 				.header {
 					color: var(--primary-50);
