@@ -106,8 +106,10 @@
 			position: relative;
 
 			img {
-				width: 40px;
-				height: 40px;
+				min-width: 40px;
+				min-height: 40px;
+				max-width: 40px;
+				max-height: 40px;
 				border-radius: 100%;
 				border: 2px solid var(--primary-700);
 				object-fit: cover;

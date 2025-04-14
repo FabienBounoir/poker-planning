@@ -632,11 +632,19 @@
 			display: flex;
 			flex-direction: column;
 
+			.tooltip {
+				text-align: center;
+				padding-top: 2em;
+			}
+
 			.header {
 				display: flex;
-				align-items: end;
-				justify-content: space-between;
 				padding-bottom: 0.5em;
+				position: sticky;
+				top: 0;
+				padding-top: 1em;
+				z-index: 99;
+				background-color: var(--primary-50);
 
 				.button-user-type-container {
 					display: flex;
@@ -678,7 +686,7 @@
 				flex-direction: row;
 				justify-content: space-between;
 				align-items: center;
-				height: 3.5em;
+				min-height: 3.5em;
 				padding: 0 1em;
 				margin-bottom: 1em;
 				border-radius: 5px;
@@ -732,8 +740,10 @@
 						img {
 							border-radius: 100%;
 							border: 2px solid var(--primary-700);
-							width: 40px;
-							height: 40px;
+							min-width: 40px;
+							min-height: 40px;
+							max-width: 40px;
+							max-height: 40px;
 							object-fit: cover;
 						}
 					}
@@ -851,11 +861,10 @@
 			.information {
 				.tooltip {
 					color: var(--primary-50);
-					text-align: center;
-					padding-top: 2em;
 				}
 				.header {
 					color: var(--primary-50);
+					background-color: var(--primary-950);
 
 					.button-user-type-container {
 						> div {
