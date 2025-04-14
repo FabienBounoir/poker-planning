@@ -486,8 +486,10 @@
 					}
 
 					img {
-						width: 40px;
-						height: 40px;
+						min-width: 40px;
+						min-height: 40px;
+						max-width: 40px;
+						max-height: 40px;
 						margin-right: 12px;
 						border-radius: 100%;
 						border: 2px solid var(--primary-800);
@@ -553,7 +555,10 @@
 							align-items: center;
 
 							img {
-								height: 2em;
+								min-width: 2em;
+								min-height: 2em;
+								max-width: 2em;
+								max-height: 2em;
 								border-radius: 100%;
 								object-fit: cover;
 								aspect-ratio: 1;
@@ -625,8 +630,10 @@
 			img {
 				border-radius: 100%;
 				border: 2px solid var(--primary-700);
-				width: 80px;
-				height: 80px;
+				min-width: 80px;
+				min-height: 80px;
+				max-width: 80px;
+				max-height: 80px;
 				margin-bottom: 1em;
 				justify-self: center;
 			}

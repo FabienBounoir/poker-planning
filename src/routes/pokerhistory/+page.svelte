@@ -234,8 +234,10 @@
 						gap: 0.5em;
 
 						img {
-							width: 2em;
-							height: 2em;
+							min-width: 2em;
+							min-height: 2em;
+							max-width: 2em;
+							max-height: 2em;
 							border-radius: 50%;
 						}
 					}

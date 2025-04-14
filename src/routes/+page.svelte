@@ -143,6 +143,8 @@
 			flex-direction: row;
 			gap: 2em;
 			width: 40%;
+			user-select: none;
+
 			a {
 				cursor: pointer;
 

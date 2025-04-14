@@ -15,8 +15,18 @@ const roomExist = (roomId) => {
     return rooms.has(roomId)
 }
 
+const getTotalUsers = () => {
+    let totalUsers = 0;
+    rooms.forEach((room) => {
+        totalUsers += room?.players?.size || 0;
+    });
+    return totalUsers;
+}
+
+
 module.exports = {
     rooms,
     roomExist,
-    createRoomId
+    createRoomId,
+    getTotalUsers
 }

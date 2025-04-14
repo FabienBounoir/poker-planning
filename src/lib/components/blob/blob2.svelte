@@ -1,4 +1,61 @@
-<svg width="12vw" viewBox="0 0 128 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+<script>
+	import { fade, scale } from 'svelte/transition';
+
+	let clickCount = $state(0);
+	let multiplier = $state(1);
+	let displayCookieClick = $state(false);
+
+	let powerUps = [
+		{ name: 'Multiplier x2', effect: () => (multiplier *= 2), price: 50, purchased: 0 },
+		{ name: 'Auto Clicker', effect: passiveGain, price: 100, purchased: 0 },
+		{ name: 'Réduction de prix', effect: reducePrices, price: 300, purchased: 0 },
+		{ name: 'Boost temporaire', effect: temporaryBoost, price: 200, purchased: 0 }
+	];
+
+	$effect(() => {
+		if (clickCount > 10) {
+			displayCookieClick = true;
+		}
+	});
+
+	function buyPowerUp(index) {
+		const powerUp = powerUps[index];
+		if (clickCount >= powerUp.price) {
+			clickCount -= powerUp.price;
+			powerUp.effect();
+			powerUp.purchased++;
+			powerUp.price = Math.floor(powerUp.price * 1.5);
+		}
+	}
+
+	function reducePrices() {
+		powerUps.forEach((powerUp) => {
+			powerUp.price = Math.floor(powerUp.price * 0.8);
+		});
+	}
+
+	function temporaryBoost() {
+		let originalMultiplier = multiplier;
+		multiplier *= 2;
+		setTimeout(() => {
+			multiplier = originalMultiplier;
+		}, 30000);
+	}
+
+	function passiveGain() {
+		setInterval(() => {
+			clickCount += 1;
+		}, 1000);
+	}
+</script>
+
+<svg
+	width="12vw"
+	viewBox="0 0 128 170"
+	fill="none"
+	xmlns="http://www.w3.org/2000/svg"
+	on:click={() => (clickCount += multiplier)}
+>
 	<path
 		d="M68.3537 0.897253C67.6531 1.53111 66.8191 2.06489 66.4855 2.06489C64.7507 2.06489 64.2837 3.26589 65.6848 4.19999C66.1185 4.50024 66.6857 5.33427 66.8858 6.06821C67.4863 8.06987 67.9868 8.3034 69.0543 7.06904C69.6214 6.43518 70.5556 5.90141 71.4229 5.66788C73.091 5.26755 73.3245 4.46688 72.0234 3.5995C71.5897 3.29925 71.0226 2.46522 70.8224 1.73128C70.1886 -0.337104 69.7882 -0.470548 68.3537 0.897253Z"
 		fill="var(--first-color)"
@@ -29,7 +86,101 @@
 	/>
 </svg>
 
+{#if displayCookieClick}
+	<div class="click-count" in:scale={{ duration: 300 }}>Clics: {clickCount}</div>
+
+	<div class="floating-menu" in:fade={{ duration: 500 }}>
+		<h3>Power-ups</h3>
+		{#each powerUps as powerUp, index}
+			<div class="power-up">
+				<span>{powerUp.name}</span>
+				<button on:click={() => buyPowerUp(index)} disabled={clickCount < powerUp.price}>
+					Acheter ({powerUp.price} clics)
+				</button>
+				<p>Acheté : {powerUp.purchased}</p>
+			</div>
+		{/each}
+	</div>
+{/if}
+
 <style lang="scss">
+	.floating-menu {
+		position: fixed;
+		bottom: 10%;
+		right: 5%;
+		background: var(--primary-100);
+		padding: 1em;
+		border-radius: 8px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		width: 200px;
+		z-index: 1000;
+
+		h3 {
+			margin: 0 0 1em;
+			font-size: 1.2em;
+			color: var(--primary-900);
+		}
+
+		.power-up {
+			display: flex;
+			flex-direction: column;
+			margin-bottom: 1em;
+
+			span {
+				font-size: 1em;
+				margin-bottom: 0.5em;
+			}
+
+			button {
+				background: var(--primary-500);
+				border: none;
+				padding: 0.5em;
+				border-radius: 4px;
+				cursor: pointer;
+				transition: background 0.3s;
+
+				&:hover:not(:disabled) {
+					background: var(--primary-700);
+				}
+
+				&:disabled {
+					background: var(--primary-300);
+					cursor: not-allowed;
+				}
+			}
+
+			p {
+				margin-top: 0.5em;
+				font-size: 0.9em;
+				color: var(--primary-700);
+			}
+		}
+	}
+
+	.click-count {
+		position: fixed;
+		top: 0%;
+		right: 0%;
+		width: max-content;
+		padding: 0.5em 1em;
+		margin: 1em 1.5em;
+		background: linear-gradient(120deg, var(--primary-200), var(--primary-400), var(--primary-700));
+		border-radius: 0.5em;
+		background-size: 200% 200%;
+		animation: shimmer 5s infinite alternate;
+		font-weight: bold;
+		user-select: none;
+
+		@keyframes shimmer {
+			0% {
+				background-position: 0% 50%;
+			}
+			100% {
+				background-position: 100% 50%;
+			}
+		}
+	}
+
 	svg {
 		position: absolute;
 		top: 50%;
@@ -53,10 +204,10 @@
 			transform: translateY(-50%) rotate(0deg);
 		}
 		50% {
-			transform: translateY(-40%) rotate(10deg); /* Flotte vers le haut */
+			transform: translateY(-40%) rotate(10deg);
 		}
 		100% {
-			transform: translateY(-50%) rotate(0deg); /* Revient à la position initiale */
+			transform: translateY(-50%) rotate(0deg);
 		}
 	}
 
@@ -65,10 +216,10 @@
 			transform: translateY(0%) rotate(0deg);
 		}
 		50% {
-			transform: translateY(7%) rotate(10deg); /* Flotte vers le haut */
+			transform: translateY(7%) rotate(10deg);
 		}
 		100% {
-			transform: translateY(0%) rotate(0deg); /* Revient à la position initiale */
+			transform: translateY(0%) rotate(0deg);
 		}
 	}
 
@@ -78,7 +229,7 @@
 			width: 15vw;
 			margin-bottom: 5em;
 			transform: translateY(0);
-			animation: floatMobile 5s ease-in-out infinite; /* Animation de flottaison */
+			animation: floatMobile 5s ease-in-out infinite;
 		}
 	}
 
