@@ -120,9 +120,7 @@ app.get("/health", (req, res) => {
         uptime: process.uptime()
     }
 
-    res.json(body).status(200);
-});
-
+    res.status(200).json(body);
 
 
 const server = http.createServer(app);
