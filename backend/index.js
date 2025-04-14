@@ -1,9 +1,10 @@
 const express = require('express');
 const http = require('http');
-const { createRoomId, rooms } = require('./rooms');
+const { createRoomId, rooms, getTotalUsers } = require('./rooms');
 const { createSocketIOServer } = require('./server');
 const cors = require('cors');
 const { newPokerPlanningCreated, sendFeedback } = require('./utils/statistics');
+const packageJson = require('../package.json');
 require('dotenv').config();
 
 const app = express();
@@ -106,6 +107,23 @@ app.post('/room', (req, res) => {
 
     res.json({ roomId });
 });
+
+app.get("/health", (req, res) => {
+    let body = {
+        status: "ok",
+        version: packageJson.version || "0.0.0",
+
+        rooms: {
+            count: rooms.size,
+            users: getTotalUsers(),
+        },
+        uptime: process.uptime()
+    }
+
+    res.json(body).status(200);
+});
+
+
 
 const server = http.createServer(app);
 
