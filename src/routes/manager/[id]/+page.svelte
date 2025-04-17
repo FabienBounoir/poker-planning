@@ -643,7 +643,7 @@
 				position: sticky;
 				top: 0;
 				padding-top: 1em;
-				z-index: 99;
+				z-index: 50;
 				background-color: var(--primary-50);
 
 				.button-user-type-container {

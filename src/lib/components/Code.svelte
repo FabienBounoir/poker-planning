@@ -75,7 +75,7 @@
 		backdrop-filter: blur(7px) brightness(80%);
 		top: 0;
 		left: 0;
-		z-index: 10;
+		z-index: 100;
 		cursor: pointer;
 
 		h3 {
