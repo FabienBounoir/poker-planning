@@ -14,6 +14,7 @@
 	}
 
 	onMount(() => {
+		checkOverflow();
 		window.addEventListener('resize', () => {
 			checkOverflow();
 		});
