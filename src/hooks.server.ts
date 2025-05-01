@@ -3,7 +3,9 @@ import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = ({ event, resolve }) => {
     return resolve(event, {
-        transformPageChunk: ({ html }) => html.replace('%lang%', get_lang(event))
+        transformPageChunk: ({ html }) => {
+            return html.replace('%lang%', get_lang(event)).replace(/%domain%/g, event.url.origin)
+        }
     });
 };
 

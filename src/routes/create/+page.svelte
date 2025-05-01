@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { accordion } from '$lib/animations/accordion';
 	import Switch from '$lib/components/Switch.svelte';
+	import type { CardsChoice } from '$lib/components/types/CardsChoices';
 	import myshades from '$lib/myshades';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
@@ -56,31 +57,36 @@
 			}
 
 			if (type.startsWith('CUSTOM-')) {
-				bodyBuilder = { ...bodyBuilder, cards: choices.find((choice) => choice.id === type).cards };
+				const customChoice = choices?.find?.((choice) => choice.id === type);
+				bodyBuilder = { ...bodyBuilder, cards: customChoice?.cards };
 			}
 
-			const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/room`, {
+			const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/room`, {
 				method: 'POST',
 				headers: myHeaders,
 				body: JSON.stringify(bodyBuilder)
-			})
-				.then((response) => response.json())
-				.catch((error) => {
-					toast.error($_('CreatePage.error'));
-					console.error(error);
-				});
+			});
 
-			if (res && res.roomId) {
-				goto(`/manager/${res.roomId}`);
+			if (!response.ok) {
+				throw new Error(`Network response was not ok: ${response?.statusText}`);
 			}
+
+			const data = await response.json();
+
+			if (!data || !data.roomId) {
+				throw new Error('Invalid response data');
+			}
+
+			goto(`/manager/${data.roomId}`);
 		} catch (error) {
 			console.log('Create Error', error);
+			toast.error($_('CreatePage.error'));
 		}
 
 		submitting = false;
 	};
 
-	let choices = $state([
+	let choices: CardsChoice[] = $state([
 		{ id: 'TSHIRT', text: $_('selectCategories.types.TSHIRT') },
 		{ id: 'FIBONACCI', text: $_('selectCategories.types.FIBONACCI') },
 		{ id: 'POWEROF2', text: $_('selectCategories.types.POWEROF2') },
