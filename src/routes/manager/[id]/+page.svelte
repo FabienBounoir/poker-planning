@@ -326,9 +326,9 @@
 	{:else}
 		<div class="manager">
 			<div class="container">
-				<a href="/" title="Go to Home Page" rel="home">
-					<span in:fly|local={{ easing: backOut, x: -25 }}> Poker Planning </span>
-				</a>
+				<h1>
+					<span in:fly|local={{ easing: backOut, x: -25 }}>Poker Planning</span>
+				</h1>
 
 				<div class="me">
 					{$_('ManagerPage.welcomeMessage', { values: { USER: pokerManager.team || '' } })}
@@ -555,12 +555,10 @@
 				min-height: 100%;
 				color: var(--primary-950);
 
-				> a {
+				> h1 {
 					font-size: 3rem;
 					font-weight: 900;
 					line-height: 37px;
-					cursor: pointer;
-					text-decoration: none;
 
 					span {
 						display: block;
@@ -827,7 +825,7 @@
 	}
 
 	@media (prefers-color-scheme: dark) {
-		a {
+		h1 {
 			color: var(--primary-100);
 		}
 

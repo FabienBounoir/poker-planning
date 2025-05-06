@@ -255,7 +255,7 @@
 
 			<button
 				type="button"
-				class={'advance-setting-button'}
+				class="advance-setting-button"
 				class:activate={advancedSettings}
 				on:click={() => (advancedSettings = !advancedSettings)}
 			>
@@ -363,6 +363,10 @@
 {/if}
 
 <style lang="scss">
+	.auto-reveal-container {
+		padding: 2px 2px 2px 0;
+	}
+
 	.button--loading .button__text {
 		visibility: hidden;
 		opacity: 0;
@@ -507,6 +511,7 @@
 				gap: 0.5em;
 				align-items: center;
 				justify-content: space-between;
+				padding: 2px 2px 2px 0;
 
 				label {
 					display: block;
@@ -537,6 +542,11 @@
 			justify-content: center;
 			cursor: pointer;
 			color: var(--primary-800);
+
+			&:focus-visible {
+				outline: 2px solid var(--primary-400);
+				border-radius: 5px;
+			}
 
 			p {
 				display: flex;
