@@ -1,14 +1,13 @@
 <script>
-	import { page } from '$app/stores';
+	import { navigating, page } from '$app/stores';
+	import { hasNotificationsActive } from '$lib/notifications';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	let hasPokerHistory = $state(false);
-	let hasNotificationActive = $state(false);
+	let notificationActive = $state(false);
 
 	onMount(() => {
-		if (import.meta.env.VITE_NOTIFICATION) {
-			hasNotificationActive = true;
-		}
+		notificationActive = hasNotificationsActive(window.location.pathname);
 
 		const pokerHistory = Object.keys(window.localStorage).filter((key) =>
 			key.startsWith('PP_HISTORY')
@@ -18,9 +17,17 @@
 			hasPokerHistory = true;
 		}
 	});
+
+	$effect(() => {
+		$navigating;
+
+		if (window) {
+			notificationActive = hasNotificationsActive(window.location.pathname);
+		}
+	});
 </script>
 
-<div class="menu" class:notification-active={hasNotificationActive}>
+<div class="menu" class:notification-active={notificationActive}>
 	{#if PACKAGE_JSON?.version}
 		<a
 			title={$_('layout.versionLink')}

@@ -3,34 +3,41 @@
 	import ScrollText from './ScrollText.svelte';
 	import { backOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
+	import { getNotifications } from '$lib/notifications.js';
+	import { navigating } from '$app/stores';
 
 	let notification = $state();
 	let errorType = $state('info');
 
 	onMount(() => {
-		const notificationInfo = import.meta.env.VITE_NOTIFICATION;
+		checkNotifications();
+	});
 
-		if (notificationInfo) {
-			const notificationParsed = JSON.parse(notificationInfo);
-			const { messages, type } = notificationParsed;
+	$effect(() => {
+		$navigating;
+
+		if (window) {
+			checkNotifications();
+		}
+	});
+
+	const checkNotifications = () => {
+		const path = window.location.pathname;
+		const { message, type } = getNotifications(path);
+
+		if (message) {
+			notification = message;
 			if (type) {
 				errorType = type;
 			}
-
-			if (messages) {
-				for (const lang of window.navigator.languages) {
-					if (messages[lang]) {
-						notification = messages[lang];
-						break;
-					}
-				}
-			}
+		} else {
+			notification = null;
 		}
-	});
+	};
 </script>
 
 {#if notification}
-	<div class="notification-center {errorType}" in:fly|local={{ easing: backOut, y: -25 }}>
+	<div class="notification-center {errorType}" transition:fly|local={{ easing: backOut, y: -25 }}>
 		<div class="notification">
 			<ScrollText text={notification} />
 		</div>
