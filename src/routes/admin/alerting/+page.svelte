@@ -1,19 +1,54 @@
 <script lang="ts">
 	import ScrollText from '$lib/components/ScrollText.svelte';
 
+	let path = $state('/');
+
 	let alert = $state({
 		type: 'info',
 		messages: {
-			fr: '',
 			en: '',
+			fr: '',
 			es: '',
 			de: '',
 			it: ''
-		}
+		},
+		path: [],
+		startDate: null,
+		endDate: null
 	});
+
+	let limitedTime = $state(false);
 
 	function onChange(event) {
 		alert.type = event.currentTarget.value;
+	}
+
+	function formatAlert() {
+		const alertMapper = JSON.parse(JSON.stringify(alert));
+
+		if (alertMapper.path.length === 0) {
+			alertMapper.path = undefined;
+		}
+
+		if (!limitedTime) {
+			alertMapper.startDate = undefined;
+			alertMapper.endDate = undefined;
+		} else {
+			if (!alertMapper.startDate) {
+				alertMapper.startDate = undefined;
+			}
+			if (!alertMapper.endDate) {
+				alertMapper.endDate = undefined;
+			}
+		}
+
+		for (const lang in alertMapper.messages) {
+			if (!alertMapper.messages[lang]) {
+				delete alertMapper.messages[lang];
+			}
+		}
+
+		return alertMapper;
 	}
 </script>
 
@@ -30,57 +65,144 @@
 </div>
 
 <main>
-	<h1>Generate alerting</h1>
+	<div class="container">
+		<h1>Generate alerting</h1>
 
-	<div class="type-list">
-		<div class="type-list-item">
-			<input type="radio" name="info" id="alerting" value="info" on:change={onChange} />
-			<label for="alerting">Info</label>
+		<div class="type-list">
+			<div class="type-list-item">
+				<input type="radio" name="info" id="alerting" value="info" on:change={onChange} />
+				<label for="alerting">Info</label>
+			</div>
+			<div class="type-list-item">
+				<input type="radio" name="info" id="warning" value="warning" on:change={onChange} />
+				<label for="warning">Warning</label>
+			</div>
+			<div class="type-list-item">
+				<input type="radio" name="info" id="error" value="error" on:change={onChange} />
+				<label for="error">Error</label>
+			</div>
+			<div class="type-list-item">
+				<input type="radio" name="info" id="success" value="success" on:change={onChange} />
+				<label for="success">Success</label>
+			</div>
 		</div>
-		<div class="type-list-item">
-			<input type="radio" name="info" id="warning" value="warning" on:change={onChange} />
-			<label for="warning">Warning</label>
+
+		{#each Object.entries(alert.messages) as [lang, message]}
+			<div class="alert-list-item">
+				<h3>Langue {lang}</h3>
+				<textarea
+					rows="1"
+					placeholder="Texte à afficher"
+					on:input={(e) => {
+						alert.messages[lang] = e.currentTarget.value;
+					}}
+				></textarea>
+			</div>
+		{/each}
+
+		<div>
+			<h3>Specific Path</h3>
+
+			<input type="text" placeholder="Path" bind:value={path} />
+			<div class="buttons">
+				<button
+					on:click={() => {
+						if (path) {
+							alert.path.push(path);
+							path = '';
+						}
+					}}
+				>
+					add path
+				</button>
+
+				<button
+					on:click={() => {
+						alert.path = [];
+					}}
+				>
+					clear path
+				</button>
+			</div>
+
+			<div class="path-list">
+				{#each alert.path as p}
+					<p class="path-list-item" on:click={() => alert.path.splice(alert.path.indexOf(p), 1)}>
+						{p}
+					</p>
+				{/each}
+			</div>
 		</div>
-		<div class="type-list-item">
-			<input type="radio" name="info" id="error" value="error" on:change={onChange} />
-			<label for="error">Error</label>
+
+		<div>
+			<h3>Limited Time</h3>
+			<input type="checkbox" bind:checked={limitedTime} />
+			{#if limitedTime}
+				<div>
+					<input
+						type="datetime-local"
+						bind:value={alert.startDate}
+						on:change={(e) => {
+							alert.startDate = e.currentTarget.value;
+						}}
+					/>
+					<input
+						type="datetime-local"
+						bind:value={alert.endDate}
+						on:change={(e) => {
+							alert.endDate = e.currentTarget.value;
+						}}
+					/>
+				</div>
+			{/if}
 		</div>
-		<div class="type-list-item">
-			<input type="radio" name="info" id="success" value="success" on:change={onChange} />
-			<label for="success">Success</label>
-		</div>
+
+		<button
+			on:click={() => {
+				const alertMapper = formatAlert();
+				navigator.clipboard.writeText(JSON.stringify(alertMapper));
+			}}
+		>
+			Copy to clipboard
+		</button>
 	</div>
-
-	{#each Object.entries(alert.messages) as [lang, message]}
-		<div class="alert-list-item">
-			<h3>Langue {lang}</h3>
-			<textarea
-				rows="1"
-				placeholder="Texte à afficher"
-				on:input={(e) => {
-					alert.messages[lang] = e.currentTarget.value;
-				}}
-			></textarea>
-		</div>
-	{/each}
-
-	<pre>
-		{JSON.stringify(alert)}
-	</pre>
 </main>
 
 <style lang="scss">
+	.buttons {
+		display: flex;
+		flex-direction: row;
+		gap: 1rem;
+	}
+
+	.path-list {
+		display: flex;
+		flex-direction: row;
+		gap: 1rem;
+		flex-wrap: wrap;
+
+		.path-list-item {
+			background-color: var(--primary-200);
+			padding: 0.5rem;
+			border-radius: 0.5rem;
+			cursor: pointer;
+		}
+	}
+
+	textarea,
+	input {
+		width: -webkit-fill-available;
+	}
+
 	pre {
 		background-color: var(--primary-200);
 		margin-top: 1rem;
 		padding: 0.5rem;
 		border-radius: 0.5rem;
-		width: 95dvw;
+		text-wrap: auto;
 	}
 
 	.alertingExample {
-		// position: fixed;
-		// top: 0;
 		z-index: 99999;
 		display: flex;
 		flex-direction: column;
@@ -127,9 +249,19 @@
 		align-items: center;
 		justify-content: center;
 		margin-top: 2rem;
-		text-align: center;
+		text-align: left;
 		scale: 0;
 		animation: scale 0.5s forwards 0.2s;
+
+		.container {
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
+			width: 95dvw;
+			max-width: 800px;
+			padding: 1rem;
+			border-radius: 0.5rem;
+		}
 
 		@keyframes scale {
 			0% {
