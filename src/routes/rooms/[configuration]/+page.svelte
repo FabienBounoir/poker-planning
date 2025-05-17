@@ -591,7 +591,10 @@
 			input {
 				accent-color: var(--primary-500);
 
-				outline: none;
+				&:not(:focus-visible) {
+					outline: none;
+				}
+
 				box-shadow: none;
 			}
 

@@ -37,12 +37,13 @@
 
 <p>{$_('ManagerPage.roomCode')}</p>
 <div class="code-element">
-	<div class="code-container" on:click={displayCopyToClipboard}>
+	<button class="code-container" on:click={displayCopyToClipboard}>
 		<h3 class:copied style="--copy-text: '{$_('ManagerPage.copied')}';">
 			<span class="code__text">{code}</span>
 		</h3>
-	</div>
+	</button>
 	<button
+		class="qr-container"
 		aria-label="Display QrCode"
 		on:click={() => {
 			displayQrCode = true;
@@ -101,11 +102,10 @@
 		gap: 0.3em;
 		align-items: center;
 
-		button {
+		.qr-container {
 			background-color: transparent;
 			border: 0px;
 			transition: scale 0.3s !important;
-			outline: none;
 
 			i {
 				font-size: 2em;
@@ -122,21 +122,22 @@
 			width: max-content;
 			padding: 1em;
 			border-radius: 8px;
+			background-color: transparent;
 
 			&:hover {
 				cursor: pointer;
-
-				h3 {
-					filter: blur(0);
-				}
 			}
 
 			h3 {
 				position: relative;
 				font-size: 2em;
-				color: var(--primary-600);
 				font-weight: 900;
 				line-height: 14px;
+				color: var(--primary-600);
+
+				span {
+					color: inherit;
+				}
 
 				&.copied {
 					.code__text {
@@ -166,7 +167,7 @@
 				}
 			}
 
-			button {
+			.qr-container {
 				color: var(--primary-200) !important;
 			}
 		}

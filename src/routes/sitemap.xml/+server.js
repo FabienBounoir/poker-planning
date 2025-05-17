@@ -52,7 +52,7 @@ export async function GET({ request, url }) {
         ),
         {
             headers: {
-                'Content-Type': 'application/xml'
+                'Content-Type': 'text/xml'
             }
         }
     );

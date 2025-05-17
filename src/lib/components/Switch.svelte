@@ -40,9 +40,13 @@
 	</button>
 </div>
 
-<style>
+<style lang="scss">
 	button {
 		outline: none;
+
+		&:focus-visible {
+			outline: 2px solid var(--primary-400);
+		}
 	}
 
 	.slider {
