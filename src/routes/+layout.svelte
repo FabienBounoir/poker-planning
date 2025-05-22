@@ -11,6 +11,26 @@
 
 	onMount(() => {
 		injectAnalytics();
+
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', function () {
+				navigator.serviceWorker
+					.register('service-worker.js')
+					.then(
+						function (registration) {
+							if (navigator.onLine) {
+								registration.update();
+							}
+						},
+						function (err) {
+							console.log('Worker registration failed', err);
+						}
+					)
+					.catch(function (err) {
+						console.log(err);
+					});
+			});
+		}
 	});
 </script>
 

@@ -19,8 +19,6 @@ const parseAndValidateNotification = (path) => {
         return null;
     }
 
-    console.log('paths', paths, path);
-
     if (paths && !paths.some((p) => path.startsWith(p))) {
         return null;
     }

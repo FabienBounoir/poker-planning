@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oops! You're Offline 🕵️‍♂️</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(180deg, #ff910a, #ff7f00);
+            color: #fff;
+            text-align: center;
+            padding: 2em;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 1.5em;
+        }
+
+        .retry-button {
+            background-color: #fff;
+            color: #ff7f00;
+            border: none;
+            padding: 0.8em 1.5em;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .retry-button:hover {
+            background-color: #ff910a;
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        #detective {
+            font-size: 5em;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🕵️‍♂️ Detective Planning à la rescousse !</h1>
+    <p>Il semblerait que vous soyez hors ligne... Pas de panique, notre détective est sur le coup !</p>
+    <p id="detective">🔍</p>
+    <p>Revenez en ligne pour continuer à planifier vos sessions de poker agile.</p>
+    <button class="retry-button" onclick="location.reload()">Réessayer</button>
+</body>
+
+</html>
