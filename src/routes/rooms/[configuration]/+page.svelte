@@ -23,6 +23,7 @@
 	import { fade, scale } from 'svelte/transition';
 	import Cards from '$lib/components/cards/Cards.svelte';
 	import Waiting from '$lib/components/Waiting.svelte';
+	import Reactions from '$lib/components/Reactions.svelte';
 
 	const ROOM_ID_REGEX = /^\d{3}-\d{3}$/i;
 	const DEFAUT_AVATAR_URL = 'https://api.dicebear.com/9.x/dylan/svg';
@@ -54,6 +55,15 @@
 	let observers: Users = $state(null);
 
 	let waitingChangeRole = $state(false);
+	let floatingReactions: {
+		id: string;
+		emoji: string;
+		userName: string;
+		userAvatar: string;
+		x: number;
+		y: number;
+		timestamp: number;
+	}[] = $state([]);
 
 	onMount(() => {
 		try {
@@ -174,6 +184,23 @@
 				}
 			});
 
+			io.on('floating-reaction', (payload) => {
+				if (payload.reaction) {
+					floatingReactions = [...floatingReactions, payload.reaction];
+
+					setTimeout(() => {
+						floatingReactions = floatingReactions.filter((r) => r.id !== payload.reaction.id);
+					}, 3000);
+				}
+			});
+
+			io.on('remove-user-reactions', (payload) => {
+				if (payload.userId) {
+					// Remove all reactions from this user immediately
+					floatingReactions = floatingReactions.filter((r) => !r.id.startsWith(payload.userId));
+				}
+			});
+
 			io.on('hexcode', (payload) => {
 				myshades({
 					primary: payload.hexcode
@@ -270,6 +297,24 @@
 			waitingChangeRole = false;
 		});
 	};
+
+	const handleReaction = (event: CustomEvent<{ emoji: string }>) => {
+		if (!io) return;
+
+		io.send(
+			{ type: 'reaction', data: { emoji: event.detail.emoji } },
+			(callback: { success: boolean }) => {
+				if (!callback?.success) {
+					toast.error($_('RoomPage.ErrorWhenSendingReaction'));
+				}
+			}
+		);
+	};
+
+	const handleRemoveReaction = (event: CustomEvent<{ reactionId: string }>) => {
+		// Remove reaction locally only for this client
+		floatingReactions = floatingReactions.filter((r) => r.id !== event.detail.reactionId);
+	};
 </script>
 
 <svelte:head>
@@ -345,6 +390,13 @@
 			{roleChange}
 			{observers}
 			{isObserver}
+		/>
+
+		<Reactions
+			{floatingReactions}
+			disabled={!io || !io.connected}
+			on:react={handleReaction}
+			on:remove={handleRemoveReaction}
 		/>
 
 		{#if pokerManager.state === 'waiting'}

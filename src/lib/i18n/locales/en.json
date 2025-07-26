@@ -83,6 +83,7 @@
         "IWantYourName": "I'd like to know your name!",
         "ErrorWhenJoining": "An error occurred while joining...",
         "ErrorWhenSendingVote": "An error occurred while sending your vote.",
+        "ErrorWhenSendingReaction": "An error occurred while sending your reaction.",
         "SuccessfullyDeleted": "The room has been successfully deleted.",
         "SuccessfullyUpdated": "The room has been successfully updated.",
         "RoomDeleted": "The room has been deleted.",
@@ -173,6 +174,15 @@
         "deleteRoom": "Delete the room",
         "save": "Save",
         "cancel": "Cancel"
+    },
+    "reactions": {
+        "react": "React",
+        "customize": "Customize reactions",
+        "title": "Customize reactions",
+        "default": "Default",
+        "placeholder": "1 emoji",
+        "validate": "Validate",
+        "clickToHide": "Click to hide this reaction"
     },
     "layout": {
         "versionLink": "View on GitHub",

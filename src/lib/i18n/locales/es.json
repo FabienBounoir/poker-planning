@@ -83,6 +83,7 @@
         "IWantYourName": "¡Me gustaría saber tu nombre!",
         "ErrorWhenJoining": "Se produjo un error al unirse...",
         "ErrorWhenSendingVote": "Se produjo un error al enviar tu voto.",
+        "ErrorWhenSendingReaction": "Se produjo un error al enviar tu reacción.",
         "SuccessfullyDeleted": "La sala se ha eliminado correctamente.",
         "SuccessfullyUpdated": "La sala se ha actualizado correctamente.",
         "RoomDeleted": "La sala ha sido cerrada.",
@@ -173,6 +174,15 @@
         "deleteRoom": "Eliminar la sala",
         "save": "Guardar",
         "cancel": "Cancelar"
+    },
+    "reactions": {
+        "react": "Reaccionar",
+        "customize": "Personalizar reacciones",
+        "title": "Personalizar reacciones",
+        "default": "Por defecto",
+        "placeholder": "1 emoji",
+        "validate": "Validar",
+        "clickToHide": "Hacer clic para ocultar esta reacción"
     },
     "layout": {
         "versionLink": "Ver en GitHub",

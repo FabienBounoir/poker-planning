@@ -83,6 +83,7 @@
         "IWantYourName": "Mi piacerebbe sapere come ti chiami!",
         "ErrorWhenJoining": "Si è verificato un errore durante la connessione...",
         "ErrorWhenSendingVote": "Si è verificato un errore durante l'invio del tuo voto.",
+        "ErrorWhenSendingReaction": "Si è verificato un errore durante l'invio della tua reazione.",
         "SuccessfullyDeleted": "La stanza è stata eliminata con successo.",
         "SuccessfullyUpdated": "La stanza è stata aggiornata con successo.",
         "RoomDeleted": "La stanza è stata chiusa.",
@@ -173,6 +174,15 @@
         "deleteRoom": "Elimina la stanza",
         "save": "Salva",
         "cancel": "Annulla"
+    },
+    "reactions": {
+        "react": "Reagisci",
+        "customize": "Personalizza reazioni",
+        "title": "Personalizza reazioni",
+        "default": "Predefinito",
+        "placeholder": "1 emoji",
+        "validate": "Convalida",
+        "clickToHide": "Fai clic per nascondere questa reazione"
     },
     "layout": {
         "versionLink": "Vedi su GitHub",

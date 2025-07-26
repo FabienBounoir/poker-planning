@@ -3,7 +3,7 @@
 	"version": "1.8.1",
 	"type": "module",
 	"scripts": {
-		"startserv": "node server.js",
+		"startserv": "node backend/server.js",
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
