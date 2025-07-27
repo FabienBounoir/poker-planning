@@ -60,19 +60,19 @@
 		<form on:submit|preventDefault={sendFeedback}>
 			<div class="feeling">
 				<input type="radio" id="angry" name="feeling" value="angry" bind:group={feeling} />
-				<label for="angry">😡</label>
+				<label for="angry"><i class="fas fa-angry"></i></label>
 
 				<input type="radio" id="sad" name="feeling" value="sad" bind:group={feeling} />
-				<label for="sad">😔</label>
+				<label for="sad"><i class="fas fa-sad-tear"></i></label>
 
 				<input type="radio" id="neutral" name="feeling" value="neutral" bind:group={feeling} />
-				<label for="neutral">😐</label>
+				<label for="neutral"><i class="fas fa-meh"></i></label>
 
 				<input type="radio" id="happy" name="feeling" value="happy" bind:group={feeling} />
-				<label for="happy">🙂</label>
+				<label for="happy"><i class="fas fa-smile"></i></label>
 
 				<input type="radio" id="loving" name="feeling" value="loving" bind:group={feeling} />
-				<label for="loving">🥰</label>
+				<label for="loving"><i class="fas fa-heart"></i></label>
 			</div>
 
 			<input type="text" placeholder={$_('feedback.placeholderEmail')} bind:value={email} />
@@ -162,6 +162,7 @@
 				font-size: 2em;
 				border-radius: 50%;
 				background-color: var(--primary-300);
+				color: var(--primary-900);
 				width: 1.5em;
 				height: 1.5em;
 				align-items: center;
@@ -172,7 +173,8 @@
 			}
 
 			:not(input:checked) + label:hover {
-				filter: grayscale(0.2) !important;
+				color: var(--primary-900);
+				transform: scale(1.05);
 			}
 
 			input:checked + label {
@@ -187,6 +189,7 @@
 
 			:not(input:checked) + label {
 				filter: grayscale(1);
+				color: var(--primary-600);
 			}
 		}
 	}
