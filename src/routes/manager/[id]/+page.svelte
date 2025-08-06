@@ -19,7 +19,7 @@
 	import { _ } from 'svelte-i18n';
 	import { toast } from 'svelte-sonner';
 	import { backOut, cubicInOut, elasticInOut, elasticOut } from 'svelte/easing';
-	import { fade, fly, slide } from 'svelte/transition';
+	import { fade, fly, slide, scale } from 'svelte/transition';
 
 	const roomId = $page.params.id;
 	let url = $state('');
@@ -46,6 +46,9 @@
 	let displayUserType = $state('PLAYERS');
 	let players: Users = $state([]);
 	let observers: Users = $state([]);
+
+	let userReactions = $state(new Map());
+	let reactionTimeouts = new Map();
 
 	let viewCards = $state(null);
 
@@ -87,6 +90,22 @@
 		io.on('players', (payload) => {
 			players = payload.players;
 			observers = payload.observers;
+
+			// Nettoyer les réactions des utilisateurs qui ne sont plus présents
+			const currentUserIds = new Set([...players.map((p) => p.id), ...observers.map((o) => o.id)]);
+
+			for (const userId of userReactions.keys()) {
+				if (!currentUserIds.has(userId)) {
+					// Nettoyer le timeout s'il existe
+					if (reactionTimeouts.has(userId)) {
+						clearTimeout(reactionTimeouts.get(userId));
+						reactionTimeouts.delete(userId);
+					}
+					userReactions.delete(userId);
+				}
+			}
+
+			userReactions = new Map(userReactions);
 
 			if (players.length > 0 && observers.length == 0) {
 				displayUserType = 'PLAYERS';
@@ -163,6 +182,41 @@
 			myshades({
 				primary: payload.hexcode
 			});
+		});
+
+		io.on('floating-reaction', (payload) => {
+			if (payload.reaction) {
+				const userId = payload.reaction.id.split('-')[0];
+
+				if (reactionTimeouts.has(userId)) {
+					clearTimeout(reactionTimeouts.get(userId));
+				}
+
+				userReactions.set(userId, payload.reaction.emoji);
+				// Forcer la réactivité
+				userReactions = new Map(userReactions);
+
+				const timeoutId = setTimeout(() => {
+					userReactions.delete(userId);
+					reactionTimeouts.delete(userId);
+					// Forcer la réactivité
+					userReactions = new Map(userReactions);
+				}, 10000);
+
+				reactionTimeouts.set(userId, timeoutId);
+			}
+		});
+
+		io.on('remove-user-reactions', (payload) => {
+			if (payload.userId) {
+				if (reactionTimeouts.has(payload.userId)) {
+					clearTimeout(reactionTimeouts.get(payload.userId));
+					reactionTimeouts.delete(payload.userId);
+				}
+
+				userReactions.delete(payload.userId);
+				userReactions = new Map(userReactions);
+			}
 		});
 	};
 
@@ -282,6 +336,12 @@
 		if (displayConfettiTimeout) {
 			clearTimeout(displayConfettiTimeout);
 		}
+
+		// Nettoyer tous les timeouts de réactions
+		for (const timeoutId of reactionTimeouts.values()) {
+			clearTimeout(timeoutId);
+		}
+		reactionTimeouts.clear();
 	});
 
 	$effect(() => {
@@ -461,8 +521,22 @@
 									(pokerManager?.avatar || 'https://api.dicebear.com/9.x/dylan/svg') +
 										`?seed=${user.name}`}
 							/>
+							{#if userReactions.get(user.id)}
+								<div
+									class="user-reaction-overlay"
+									title="Réaction actuelle"
+									in:scale={{ duration: 400, start: 0.5, opacity: 0 }}
+									out:scale={{ duration: 200, start: 0.8, opacity: 0 }}
+								>
+									<span class="reaction-emoji">
+										{userReactions.get(user.id)}
+									</span>
+								</div>
+							{/if}
 						</div>
-						<h2>{user.name}</h2>
+						<div class="user-name-container">
+							<h2>{user.name}</h2>
+						</div>
 						{#if user?.firstVoter && pokerManager.state == 'result' && displayUserType == 'PLAYERS'}
 							<Tooltip title={$_('ManagerPage.firstVoterTooltip')}>
 								<svg
@@ -719,6 +793,47 @@
 					gap: 0.5em;
 					align-items: center;
 
+					.user-name-container {
+						display: flex;
+						align-items: center;
+						gap: 0.5em;
+						flex-wrap: wrap;
+					}
+
+					@keyframes reactionBounce {
+						0%,
+						80%,
+						100% {
+							transform: scale(1) rotate(0deg);
+						}
+						10% {
+							transform: scale(1.2) rotate(5deg);
+						}
+						20% {
+							transform: scale(1.1) rotate(-3deg);
+						}
+						30% {
+							transform: scale(1.15) rotate(2deg);
+						}
+						40% {
+							transform: scale(1) rotate(0deg);
+						}
+					}
+
+					@keyframes rotatingBorder {
+						0% {
+							transform: rotate(0deg);
+							opacity: 0.8;
+						}
+						50% {
+							opacity: 1;
+						}
+						100% {
+							transform: rotate(360deg);
+							opacity: 0.8;
+						}
+					}
+
 					svg {
 						path {
 							fill: var(--primary-950);
@@ -735,6 +850,7 @@
 						position: relative;
 						width: 40px;
 						height: 40px;
+
 						img {
 							border-radius: 100%;
 							border: 2px solid var(--primary-700);
@@ -743,6 +859,49 @@
 							max-width: 40px;
 							max-height: 40px;
 							object-fit: cover;
+						}
+
+						.user-reaction-overlay {
+							position: absolute;
+							bottom: -5px;
+							right: -5px;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							min-width: 24px;
+							height: 24px;
+							background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
+							border-radius: 50%;
+							border: 2px solid var(--primary-400);
+							box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+							z-index: 10;
+
+							.reaction-emoji {
+								font-size: 0.9em;
+								display: flex;
+								align-items: center;
+								justify-content: center;
+								animation: reactionBounce 3s ease-in-out infinite;
+								transform-origin: center;
+							}
+
+							&::before {
+								content: '';
+								position: absolute;
+								top: -2px;
+								left: -2px;
+								right: -2px;
+								bottom: -2px;
+								border-radius: 50%;
+								background: linear-gradient(
+									45deg,
+									var(--primary-400),
+									var(--primary-600),
+									var(--primary-400)
+								);
+								z-index: -1;
+								animation: rotatingBorder 2s linear infinite;
+							}
 						}
 					}
 
@@ -926,6 +1085,21 @@
 					}
 
 					.profile {
+						.user-reaction-overlay {
+							background: linear-gradient(135deg, var(--primary-800), var(--primary-700));
+							border: 2px solid var(--primary-500);
+							box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+							&::before {
+								background: linear-gradient(
+									45deg,
+									var(--primary-500),
+									var(--primary-300),
+									var(--primary-500)
+								);
+							}
+						}
+
 						svg {
 							path {
 								fill: var(--primary-950);

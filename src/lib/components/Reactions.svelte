@@ -176,10 +176,15 @@
 
 <!-- Click outside overlay -->
 {#if showEmojiPicker || showCustomizer}
-	<div class="click-outside-overlay" on:click={handleClickOutside}></div>
+	<div
+		class="click-outside-overlay"
+		on:click={handleClickOutside}
+		on:keydown={handleClickOutside}
+		role="button"
+		tabindex="-1"
+	></div>
 {/if}
 
-<!-- Floating action button for emoji picker - Hidden on small screens -->
 {#if !isSmallScreen}
 	<div class="fab-container">
 		<button
@@ -204,6 +209,7 @@
 					on:click={toggleCustomizer}
 					{disabled}
 					title={$_('reactions.customize')}
+					aria-label={$_('reactions.customize')}
 				>
 					<i class="fa-solid fa-gear"></i>
 				</button>
@@ -249,6 +255,7 @@
 									on:click={() => updateEmoji(index)}
 									disabled={!isValidEmoji(customEmojiInputs[index])}
 									title={$_('reactions.validate')}
+									aria-label={$_('reactions.validate')}
 								>
 									<i class="fa-solid fa-check"></i>
 								</button>

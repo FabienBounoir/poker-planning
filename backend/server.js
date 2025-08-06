@@ -288,7 +288,13 @@ const createSocketIOServer = (server, rooms) => {
                 room.players.delete(socket.id);
 
                 // Clean up reactions from disconnected user
+                const hadReaction = room.userReactions.has(socket.id);
                 room.userReactions.delete(socket.id);
+                room.floatingReactions = room.floatingReactions.filter(r => !r.id.startsWith(socket.id));
+
+                if (hadReaction) {
+                    room.emitRemoveUserReactions(socket.id);
+                }
 
                 if (room.players.size) {
                     room.emitPlayers(room.data.state != "waiting");
