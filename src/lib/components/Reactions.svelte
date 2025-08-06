@@ -25,6 +25,13 @@
 	let showEmojiPicker = false;
 	let showCustomizer = false;
 	let customEmojiInputs: string[] = Array(8).fill('');
+	let isSmallScreen = false;
+
+	const checkScreenSize = () => {
+		if (typeof window !== 'undefined') {
+			isSmallScreen = window.innerWidth <= 768;
+		}
+	};
 
 	// Fonction pour valider qu'une chaîne contient uniquement un seul emoji
 	const isValidEmoji = (str: string): boolean => {
@@ -62,16 +69,24 @@
 
 	onMount(() => {
 		loadCustomEmojis();
+		checkScreenSize();
+
+		const handleResize = () => checkScreenSize();
+		window.addEventListener('resize', handleResize);
+
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		};
 	});
 
 	const handleReaction = (emoji: string) => {
-		if (disabled) return;
+		if (disabled || isSmallScreen) return;
 		dispatch('react', { emoji });
 		showEmojiPicker = false;
 	};
 
 	const toggleEmojiPicker = () => {
-		if (disabled) return;
+		if (disabled || isSmallScreen) return;
 
 		// Si le customizer est ouvert, on ferme tout
 		if (showCustomizer) {
@@ -135,112 +150,116 @@
 	};
 </script>
 
-<!-- Floating reactions overlay -->
-{#each floatingReactions as reaction (reaction.id)}
-	<div
-		class="floating-reaction"
-		style="left: {reaction.x}%; top: {reaction.y}%;"
-		in:scale={{ duration: 1500, easing: elasticOut }}
-		out:fly={{ y: -100, duration: 500, easing: quintOut }}
-	>
-		<button
-			class="reaction-card"
-			on:click={() => removeReaction(reaction.id)}
-			title={$_('reactions.clickToHide')}
+<!-- Floating reactions overlay - Hidden on small screens -->
+{#if !isSmallScreen}
+	{#each floatingReactions as reaction (reaction.id)}
+		<div
+			class="floating-reaction"
+			style="left: {reaction.x}%; top: {reaction.y}%;"
+			in:scale={{ duration: 1500, easing: elasticOut }}
+			out:fly={{ y: -100, duration: 500, easing: quintOut }}
 		>
-			<img class="user-avatar" src={reaction.userAvatar} alt={reaction.userName} />
-			<span class="user-name">{reaction.userName}</span>
-			<div class="reaction-pin">
-				<span class="reaction-emoji">{reaction.emoji}</span>
-			</div>
-		</button>
-	</div>
-{/each}
+			<button
+				class="reaction-card"
+				on:click={() => removeReaction(reaction.id)}
+				title={$_('reactions.clickToHide')}
+			>
+				<img class="user-avatar" src={reaction.userAvatar} alt={reaction.userName} />
+				<span class="user-name">{reaction.userName}</span>
+				<div class="reaction-pin">
+					<span class="reaction-emoji">{reaction.emoji}</span>
+				</div>
+			</button>
+		</div>
+	{/each}
+{/if}
 
 <!-- Click outside overlay -->
 {#if showEmojiPicker || showCustomizer}
 	<div class="click-outside-overlay" on:click={handleClickOutside}></div>
 {/if}
 
-<!-- Floating action button for emoji picker -->
-<div class="fab-container">
-	<button
-		class="fab"
-		class:fab--active={showEmojiPicker || showCustomizer}
-		on:click={toggleEmojiPicker}
-		{disabled}
-		title={$_('reactions.react')}
-	>
-		{#if showEmojiPicker || showCustomizer}
-			<i class="fa-solid fa-xmark fab-icon"></i>
-		{:else}
-			<i class="fa-solid fa-face-smile fab-icon"></i>
-		{/if}
-	</button>
+<!-- Floating action button for emoji picker - Hidden on small screens -->
+{#if !isSmallScreen}
+	<div class="fab-container">
+		<button
+			class="fab"
+			class:fab--active={showEmojiPicker || showCustomizer}
+			on:click={toggleEmojiPicker}
+			{disabled}
+			title={$_('reactions.react')}
+		>
+			{#if showEmojiPicker || showCustomizer}
+				<i class="fa-solid fa-xmark fab-icon"></i>
+			{:else}
+				<i class="fa-solid fa-face-smile fab-icon"></i>
+			{/if}
+		</button>
 
-	{#if showEmojiPicker}
-		<div class="emoji-picker-fab" transition:scale={{ duration: 200, easing: quintOut }}>
-			<!-- Bouton d'engrenage en premier -->
-			<button
-				class="emoji-option-fab settings-btn"
-				on:click={toggleCustomizer}
-				{disabled}
-				title={$_('reactions.customize')}
-			>
-				<i class="fa-solid fa-gear"></i>
-			</button>
-
-			{#each availableEmojis as emoji, index}
+		{#if showEmojiPicker}
+			<div class="emoji-picker-fab" transition:scale={{ duration: 200, easing: quintOut }}>
+				<!-- Bouton d'engrenage en premier -->
 				<button
-					class="emoji-option-fab"
-					on:click={() => handleReaction(emoji)}
+					class="emoji-option-fab settings-btn"
+					on:click={toggleCustomizer}
 					{disabled}
-					style="--delay: {(index + 1) * 50}ms"
+					title={$_('reactions.customize')}
 				>
-					{emoji}
+					<i class="fa-solid fa-gear"></i>
 				</button>
-			{/each}
-		</div>
-	{/if}
 
-	{#if showCustomizer}
-		<div class="emoji-customizer" transition:scale={{ duration: 200, easing: quintOut }}>
-			<div class="customizer-header">
-				<h3>{$_('reactions.title')}</h3>
-				<button class="reset-btn" on:click={resetToDefault}>
-					<i class="fa-solid fa-rotate-left"></i>
-					{$_('reactions.default')}
-				</button>
-			</div>
-			<div class="emoji-grid">
 				{#each availableEmojis as emoji, index}
-					<div class="emoji-edit-item">
-						<span class="current-emoji">{emoji}</span>
-						<div class="input-container">
-							<input
-								type="text"
-								placeholder={$_('reactions.placeholder')}
-								bind:value={customEmojiInputs[index]}
-								on:input={() => validateEmojiInput(index)}
-								on:keydown={(e) => e.key === 'Enter' && updateEmoji(index)}
-								class="emoji-input"
-								maxlength="2"
-							/>
-							<button
-								class="update-btn"
-								on:click={() => updateEmoji(index)}
-								disabled={!isValidEmoji(customEmojiInputs[index])}
-								title={$_('reactions.validate')}
-							>
-								<i class="fa-solid fa-check"></i>
-							</button>
-						</div>
-					</div>
+					<button
+						class="emoji-option-fab"
+						on:click={() => handleReaction(emoji)}
+						{disabled}
+						style="--delay: {(index + 1) * 50}ms"
+					>
+						{emoji}
+					</button>
 				{/each}
 			</div>
-		</div>
-	{/if}
-</div>
+		{/if}
+
+		{#if showCustomizer}
+			<div class="emoji-customizer" transition:scale={{ duration: 200, easing: quintOut }}>
+				<div class="customizer-header">
+					<h3>{$_('reactions.title')}</h3>
+					<button class="reset-btn" on:click={resetToDefault}>
+						<i class="fa-solid fa-rotate-left"></i>
+						{$_('reactions.default')}
+					</button>
+				</div>
+				<div class="emoji-grid">
+					{#each availableEmojis as emoji, index}
+						<div class="emoji-edit-item">
+							<span class="current-emoji">{emoji}</span>
+							<div class="input-container">
+								<input
+									type="text"
+									placeholder={$_('reactions.placeholder')}
+									bind:value={customEmojiInputs[index]}
+									on:input={() => validateEmojiInput(index)}
+									on:keydown={(e) => e.key === 'Enter' && updateEmoji(index)}
+									class="emoji-input"
+									maxlength="2"
+								/>
+								<button
+									class="update-btn"
+									on:click={() => updateEmoji(index)}
+									disabled={!isValidEmoji(customEmojiInputs[index])}
+									title={$_('reactions.validate')}
+								>
+									<i class="fa-solid fa-check"></i>
+								</button>
+							</div>
+						</div>
+					{/each}
+				</div>
+			</div>
+		{/if}
+	</div>
+{/if}
 
 <style lang="scss">
 	.floating-reaction {
