@@ -26,12 +26,21 @@
 	let showCustomizer = false;
 	let customEmojiInputs: string[] = Array(8).fill('');
 	let isSmallScreen = false;
+	let isPageVisible = true;
+	let isWindowFocused = true;
 
 	const checkScreenSize = () => {
 		if (typeof window !== 'undefined') {
 			isSmallScreen = window.innerWidth <= 768;
 		}
 	};
+
+	const updateVisibilityState = () => {
+		isPageVisible = !document.hidden;
+		isWindowFocused = document.hasFocus();
+	};
+
+	$: isPageActive = isPageVisible && isWindowFocused;
 
 	// Fonction pour valider qu'une chaîne contient uniquement un seul emoji
 	const isValidEmoji = (str: string): boolean => {
@@ -74,19 +83,31 @@
 		const handleResize = () => checkScreenSize();
 		window.addEventListener('resize', handleResize);
 
+		// Détecter les changements de visibilité de la page
+		document.addEventListener('visibilitychange', updateVisibilityState);
+		window.addEventListener('focus', updateVisibilityState);
+		window.addEventListener('blur', updateVisibilityState);
+
+		updateVisibilityState();
+
 		return () => {
 			window.removeEventListener('resize', handleResize);
+			document.removeEventListener('visibilitychange', updateVisibilityState);
+			window.removeEventListener('focus', updateVisibilityState);
+			window.removeEventListener('blur', updateVisibilityState);
 		};
 	});
 
 	const handleReaction = (emoji: string) => {
-		if (disabled || isSmallScreen) return;
+		// Ne pas traiter les réactions si la page n'est pas active
+		if (disabled || isSmallScreen || !isPageActive) return;
 		dispatch('react', { emoji });
 		showEmojiPicker = false;
 	};
 
 	const toggleEmojiPicker = () => {
-		if (disabled || isSmallScreen) return;
+		// Ne pas ouvrir le picker si la page n'est pas active
+		if (disabled || isSmallScreen || !isPageActive) return;
 
 		// Si le customizer est ouvert, on ferme tout
 		if (showCustomizer) {
@@ -150,8 +171,8 @@
 	};
 </script>
 
-<!-- Floating reactions overlay - Hidden on small screens -->
-{#if !isSmallScreen}
+<!-- Floating reactions overlay - Hidden on small screens or when page is not active -->
+{#if !isSmallScreen && isPageActive}
 	{#each floatingReactions as reaction (reaction.id)}
 		<div
 			class="floating-reaction"
