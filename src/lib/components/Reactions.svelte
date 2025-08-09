@@ -333,13 +333,13 @@
 
 	.reaction-pin {
 		position: absolute;
-		top: -10px;
-		right: -10px;
-		background: var(--primary-500);
-		border: 3px solid var(--primary-100);
+		top: -12px;
+		right: -12px;
+		background: var(--primary-200);
+		border: 3px solid var(--primary-400);
 		border-radius: 50%;
-		width: 2em;
-		height: 2em;
+		width: 2.3em;
+		height: 2.3em;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -347,7 +347,7 @@
 	}
 
 	.reaction-emoji {
-		font-size: 1.2em;
+		font-size: 1.3em;
 	}
 
 	.fab-container {
@@ -365,7 +365,8 @@
 		width: 56px;
 		height: 56px;
 		border-radius: 50%;
-		background: var(--primary-500);
+		background: var(--primary-700);
+		color: var(--primary-200);
 		border: none;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 		cursor: pointer;
@@ -375,12 +376,6 @@
 		transition: all 0.3s ease;
 		position: relative;
 		overflow: hidden;
-
-		&:hover:not(:disabled) {
-			background: var(--primary-600);
-			transform: scale(1.1);
-			box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-		}
 
 		&:disabled {
 			opacity: 0.5;
@@ -595,6 +590,15 @@
 	}
 
 	@media (prefers-color-scheme: dark) {
+		.fab {
+			background: var(--primary-200);
+			color: var(--primary-700);
+
+			&--active {
+				background: var(--primary-300);
+			}
+		}
+
 		.reaction-card {
 			background: var(--primary-900);
 			border-color: var(--primary-400);
@@ -613,8 +617,8 @@
 		}
 
 		.reaction-pin {
-			background: var(--primary-600);
-			border-color: var(--primary-900);
+			background: var(--primary-900);
+			border-color: var(--primary-800);
 		}
 
 		.emoji-option-fab {
