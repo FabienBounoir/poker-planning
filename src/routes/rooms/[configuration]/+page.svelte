@@ -463,7 +463,14 @@
 								</div>
 							{/each}
 						{:else}
-							<p class="no-vote">{$_('RoomPage.noVotesMessage')}</p>
+							<div class="no-votes-animation">
+								<div class="empty-cards-animation">
+									<div class="empty-card-animate empty-card-1"></div>
+									<div class="empty-card-animate empty-card-2"></div>
+									<div class="empty-card-animate empty-card-3"></div>
+								</div>
+								<span class="no-vote">{$_('RoomPage.noVotesMessage')}</span>
+							</div>
 						{/if}
 					</div>
 				</div>
@@ -573,9 +580,65 @@
 			}
 
 			.no-vote {
-				font-size: 1.5em;
-				font-weight: 800;
 				color: var(--primary-600);
+			}
+
+			.no-votes-animation {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 2em;
+			}
+
+			.empty-cards-animation {
+				display: flex;
+				gap: 1em;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.empty-card-animate {
+				width: 60px;
+				height: 90px;
+				background-color: var(--primary-100);
+				border: 2px dashed var(--primary-700);
+				border-radius: 8px;
+				position: relative;
+				animation: emptyCardFloat 3s infinite ease-in-out;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				&::before {
+					content: 'X';
+					color: var(--primary-500);
+					font-size: 2em;
+					font-weight: bold;
+				}
+
+				&.empty-card-1 {
+					animation-delay: 0s;
+				}
+
+				&.empty-card-2 {
+					animation-delay: 0.5s;
+				}
+
+				&.empty-card-3 {
+					animation-delay: 1s;
+				}
+			}
+
+			@keyframes emptyCardFloat {
+				0%,
+				100% {
+					transform: translateY(0px) scale(1);
+					opacity: 0.6;
+				}
+				50% {
+					transform: translateY(-10px) scale(1.05);
+					opacity: 1;
+				}
 			}
 
 			.result {
@@ -812,6 +875,15 @@
 						}
 					}
 				}
+
+				.empty-card-animate {
+					background-color: var(--primary-900);
+					border-color: var(--primary-500);
+
+					&::before {
+						color: var(--primary-400);
+					}
+				}
 			}
 		}
 
@@ -829,6 +901,10 @@
 				p {
 					color: var(--primary-900) !important;
 				}
+			}
+
+			.no-vote {
+				color: var(--primary-300);
 			}
 		}
 

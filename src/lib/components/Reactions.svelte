@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
-	import { fade, scale, fly } from 'svelte/transition';
+	import { scale, fly } from 'svelte/transition';
 	import { quintOut, elasticOut } from 'svelte/easing';
 	import { _ } from 'svelte-i18n';
+	import { browser } from '$app/environment';
 
 	export let floatingReactions: {
 		id: string;
@@ -20,14 +21,16 @@
 		remove: { reactionId: string };
 	}>();
 
-	const defaultEmojis = ['👍', '👎', '❤️', '😂', '😮', '😢', '🎉', '🔥'];
+	const defaultEmojis = ['👍', '👎', '❤️', '😂', '😮', '😢'];
 	let availableEmojis = [...defaultEmojis];
 	let showEmojiPicker = false;
 	let showCustomizer = false;
-	let customEmojiInputs: string[] = Array(8).fill('');
+	let showEmojiPickerForCustomization = false;
+	let currentEditingIndex = -1;
 	let isSmallScreen = false;
 	let isPageVisible = true;
 	let isWindowFocused = true;
+	let emojiPickerLoaded = false;
 
 	const checkScreenSize = () => {
 		if (typeof window !== 'undefined') {
@@ -42,22 +45,23 @@
 
 	$: isPageActive = isPageVisible && isWindowFocused;
 
-	// Fonction pour valider qu'une chaîne contient uniquement un seul emoji
 	const isValidEmoji = (str: string): boolean => {
 		const trimmed = str.trim();
-		// Vérifier qu'il y a exactement un emoji (pas plus)
 		const emojiRegex =
 			/^[\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Component}\p{Emoji_Modifier_Base}\p{Emoji_Presentation}]$/u;
 		return emojiRegex.test(trimmed) && trimmed.length > 0;
 	};
 
-	// Charger les emoji depuis le localStorage
 	const loadCustomEmojis = () => {
 		try {
 			const saved = localStorage.getItem('poker-reactions-emojis');
 			if (saved) {
 				const parsed = JSON.parse(saved);
-				if (Array.isArray(parsed) && parsed.length === 8 && parsed.every(isValidEmoji)) {
+				if (
+					Array.isArray(parsed) &&
+					parsed.length === defaultEmojis.length &&
+					parsed.every(isValidEmoji)
+				) {
 					availableEmojis = parsed;
 				}
 			}
@@ -67,7 +71,6 @@
 		}
 	};
 
-	// Sauvegarder les emoji dans le localStorage
 	const saveCustomEmojis = () => {
 		try {
 			localStorage.setItem('poker-reactions-emojis', JSON.stringify(availableEmojis));
@@ -76,19 +79,27 @@
 		}
 	};
 
-	onMount(() => {
+	onMount(async () => {
 		loadCustomEmojis();
 		checkScreenSize();
 
 		const handleResize = () => checkScreenSize();
 		window.addEventListener('resize', handleResize);
 
-		// Détecter les changements de visibilité de la page
 		document.addEventListener('visibilitychange', updateVisibilityState);
 		window.addEventListener('focus', updateVisibilityState);
 		window.addEventListener('blur', updateVisibilityState);
 
 		updateVisibilityState();
+
+		if (browser) {
+			try {
+				await import('emoji-picker-element');
+				emojiPickerLoaded = true;
+			} catch (error) {
+				console.warn("Erreur lors du chargement du sélecteur d'emoji:", error);
+			}
+		}
 
 		return () => {
 			window.removeEventListener('resize', handleResize);
@@ -99,22 +110,18 @@
 	});
 
 	const handleReaction = (emoji: string) => {
-		// Ne pas traiter les réactions si la page n'est pas active
 		if (disabled || isSmallScreen || !isPageActive) return;
 		dispatch('react', { emoji });
 		showEmojiPicker = false;
 	};
 
 	const toggleEmojiPicker = () => {
-		// Ne pas ouvrir le picker si la page n'est pas active
 		if (disabled || isSmallScreen || !isPageActive) return;
 
-		// Si le customizer est ouvert, on ferme tout
 		if (showCustomizer) {
 			showCustomizer = false;
 			showEmojiPicker = false;
 		} else {
-			// Sinon on toggle le picker normalement
 			showEmojiPicker = !showEmojiPicker;
 		}
 	};
@@ -138,40 +145,27 @@
 		}
 	};
 
-	const updateEmoji = (index: number) => {
-		if (isValidEmoji(customEmojiInputs[index])) {
-			availableEmojis[index] = customEmojiInputs[index].trim();
+	const handleEmojiSelection = (event: CustomEvent) => {
+		if (currentEditingIndex >= 0) {
+			availableEmojis[currentEditingIndex] = event.detail.emoji.unicode;
 			saveCustomEmojis();
-			customEmojiInputs[index] = '';
+			showEmojiPickerForCustomization = false;
+			currentEditingIndex = -1;
 		}
 	};
 
-	const validateEmojiInput = (index: number) => {
-		const value = customEmojiInputs[index];
-		if (value === '') return;
-
-		// Extraire seulement les emojis valides
-		const emojiRegex =
-			/[\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Component}\p{Emoji_Modifier_Base}\p{Emoji_Presentation}]/gu;
-		const matches = value.match(emojiRegex);
-
-		if (matches && matches.length > 0) {
-			// Prendre seulement le premier emoji trouvé
-			customEmojiInputs[index] = matches[0];
-		} else {
-			// Aucun emoji trouvé, vider l'input
-			customEmojiInputs[index] = '';
-		}
+	const openEmojiPickerForIndex = (index: number) => {
+		if (!browser || !emojiPickerLoaded) return;
+		currentEditingIndex = index;
+		showEmojiPickerForCustomization = true;
 	};
 
 	const resetToDefault = () => {
 		availableEmojis = [...defaultEmojis];
-		customEmojiInputs = Array(8).fill('');
 		saveCustomEmojis();
 	};
 </script>
 
-<!-- Floating reactions overlay - Hidden on small screens or when page is not active -->
 {#if !isSmallScreen && isPageActive}
 	{#each floatingReactions as reaction (reaction.id)}
 		<div
@@ -195,7 +189,6 @@
 	{/each}
 {/if}
 
-<!-- Click outside overlay -->
 {#if showEmojiPicker || showCustomizer}
 	<div
 		class="click-outside-overlay"
@@ -224,7 +217,6 @@
 
 		{#if showEmojiPicker}
 			<div class="emoji-picker-fab" transition:scale={{ duration: 200, easing: quintOut }}>
-				<!-- Bouton d'engrenage en premier -->
 				<button
 					class="emoji-option-fab settings-btn"
 					on:click={toggleCustomizer}
@@ -261,28 +253,40 @@
 					{#each availableEmojis as emoji, index}
 						<div class="emoji-edit-item">
 							<span class="current-emoji">{emoji}</span>
-							<div class="input-container">
-								<input
-									type="text"
-									placeholder={$_('reactions.placeholder')}
-									bind:value={customEmojiInputs[index]}
-									on:input={() => validateEmojiInput(index)}
-									on:keydown={(e) => e.key === 'Enter' && updateEmoji(index)}
-									class="emoji-input"
-									maxlength="2"
-								/>
-								<button
-									class="update-btn"
-									on:click={() => updateEmoji(index)}
-									disabled={!isValidEmoji(customEmojiInputs[index])}
-									title={$_('reactions.validate')}
-									aria-label={$_('reactions.validate')}
-								>
-									<i class="fa-solid fa-check"></i>
-								</button>
-							</div>
+							<button
+								class="emoji-change-btn"
+								on:click={() => openEmojiPickerForIndex(index)}
+								title={$_('reactions.change')}
+								aria-label={$_('reactions.change')}
+							>
+								<i class="fa-solid fa-edit"></i>
+								{$_('reactions.change')}
+							</button>
 						</div>
 					{/each}
+				</div>
+			</div>
+		{/if}
+
+		{#if showEmojiPickerForCustomization && browser && emojiPickerLoaded}
+			<div class="emoji-picker-overlay">
+				<div class="emoji-picker-container">
+					<div class="emoji-picker-header">
+						<h4>{$_('reactions.selectEmoji')}</h4>
+						<button
+							class="close-picker-btn"
+							on:click={() => (showEmojiPickerForCustomization = false)}
+							aria-label="Fermer le sélecteur d'emoji"
+							title="Fermer"
+						>
+							<i class="fa-solid fa-xmark"></i>
+						</button>
+					</div>
+					<emoji-picker
+						on:emoji-click={handleEmojiSelection}
+						style="height: 400px; width: 350px;"
+						class="custom-emoji-picker"
+					></emoji-picker>
 				</div>
 			</div>
 		{/if}
@@ -365,10 +369,10 @@
 		align-items: center;
 		justify-content: center;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-	}
 
-	.reaction-emoji {
-		font-size: 1.3em;
+		.reaction-emoji {
+			font-size: 1.3em;
+		}
 	}
 
 	.fab-container {
@@ -439,7 +443,6 @@
 		bottom: 120px;
 		right: 0;
 		background: var(--primary-50);
-		border: 2px solid var(--primary-300);
 		border-radius: 12px;
 		padding: 1em;
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
@@ -498,19 +501,79 @@
 		border: 1px solid var(--primary-200);
 	}
 
-	.input-container {
+	.emoji-change-btn {
 		flex: 1;
 		display: flex;
 		align-items: center;
-		background: var(--primary-50);
-		border: 1px solid var(--primary-300);
+		justify-content: center;
+		gap: 0.5em;
+		background: var(--primary-500);
+		border: none;
 		border-radius: 6px;
-		overflow: hidden;
-		transition: border-color 0.2s ease;
+		padding: 0.5em 1em;
+		color: white;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		font-size: 0.9em;
 
-		&:focus-within {
-			border-color: var(--primary-500);
-			box-shadow: 0 0 0 2px var(--primary-500-20);
+		&:hover {
+			background: var(--primary-600);
+		}
+	}
+
+	.emoji-picker-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		background: rgba(0, 0, 0, 0.5);
+		z-index: 1000;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.emoji-picker-container {
+		background: var(--primary-50);
+		border: 2px solid var(--primary-300);
+		border-radius: 12px;
+		padding: 1em;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+		max-width: 90vw;
+		max-height: 90vh;
+	}
+
+	.emoji-picker-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1em;
+		padding-bottom: 0.5em;
+		border-bottom: 1px solid var(--primary-200);
+
+		h4 {
+			margin: 0;
+			color: var(--primary-700);
+			font-size: 1.1em;
+		}
+	}
+
+	.close-picker-btn {
+		background: var(--primary-200);
+		border: 1px solid var(--primary-400);
+		border-radius: 50%;
+		width: 2em;
+		height: 2em;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--primary-700);
+		transition: all 0.2s ease;
+
+		&:hover {
+			background: var(--primary-300);
 		}
 	}
 
@@ -519,46 +582,6 @@
 		width: 2em;
 		text-align: center;
 		flex-shrink: 0;
-	}
-
-	.emoji-input {
-		flex: 1;
-		padding: 0.5em;
-		border: none;
-		background: transparent;
-		color: var(--primary-700);
-		font-size: 1em;
-		outline: none;
-
-		&::placeholder {
-			color: var(--primary-400);
-			font-style: italic;
-		}
-	}
-
-	.update-btn {
-		background: var(--primary-500);
-		border: none;
-		border-radius: 0;
-		padding: 0.5em;
-		color: white;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		width: 2.5em;
-		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-left: 1px solid var(--primary-400);
-
-		&:hover:not(:disabled) {
-			background: var(--primary-600);
-		}
-
-		&:disabled {
-			background: var(--primary-300);
-			cursor: not-allowed;
-		}
 	}
 
 	.emoji-option-fab {
@@ -677,25 +700,32 @@
 			border-color: var(--primary-600);
 		}
 
-		.input-container {
-			background: var(--primary-800);
+		.emoji-change-btn {
+			background: var(--primary-600);
+			color: var(--primary-100);
+
+			&:hover {
+				background: var(--primary-500);
+			}
+		}
+
+		.emoji-picker-container {
+			background: var(--primary-900);
 			border-color: var(--primary-600);
 
-			&:focus-within {
-				border-color: var(--primary-400);
+			h4 {
+				color: var(--primary-200);
 			}
 		}
 
-		.emoji-input {
+		.close-picker-btn {
+			background: var(--primary-700);
+			border-color: var(--primary-500);
 			color: var(--primary-200);
 
-			&::placeholder {
-				color: var(--primary-500);
+			&:hover {
+				background: var(--primary-600);
 			}
-		}
-
-		.update-btn {
-			border-left-color: var(--primary-600);
 		}
 
 		.reset-btn {
@@ -782,6 +812,36 @@
 			width: 36px;
 			height: 36px;
 			font-size: 1em;
+		}
+	}
+
+	/* Personnalisation de l'emoji picker */
+	:global(.custom-emoji-picker) {
+		--background: var(--primary-50);
+		--border-color: transparent;
+		--indicator-color: var(--primary-500);
+		--input-border-color: var(--primary-300);
+		--input-font-color: var(--primary-700);
+		--input-background: var(--primary-100);
+		--input-border-color-active: var(--primary-500);
+		--outline-color: transparent;
+		--category-font-color: var(--primary-700);
+		--button-active-background: var(--primary-200);
+		--button-hover-background: var(--primary-200);
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:global(.custom-emoji-picker) {
+			--background: var(--primary-900);
+			--indicator-color: var(--primary-400);
+			--input-border-color: var(--primary-600);
+			--input-font-color: var(--primary-200);
+			--input-background: var(--primary-800);
+			--input-border-color-active: var(--primary-400);
+			--category-font-color: var(--primary-200);
+			--button-active-background: var(--primary-700);
+			--button-hover-background: var(--primary-800);
+			border-color: var(--primary-600);
 		}
 	}
 </style>

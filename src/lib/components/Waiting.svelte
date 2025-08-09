@@ -30,12 +30,22 @@
 </script>
 
 <h3 class="player-count-display">
-	{players && players.length > 0 ? `${players.length} player` : ''}
+	{players && players.length > 0 ? `${players.length} player${players.length > 1 ? 's' : ''}` : ''}
 	{players && players.length > 0 && observers && observers.length > 0 ? ' + ' : ''}
-	{observers && observers.length > 0 ? `${observers?.length} observer` : ''}
+	{observers && observers.length > 0
+		? `${observers?.length} observer${observers.length > 1 ? 's' : ''}`
+		: ''}
 </h3>
 
-<h1>{$_('RoomPage.waitingForVotes')}</h1>
+<div class="waiting-message">
+	<h1>{$_('RoomPage.waitingForVotes')}</h1>
+	<div class="loading-dots">
+		<span class="dot dot-1">.</span>
+		<span class="dot dot-2">.</span>
+		<span class="dot dot-3">.</span>
+	</div>
+</div>
+
 {#if players}
 	{#each players as player}
 		<div class="player-display" style={getRandomPosition()} transition:scale={{ duration: 500 }}>
@@ -84,9 +94,65 @@
 		}
 	}
 
+	.waiting-message {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5em;
+
+		h1 {
+			margin: 0;
+			text-align: center;
+		}
+	}
+
+	.loading-dots {
+		display: flex;
+		gap: 0.2em;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.dot {
+		font-size: 2em;
+		font-weight: bold;
+		color: var(--primary-600);
+		animation: dotPulse 1.5s infinite ease-in-out;
+		opacity: 0.4;
+
+		&.dot-1 {
+			animation-delay: 0s;
+		}
+
+		&.dot-2 {
+			animation-delay: 0.3s;
+		}
+
+		&.dot-3 {
+			animation-delay: 0.6s;
+		}
+	}
+
+	@keyframes dotPulse {
+		0%,
+		60%,
+		100% {
+			opacity: 0.4;
+			transform: scale(1);
+		}
+		30% {
+			opacity: 1;
+			transform: scale(1.2);
+		}
+	}
+
 	@media (prefers-color-scheme: dark) {
 		h1 {
 			color: var(--primary-100);
+		}
+
+		.dot {
+			color: var(--primary-400);
 		}
 
 		.player-count-display {

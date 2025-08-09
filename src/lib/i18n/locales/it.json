@@ -73,12 +73,12 @@
         "welcome": "Benvenuto",
         "whatIsYourName": "Come ti chiami?",
         "validateButton": "Convalida",
-        "waitingForVotes": "In attesa che inizino i voti...",
+        "waitingForVotes": "In attesa che inizino i voti",
         "playersCount": "{players} giocatore{players > 1 ? 'i' : ''}",
         "voteButton": "Penso che sia l'opzione {LETTER}",
         "resultsTitle": "Ecco i risultati",
         "resultDefenderQuestion": "Perché hai scelto",
-        "noVotesMessage": "Nessun voto da visualizzare 🥲",
+        "noVotesMessage": "Il team non ha partecipato al voto",
         "noVote": "Nessun voto",
         "IWantYourName": "Mi piacerebbe sapere come ti chiami!",
         "ErrorWhenJoining": "Si è verificato un errore durante la connessione...",
@@ -182,6 +182,8 @@
         "default": "Predefinito",
         "placeholder": "1 emoji",
         "validate": "Convalida",
+        "change": "Cambia",
+        "selectEmoji": "Seleziona un'emoji",
         "clickToHide": "Fai clic per nascondere questa reazione"
     },
     "layout": {
