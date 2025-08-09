@@ -201,7 +201,7 @@
 					reactionTimeouts.delete(userId);
 					// Forcer la réactivité
 					userReactions = new Map(userReactions);
-				}, 10000);
+				}, 5000);
 
 				reactionTimeouts.set(userId, timeoutId);
 			}
@@ -820,20 +820,6 @@
 						}
 					}
 
-					@keyframes rotatingBorder {
-						0% {
-							transform: rotate(0deg);
-							opacity: 0.8;
-						}
-						50% {
-							opacity: 1;
-						}
-						100% {
-							transform: rotate(360deg);
-							opacity: 0.8;
-						}
-					}
-
 					svg {
 						path {
 							fill: var(--primary-950);
@@ -863,21 +849,19 @@
 
 						.user-reaction-overlay {
 							position: absolute;
-							bottom: -5px;
-							right: -5px;
+							left: 50%;
+							top: 50%;
+							transform: translate(-50%, -50%);
 							display: flex;
 							align-items: center;
 							justify-content: center;
-							min-width: 24px;
-							height: 24px;
-							background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
+							min-width: 40px;
+							height: 40px;
 							border-radius: 50%;
-							border: 2px solid var(--primary-400);
-							box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 							z-index: 10;
 
 							.reaction-emoji {
-								font-size: 0.9em;
+								font-size: 1.6em;
 								display: flex;
 								align-items: center;
 								justify-content: center;
@@ -893,14 +877,9 @@
 								right: -2px;
 								bottom: -2px;
 								border-radius: 50%;
-								background: linear-gradient(
-									45deg,
-									var(--primary-400),
-									var(--primary-600),
-									var(--primary-400)
-								);
+								background: color-mix(in srgb, var(--primary-800) 20%, transparent);
+								backdrop-filter: blur(1px);
 								z-index: -1;
-								animation: rotatingBorder 2s linear infinite;
 							}
 						}
 					}

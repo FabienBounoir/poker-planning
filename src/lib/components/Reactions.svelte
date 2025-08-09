@@ -415,6 +415,7 @@
 		max-height: calc(100vh - 140px);
 		overflow-x: auto;
 		grid-auto-flow: column;
+		justify-content: end;
 	}
 
 	.emoji-customizer {
