@@ -94,7 +94,9 @@
         "errorUploadingFile": "An error occurred while uploading the file.",
         "becomeObserver": "Become an observer",
         "leaveObserver": "Leave observer mode",
-        "copyError": "An error occurred while copying the room code."
+        "copyError": "An error occurred while copying the room code.",
+        "quickVote": "Quick Vote",
+        "hideVoting": "Hide Voting"
     },
     "ManagerPage": {
         "welcomeMessage": "Welcome {USER}!",

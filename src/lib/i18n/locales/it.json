@@ -94,7 +94,9 @@
         "errorUploadingFile": "Si è verificato un errore durante il caricamento del file.",
         "becomeObserver": "Diventa osservatore",
         "leaveObserver": "Esci dalla modalità osservatore",
-        "copyError": "Si è verificato un errore durante la copia del codice della stanza."
+        "copyError": "Si è verificato un errore durante la copia del codice della stanza.",
+        "quickVote": "Voto Veloce",
+        "hideVoting": "Nascondi Votazione"
     },
     "ManagerPage": {
         "welcomeMessage": "Benvenuto {USER}!",

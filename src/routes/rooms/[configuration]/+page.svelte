@@ -24,6 +24,7 @@
 	import Cards from '$lib/components/cards/Cards.svelte';
 	import Waiting from '$lib/components/Waiting.svelte';
 	import Reactions from '$lib/components/Reactions.svelte';
+	import MobileVoting from '$lib/components/MobileVoting.svelte';
 
 	const ROOM_ID_REGEX = /^\d{3}-\d{3}$/i;
 	const DEFAUT_AVATAR_URL = 'https://api.dicebear.com/9.x/dylan/svg';
@@ -478,23 +479,35 @@
 				<!-- //-------------- -->
 
 				{#if pokerManager?.voteOnResults && !isObserver}
-					<div class="cards" in:fade={{ duration: 500, easing: quintOut }}>
-						{#each pokerManager.cards as card}
-							<Card
-								height={'12dvh'}
-								style={'aspect-ratio: 4/2'}
-								content={card}
-								bind:cardSelected={selectedLetter}
-								bind:submittedLetter
-								canRemove={false}
-								clickHandler={() => {
-									sendVote();
-								}}
-							/>
-						{/each}
+					<div class="compact-cards" in:fade={{ duration: 500, easing: quintOut }}>
+						<h4>Vote rapide :</h4>
+						<div class="compact-cards-grid">
+							{#each pokerManager.cards as card}
+								<button
+									class="compact-card"
+									class:selected={selectedLetter === card}
+									class:submitted={submittedLetter === card}
+									on:click={() => {
+										if (selectedLetter === card) {
+											selectedLetter = null;
+										} else {
+											selectedLetter = card;
+										}
+										sendVote();
+									}}
+								>
+									{card}
+								</button>
+							{/each}
+						</div>
 					</div>
 				{/if}
 			</div>
+
+			<!-- Composant mobile voting -->
+			{#if pokerManager?.voteOnResults && !isObserver}
+				<MobileVoting cards={pokerManager.cards} bind:selectedLetter {submittedLetter} {sendVote} />
+			{/if}
 		{/if}
 	</main>
 {/if}
@@ -522,6 +535,67 @@
 
 			scroll-snap-type: y mandatory;
 			scroll-behavior: smooth;
+		}
+
+		.compact-cards {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 1em;
+			padding: 1em;
+			max-width: 300px;
+
+			h4 {
+				margin: 0;
+				color: var(--primary-700);
+				font-size: 1.2em;
+				font-weight: 600;
+			}
+
+			/* Masquer sur mobile pour utiliser MobileVoting à la place */
+			@media (max-width: 767px) {
+				display: none;
+			}
+		}
+
+		.compact-cards-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+			gap: 0.5em;
+			width: 100%;
+		}
+
+		.compact-card {
+			aspect-ratio: 1;
+			background-color: var(--primary-200);
+			border: 2px solid var(--primary-400);
+			border-radius: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: bold;
+			font-size: 1.1em;
+			color: var(--primary-700);
+			cursor: pointer;
+			transition: all 0.2s ease;
+			min-height: 45px;
+
+			&:hover {
+				transform: scale(1.05);
+				background-color: var(--primary-300);
+			}
+
+			&.selected {
+				background-color: var(--primary-400);
+				border-color: var(--primary-600);
+				transform: scale(1.05);
+			}
+
+			&.submitted {
+				background-color: var(--primary-600);
+				color: var(--primary-100);
+				border-color: var(--primary-700);
+			}
 		}
 
 		.results {
@@ -905,6 +979,33 @@
 
 			.no-vote {
 				color: var(--primary-300);
+			}
+		}
+
+		.compact-cards {
+			h4 {
+				color: var(--primary-300);
+			}
+		}
+
+		.compact-card {
+			background-color: var(--primary-800);
+			border-color: var(--primary-600);
+			color: var(--primary-200);
+
+			&:hover {
+				background-color: var(--primary-700);
+			}
+
+			&.selected {
+				background-color: var(--primary-600);
+				border-color: var(--primary-400);
+			}
+
+			&.submitted {
+				background-color: var(--primary-500);
+				color: var(--primary-100);
+				border-color: var(--primary-300);
 			}
 		}
 
