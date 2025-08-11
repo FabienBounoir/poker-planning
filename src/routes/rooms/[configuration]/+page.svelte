@@ -480,7 +480,7 @@
 
 				{#if pokerManager?.voteOnResults && !isObserver}
 					<div class="compact-cards" in:fade={{ duration: 500, easing: quintOut }}>
-						<h4>Vote rapide :</h4>
+						<h4>{$_('RoomPage.quickVote')}</h4>
 						<div class="compact-cards-grid">
 							{#each pokerManager.cards as card}
 								<button
@@ -552,7 +552,6 @@
 				font-weight: 600;
 			}
 
-			/* Masquer sur mobile pour utiliser MobileVoting à la place */
 			@media (max-width: 767px) {
 				display: none;
 			}
@@ -560,9 +559,10 @@
 
 		.compact-cards-grid {
 			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+			grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
 			gap: 0.5em;
 			width: 100%;
+			max-width: 300px;
 		}
 
 		.compact-card {

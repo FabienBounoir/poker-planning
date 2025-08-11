@@ -80,6 +80,7 @@
 		font-size: 1.1rem;
 		cursor: pointer;
 		transition: all 0.3s ease;
+		border-radius: 0;
 
 		&:hover {
 			background-color: var(--primary-700);
