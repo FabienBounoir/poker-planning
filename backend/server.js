@@ -34,7 +34,6 @@ const createSocketIOServer = (server, rooms) => {
                 },
                 history: [],
                 timeout: null,
-                userReactions: new Map(),
                 floatingReactions: [],
                 emit(type, data, manager) {
                     object.players.forEach((player) => {
@@ -107,9 +106,6 @@ const createSocketIOServer = (server, rooms) => {
                 },
                 emitFloatingReaction(reaction) {
                     object.emit('floating-reaction', { reaction });
-                },
-                emitRemoveUserReactions(userId) {
-                    object.emit('remove-user-reactions', { userId });
                 },
                 cleanupExpiredReactions() {
                     const now = Date.now();
@@ -287,14 +283,7 @@ const createSocketIOServer = (server, rooms) => {
                 userLeft(room.players.get(socket.id)?.name || "Unknown", room.data, roomId);
                 room.players.delete(socket.id);
 
-                // Clean up reactions from disconnected user
-                const hadReaction = room.userReactions.has(socket.id);
-                room.userReactions.delete(socket.id);
                 room.floatingReactions = room.floatingReactions.filter(r => !r.id.startsWith(socket.id));
-
-                if (hadReaction) {
-                    room.emitRemoveUserReactions(socket.id);
-                }
 
                 if (room.players.size) {
                     room.emitPlayers(room.data.state != "waiting");
@@ -394,22 +383,14 @@ const createSocketIOServer = (server, rooms) => {
                                 return callback({ success: false, error: "Invalid emoji" });
                             }
 
-                            room.userReactions.delete(socket.id);
-
-                            const hadPreviousReaction = room.floatingReactions.some(r => r.id.startsWith(socket.id));
-                            room.floatingReactions = room.floatingReactions.filter(r => !r.id.startsWith(socket.id));
-
-                            if (hadPreviousReaction) {
-                                room.emitRemoveUserReactions(socket.id);
-                            }
-
                             room.cleanupExpiredReactions();
+                            room.floatingReactions = room.floatingReactions.filter(r => !r.id.startsWith(socket.id));
 
                             const x = Math.random() * 70 + 10;
                             const y = Math.random() * 60 + 20;
 
                             const reaction = {
-                                id: `${socket.id}-${Date.now()}`,
+                                id: `${socket.id}`,
                                 emoji,
                                 userName: player.name,
                                 userAvatar: player.avatar || room.data.avatar + `?seed=${player.name}`,
@@ -417,8 +398,6 @@ const createSocketIOServer = (server, rooms) => {
                                 y,
                                 timestamp: Date.now()
                             };
-
-                            room.userReactions.set(socket.id, { emoji, timestamp: Date.now() });
 
                             room.floatingReactions.push(reaction);
 

@@ -185,7 +185,7 @@
 		});
 
 		io.on('floating-reaction', (payload) => {
-			if (payload.reaction) {
+			if (payload?.reaction) {
 				const userId = payload.reaction.id.split('-')[0];
 
 				if (reactionTimeouts.has(userId)) {
@@ -204,18 +204,6 @@
 				}, 5000);
 
 				reactionTimeouts.set(userId, timeoutId);
-			}
-		});
-
-		io.on('remove-user-reactions', (payload) => {
-			if (payload.userId) {
-				if (reactionTimeouts.has(payload.userId)) {
-					clearTimeout(reactionTimeouts.get(payload.userId));
-					reactionTimeouts.delete(payload.userId);
-				}
-
-				userReactions.delete(payload.userId);
-				userReactions = new Map(userReactions);
 			}
 		});
 	};

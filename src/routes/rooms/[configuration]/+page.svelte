@@ -56,7 +56,7 @@
 	let observers: Users = $state(null);
 
 	let waitingChangeRole = $state(false);
-	let floatingReactions: {
+	type FloatingReaction = {
 		id: string;
 		emoji: string;
 		userName: string;
@@ -64,7 +64,43 @@
 		x: number;
 		y: number;
 		timestamp: number;
-	}[] = $state([]);
+	};
+	let floatingReactions: Map<string, FloatingReaction> = $state(new Map());
+	const reactionTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
+	const REACTION_LIFETIME_MS = 3000;
+
+	function addOrUpdateReaction(reaction: FloatingReaction) {
+		const existingTimeout = reactionTimeouts.get(reaction.id);
+
+		if (existingTimeout) {
+			clearTimeout(existingTimeout);
+		}
+
+		// Reassign a new Map to trigger reactivity
+		const next = new Map(floatingReactions);
+		next.set(reaction.id, reaction);
+		floatingReactions = next;
+
+		reactionTimeouts.set(
+			reaction.id,
+			setTimeout(() => {
+				removeReactionById(reaction.id);
+			}, REACTION_LIFETIME_MS)
+		);
+	}
+
+	function removeReactionById(id: string) {
+		const existingTimeout = reactionTimeouts.get(id);
+		if (existingTimeout) {
+			clearTimeout(existingTimeout);
+			reactionTimeouts.delete(id);
+		}
+		if (floatingReactions.has(id)) {
+			const next = new Map(floatingReactions);
+			next.delete(id);
+			floatingReactions = next;
+		}
+	}
 
 	onMount(() => {
 		try {
@@ -187,18 +223,7 @@
 
 			io.on('floating-reaction', (payload) => {
 				if (payload.reaction) {
-					floatingReactions = [...floatingReactions, payload.reaction];
-
-					setTimeout(() => {
-						floatingReactions = floatingReactions.filter((r) => r.id !== payload.reaction.id);
-					}, 3000);
-				}
-			});
-
-			io.on('remove-user-reactions', (payload) => {
-				if (payload.userId) {
-					// Remove all reactions from this user immediately
-					floatingReactions = floatingReactions.filter((r) => !r.id.startsWith(payload.userId));
+					addOrUpdateReaction(payload.reaction);
 				}
 			});
 
@@ -314,7 +339,7 @@
 
 	const handleRemoveReaction = (event: CustomEvent<{ reactionId: string }>) => {
 		// Remove reaction locally only for this client
-		floatingReactions = floatingReactions.filter((r) => r.id !== event.detail.reactionId);
+		removeReactionById(event.detail.reactionId);
 	};
 </script>
 
@@ -394,7 +419,7 @@
 		/>
 
 		<Reactions
-			{floatingReactions}
+			floatingReactions={[...floatingReactions.values()]}
 			disabled={!io || !io.connected}
 			on:react={handleReaction}
 			on:remove={handleRemoveReaction}
