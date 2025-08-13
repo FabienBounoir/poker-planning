@@ -73,16 +73,17 @@
         "welcome": "Bienvenue",
         "whatIsYourName": "Comment tu t'appelles ?",
         "validateButton": "Valider",
-        "waitingForVotes": "En attente du lancement des votes...",
+        "waitingForVotes": "En attente du lancement des votes",
         "playersCount": "{players} player{players > 1 ? 's' : ''}",
         "voteButton": "Je pense que c'est {LETTER}",
         "resultsTitle": "Voici les résultats",
         "resultDefenderQuestion": "Pourquoi as-tu choisi",
-        "noVotesMessage": "Aucun vote à afficher 🥲",
+        "noVotesMessage": "L'équipe n'a pas participé au vote",
         "noVote": "Aucun Vote",
         "IWantYourName": "J'aimerai savoir comment tu t'appelles !",
         "ErrorWhenJoining": "Une erreur c'est produite lors de la connection...",
         "ErrorWhenSendingVote": "Une erreur s'est produite lors de l'envoi de votre vote.",
+        "ErrorWhenSendingReaction": "Une erreur s'est produite lors de l'envoi de votre réaction.",
         "SuccessfullyDeleted": "La salle a été supprimée avec succès.",
         "SuccessfullyUpdated": "La salle a été mise à jour avec succès.",
         "RoomDeleted": "La salle a été supprimée.",
@@ -93,7 +94,9 @@
         "errorUploadingFile": "Une erreur s'est produite lors du téléchargement du fichier.",
         "becomeObserver": "Devenir observateur",
         "leaveObserver": "Quitter le mode observateur",
-        "copyError": "Une erreur s'est produite lors de la copie du code de la salle."
+        "copyError": "Une erreur s'est produite lors de la copie du code de la salle.",
+        "quickVote": "Vote rapide",
+        "hideVoting": "Masquer le vote"
     },
     "ManagerPage": {
         "welcomeMessage": "Bienvenue {USER}!",
@@ -173,6 +176,17 @@
         "deleteRoom": "Supprimer la salle",
         "save": "Sauvegarder",
         "cancel": "Annuler"
+    },
+    "reactions": {
+        "react": "Réagir",
+        "customize": "Personnaliser les réactions",
+        "title": "Personnaliser les réactions",
+        "default": "Par défaut",
+        "placeholder": "1 emoji",
+        "validate": "Valider",
+        "change": "Modifier",
+        "selectEmoji": "Sélectionner un emoji",
+        "clickToHide": "Cliquer pour masquer cette réaction"
     },
     "layout": {
         "versionLink": "Voir sur GitHub",

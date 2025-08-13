@@ -34,6 +34,7 @@ const createSocketIOServer = (server, rooms) => {
                 },
                 history: [],
                 timeout: null,
+                floatingReactions: [],
                 emit(type, data, manager) {
                     object.players.forEach((player) => {
                         if (manager) {
@@ -102,6 +103,15 @@ const createSocketIOServer = (server, rooms) => {
                     console.log(`Room ${roomId} deleted by manager.`);
                     room.data.state = "deleted";
                     roomDeleted(room.data);
+                },
+                emitFloatingReaction(reaction) {
+                    object.emit('floating-reaction', { reaction });
+                },
+                cleanupExpiredReactions() {
+                    const now = Date.now();
+                    object.floatingReactions = object.floatingReactions.filter(reaction =>
+                        now - reaction.timestamp < 5000
+                    );
                 },
                 resetChoose() {
                     object.data.firstVoter = null;
@@ -273,6 +283,8 @@ const createSocketIOServer = (server, rooms) => {
                 userLeft(room.players.get(socket.id)?.name || "Unknown", room.data, roomId);
                 room.players.delete(socket.id);
 
+                room.floatingReactions = room.floatingReactions.filter(r => !r.id.startsWith(socket.id));
+
                 if (room.players.size) {
                     room.emitPlayers(room.data.state != "waiting");
                 } else {
@@ -364,6 +376,40 @@ const createSocketIOServer = (server, rooms) => {
                             callback({ success: false, error: "Role not changed" });
                         }
                         break;
+                    case 'reaction': {
+                        try {
+                            const { emoji } = data;
+                            if (!emoji || typeof emoji !== 'string') {
+                                return callback({ success: false, error: "Invalid emoji" });
+                            }
+
+                            room.cleanupExpiredReactions();
+                            room.floatingReactions = room.floatingReactions.filter(r => !r.id.startsWith(socket.id));
+
+                            const x = Math.random() * 70 + 10;
+                            const y = Math.random() * 60 + 20;
+
+                            const reaction = {
+                                id: `${socket.id}`,
+                                emoji,
+                                userName: player.name,
+                                userAvatar: player.avatar || room.data.avatar + `?seed=${player.name}`,
+                                x,
+                                y,
+                                timestamp: Date.now()
+                            };
+
+                            room.floatingReactions.push(reaction);
+
+                            room.emitFloatingReaction(reaction);
+
+                            callback({ success: true });
+                        } catch (e) {
+                            console.error("Error when handling reaction", e);
+                            callback({ success: false, error: e.message });
+                        }
+                        break;
+                    }
                     case 'delete-room':
                         if (player.role === UserRole.MANAGER) {
                             rooms.delete(roomId);

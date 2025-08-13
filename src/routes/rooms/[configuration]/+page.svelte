@@ -23,6 +23,8 @@
 	import { fade, scale } from 'svelte/transition';
 	import Cards from '$lib/components/cards/Cards.svelte';
 	import Waiting from '$lib/components/Waiting.svelte';
+	import Reactions from '$lib/components/Reactions.svelte';
+	import MobileVoting from '$lib/components/MobileVoting.svelte';
 
 	const ROOM_ID_REGEX = /^\d{3}-\d{3}$/i;
 	const DEFAUT_AVATAR_URL = 'https://api.dicebear.com/9.x/dylan/svg';
@@ -54,6 +56,51 @@
 	let observers: Users = $state(null);
 
 	let waitingChangeRole = $state(false);
+	type FloatingReaction = {
+		id: string;
+		emoji: string;
+		userName: string;
+		userAvatar: string;
+		x: number;
+		y: number;
+		timestamp: number;
+	};
+	let floatingReactions: Map<string, FloatingReaction> = $state(new Map());
+	const reactionTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
+	const REACTION_LIFETIME_MS = 3000;
+
+	function addOrUpdateReaction(reaction: FloatingReaction) {
+		const existingTimeout = reactionTimeouts.get(reaction.id);
+
+		if (existingTimeout) {
+			clearTimeout(existingTimeout);
+		}
+
+		// Reassign a new Map to trigger reactivity
+		const next = new Map(floatingReactions);
+		next.set(reaction.id, reaction);
+		floatingReactions = next;
+
+		reactionTimeouts.set(
+			reaction.id,
+			setTimeout(() => {
+				removeReactionById(reaction.id);
+			}, REACTION_LIFETIME_MS)
+		);
+	}
+
+	function removeReactionById(id: string) {
+		const existingTimeout = reactionTimeouts.get(id);
+		if (existingTimeout) {
+			clearTimeout(existingTimeout);
+			reactionTimeouts.delete(id);
+		}
+		if (floatingReactions.has(id)) {
+			const next = new Map(floatingReactions);
+			next.delete(id);
+			floatingReactions = next;
+		}
+	}
 
 	onMount(() => {
 		try {
@@ -174,6 +221,12 @@
 				}
 			});
 
+			io.on('floating-reaction', (payload) => {
+				if (payload.reaction) {
+					addOrUpdateReaction(payload.reaction);
+				}
+			});
+
 			io.on('hexcode', (payload) => {
 				myshades({
 					primary: payload.hexcode
@@ -270,6 +323,24 @@
 			waitingChangeRole = false;
 		});
 	};
+
+	const handleReaction = (event: CustomEvent<{ emoji: string }>) => {
+		if (!io) return;
+
+		io.send(
+			{ type: 'reaction', data: { emoji: event.detail.emoji } },
+			(callback: { success: boolean }) => {
+				if (!callback?.success) {
+					toast.error($_('RoomPage.ErrorWhenSendingReaction'));
+				}
+			}
+		);
+	};
+
+	const handleRemoveReaction = (event: CustomEvent<{ reactionId: string }>) => {
+		// Remove reaction locally only for this client
+		removeReactionById(event.detail.reactionId);
+	};
 </script>
 
 <svelte:head>
@@ -347,6 +418,13 @@
 			{isObserver}
 		/>
 
+		<Reactions
+			floatingReactions={[...floatingReactions.values()]}
+			disabled={!io || !io.connected}
+			on:react={handleReaction}
+			on:remove={handleRemoveReaction}
+		/>
+
 		{#if pokerManager.state === 'waiting'}
 			<Waiting {DEFAUT_AVATAR_URL} {observers} {players} pokerAvatarType={pokerManager?.avatar} />
 		{:else if pokerManager.state === 'playing'}
@@ -411,7 +489,14 @@
 								</div>
 							{/each}
 						{:else}
-							<p class="no-vote">{$_('RoomPage.noVotesMessage')}</p>
+							<div class="no-votes-animation">
+								<div class="empty-cards-animation">
+									<div class="empty-card-animate empty-card-1"></div>
+									<div class="empty-card-animate empty-card-2"></div>
+									<div class="empty-card-animate empty-card-3"></div>
+								</div>
+								<span class="no-vote">{$_('RoomPage.noVotesMessage')}</span>
+							</div>
 						{/if}
 					</div>
 				</div>
@@ -419,23 +504,35 @@
 				<!-- //-------------- -->
 
 				{#if pokerManager?.voteOnResults && !isObserver}
-					<div class="cards" in:fade={{ duration: 500, easing: quintOut }}>
-						{#each pokerManager.cards as card}
-							<Card
-								height={'12dvh'}
-								style={'aspect-ratio: 4/2'}
-								content={card}
-								bind:cardSelected={selectedLetter}
-								bind:submittedLetter
-								canRemove={false}
-								clickHandler={() => {
-									sendVote();
-								}}
-							/>
-						{/each}
+					<div class="compact-cards" in:fade={{ duration: 500, easing: quintOut }}>
+						<h4>{$_('RoomPage.quickVote')}</h4>
+						<div class="compact-cards-grid">
+							{#each pokerManager.cards as card}
+								<button
+									class="compact-card"
+									class:selected={selectedLetter === card}
+									class:submitted={submittedLetter === card}
+									on:click={() => {
+										if (selectedLetter === card) {
+											selectedLetter = null;
+										} else {
+											selectedLetter = card;
+										}
+										sendVote();
+									}}
+								>
+									{card}
+								</button>
+							{/each}
+						</div>
 					</div>
 				{/if}
 			</div>
+
+			<!-- Composant mobile voting -->
+			{#if pokerManager?.voteOnResults && !isObserver}
+				<MobileVoting cards={pokerManager.cards} bind:selectedLetter {submittedLetter} {sendVote} />
+			{/if}
 		{/if}
 	</main>
 {/if}
@@ -463,6 +560,67 @@
 
 			scroll-snap-type: y mandatory;
 			scroll-behavior: smooth;
+		}
+
+		.compact-cards {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 1em;
+			padding: 1em;
+			max-width: 300px;
+
+			h4 {
+				margin: 0;
+				color: var(--primary-700);
+				font-size: 1.2em;
+				font-weight: 600;
+			}
+
+			@media (max-width: 767px) {
+				display: none;
+			}
+		}
+
+		.compact-cards-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+			gap: 0.5em;
+			width: 100%;
+			max-width: 300px;
+		}
+
+		.compact-card {
+			aspect-ratio: 1;
+			background-color: var(--primary-200);
+			border: 2px solid var(--primary-400);
+			border-radius: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: bold;
+			font-size: 1.1em;
+			color: var(--primary-700);
+			cursor: pointer;
+			transition: all 0.2s ease;
+			min-height: 45px;
+
+			&:hover {
+				transform: scale(1.05);
+				background-color: var(--primary-300);
+			}
+
+			&.selected {
+				background-color: var(--primary-400);
+				border-color: var(--primary-600);
+				transform: scale(1.05);
+			}
+
+			&.submitted {
+				background-color: var(--primary-600);
+				color: var(--primary-100);
+				border-color: var(--primary-700);
+			}
 		}
 
 		.results {
@@ -521,9 +679,65 @@
 			}
 
 			.no-vote {
-				font-size: 1.5em;
-				font-weight: 800;
 				color: var(--primary-600);
+			}
+
+			.no-votes-animation {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 2em;
+			}
+
+			.empty-cards-animation {
+				display: flex;
+				gap: 1em;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.empty-card-animate {
+				width: 60px;
+				height: 90px;
+				background-color: var(--primary-100);
+				border: 2px dashed var(--primary-700);
+				border-radius: 8px;
+				position: relative;
+				animation: emptyCardFloat 3s infinite ease-in-out;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				&::before {
+					content: 'X';
+					color: var(--primary-500);
+					font-size: 2em;
+					font-weight: bold;
+				}
+
+				&.empty-card-1 {
+					animation-delay: 0s;
+				}
+
+				&.empty-card-2 {
+					animation-delay: 0.5s;
+				}
+
+				&.empty-card-3 {
+					animation-delay: 1s;
+				}
+			}
+
+			@keyframes emptyCardFloat {
+				0%,
+				100% {
+					transform: translateY(0px) scale(1);
+					opacity: 0.6;
+				}
+				50% {
+					transform: translateY(-10px) scale(1.05);
+					opacity: 1;
+				}
 			}
 
 			.result {
@@ -760,6 +974,15 @@
 						}
 					}
 				}
+
+				.empty-card-animate {
+					background-color: var(--primary-900);
+					border-color: var(--primary-500);
+
+					&::before {
+						color: var(--primary-400);
+					}
+				}
 			}
 		}
 
@@ -777,6 +1000,37 @@
 				p {
 					color: var(--primary-900) !important;
 				}
+			}
+
+			.no-vote {
+				color: var(--primary-300);
+			}
+		}
+
+		.compact-cards {
+			h4 {
+				color: var(--primary-300);
+			}
+		}
+
+		.compact-card {
+			background-color: var(--primary-800);
+			border-color: var(--primary-600);
+			color: var(--primary-200);
+
+			&:hover {
+				background-color: var(--primary-700);
+			}
+
+			&.selected {
+				background-color: var(--primary-600);
+				border-color: var(--primary-400);
+			}
+
+			&.submitted {
+				background-color: var(--primary-500);
+				color: var(--primary-100);
+				border-color: var(--primary-300);
 			}
 		}
 

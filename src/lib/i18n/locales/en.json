@@ -73,16 +73,17 @@
         "welcome": "Welcome",
         "whatIsYourName": "What is your name?",
         "validateButton": "Validate",
-        "waitingForVotes": "Waiting for the votes to start...",
+        "waitingForVotes": "Waiting for the votes to start",
         "playersCount": "{players} player{players > 1 ? 's' : ''}",
         "voteButton": "I think it’s {LETTER}",
         "resultsTitle": "Here are the results",
         "resultDefenderQuestion": "Why did you choose",
-        "noVotesMessage": "No votes to display 🥲",
+        "noVotesMessage": "The team did not participate in the vote",
         "noVote": "No Vote",
         "IWantYourName": "I'd like to know your name!",
         "ErrorWhenJoining": "An error occurred while joining...",
         "ErrorWhenSendingVote": "An error occurred while sending your vote.",
+        "ErrorWhenSendingReaction": "An error occurred while sending your reaction.",
         "SuccessfullyDeleted": "The room has been successfully deleted.",
         "SuccessfullyUpdated": "The room has been successfully updated.",
         "RoomDeleted": "The room has been deleted.",
@@ -93,7 +94,9 @@
         "errorUploadingFile": "An error occurred while uploading the file.",
         "becomeObserver": "Become an observer",
         "leaveObserver": "Leave observer mode",
-        "copyError": "An error occurred while copying the room code."
+        "copyError": "An error occurred while copying the room code.",
+        "quickVote": "Quick Vote",
+        "hideVoting": "Hide Voting"
     },
     "ManagerPage": {
         "welcomeMessage": "Welcome {USER}!",
@@ -173,6 +176,17 @@
         "deleteRoom": "Delete the room",
         "save": "Save",
         "cancel": "Cancel"
+    },
+    "reactions": {
+        "react": "React",
+        "customize": "Customize reactions",
+        "title": "Customize reactions",
+        "default": "Default",
+        "placeholder": "1 emoji",
+        "validate": "Validate",
+        "change": "Change",
+        "selectEmoji": "Select an emoji",
+        "clickToHide": "Click to hide this reaction"
     },
     "layout": {
         "versionLink": "View on GitHub",

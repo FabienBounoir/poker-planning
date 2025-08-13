@@ -73,16 +73,17 @@
         "welcome": "Bienvenido",
         "whatIsYourName": "¿Cómo te llamas?",
         "validateButton": "Validar",
-        "waitingForVotes": "Esperando a que comiencen los votos...",
+        "waitingForVotes": "Esperando a que comiencen los votos",
         "playersCount": "{players} jugador{players > 1 ? 'es' : ''}",
         "voteButton": "Creo que es la opción {LETTER}",
         "resultsTitle": "Aquí están los resultados",
         "resultDefenderQuestion": "¿Por qué elegiste",
-        "noVotesMessage": "No hay votos para mostrar 🥲",
+        "noVotesMessage": "El equipo no participó en la votación",
         "noVote": "Sin voto",
         "IWantYourName": "¡Me gustaría saber tu nombre!",
         "ErrorWhenJoining": "Se produjo un error al unirse...",
         "ErrorWhenSendingVote": "Se produjo un error al enviar tu voto.",
+        "ErrorWhenSendingReaction": "Se produjo un error al enviar tu reacción.",
         "SuccessfullyDeleted": "La sala se ha eliminado correctamente.",
         "SuccessfullyUpdated": "La sala se ha actualizado correctamente.",
         "RoomDeleted": "La sala ha sido cerrada.",
@@ -93,7 +94,9 @@
         "errorUploadingFile": "Ocurrió un error al subir el archivo.",
         "becomeObserver": "Convertirse en observador",
         "leaveObserver": "Dejar el modo observador",
-        "copyError": "Se produjo un error al copiar el código de la sala."
+        "copyError": "Se produjo un error al copiar el código de la sala.",
+        "quickVote": "Voto Rápido",
+        "hideVoting": "Ocultar Votación"
     },
     "ManagerPage": {
         "welcomeMessage": "¡Bienvenido {USER}!",
@@ -173,6 +176,17 @@
         "deleteRoom": "Eliminar la sala",
         "save": "Guardar",
         "cancel": "Cancelar"
+    },
+    "reactions": {
+        "react": "Reaccionar",
+        "customize": "Personalizar reacciones",
+        "title": "Personalizar reacciones",
+        "default": "Por defecto",
+        "placeholder": "1 emoji",
+        "validate": "Validar",
+        "change": "Cambiar",
+        "selectEmoji": "Seleccionar un emoji",
+        "clickToHide": "Hacer clic para ocultar esta reacción"
     },
     "layout": {
         "versionLink": "Ver en GitHub",
