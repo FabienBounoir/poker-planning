@@ -66,13 +66,7 @@
 		height: 12vh;
 		justify-items: center;
 		place-content: center;
-		background: linear-gradient(
-			180deg,
-			var(--primary-50) 0%,
-			var(--primary-50) 49%,
-			var(--primary-200) 51%,
-			var(--primary-200) 100%
-		);
+		background: var(--primary-50);
 		div.container {
 			height: 9vh;
 			width: 110vw;
@@ -108,13 +102,7 @@
 
 	@media (prefers-color-scheme: dark) {
 		section.banner {
-			background: linear-gradient(
-				180deg,
-				var(--primary-950) 0%,
-				var(--primary-950) 49%,
-				var(--primary-900) 51%,
-				var(--primary-900) 100%
-			);
+			background: var(--primary-950);
 			div.container {
 				background-color: var(--primary-500);
 				color: var(--primary-950);

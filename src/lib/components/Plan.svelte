@@ -41,7 +41,7 @@
 
 <style lang="scss">
 	section.plan {
-		background-color: var(--primary-200);
+		background-color: var(--primary-50);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -62,7 +62,7 @@
 		.card {
 			width: min-content;
 			border-radius: 1em;
-			background-color: var(--primary-50);
+			background-color: var(--primary-200);
 			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 			padding: 1em;
 
