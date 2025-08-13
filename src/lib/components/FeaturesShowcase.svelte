@@ -8,20 +8,26 @@
 		<div class="container left-right-layout">
 			<div class="content-side">
 				<div class="content-wrapper">
-					<div class="feature-badge"><i class="fas fa-bullseye"></i> {$_('HomePage.features.estimation.badge')}</div>
+					<div class="feature-badge">
+						<i class="fas fa-bullseye"></i>
+						{$_('HomePage.features.estimation.badge')}
+					</div>
 					<h2>{$_('HomePage.features.estimation.title')}</h2>
 					<p>
 						{$_('HomePage.features.estimation.description')}
 					</p>
 					<div class="features-list">
 						<div class="feature-item">
-							<i class="fa-solid fa-check-to-slot"></i> {$_('HomePage.features.estimation.items.methods')}
+							<i class="fa-solid fa-check-to-slot"></i>
+							{$_('HomePage.features.estimation.items.methods')}
 						</div>
 						<div class="feature-item">
-							<i class="fas fa-bolt"></i> {$_('HomePage.features.estimation.items.interface')}
+							<i class="fas fa-bolt"></i>
+							{$_('HomePage.features.estimation.items.interface')}
 						</div>
 						<div class="feature-item">
-							<i class="fas fa-palette"></i> {$_('HomePage.features.estimation.items.design')}
+							<i class="fas fa-palette"></i>
+							{$_('HomePage.features.estimation.items.design')}
 						</div>
 					</div>
 				</div>
@@ -64,15 +70,24 @@
 							{/each}
 						</div>
 						<div class="vote-actions">
-							<button class="vote-btn primary"><i class="fas fa-thumbs-up"></i> {$_('HomePage.features.voting.buttons.vote')}</button>
-							<button class="vote-btn secondary"><i class="fas fa-sync-alt"></i> {$_('HomePage.features.voting.buttons.reveal')}</button>
+							<button class="vote-btn primary"
+								><i class="fas fa-thumbs-up"></i>
+								{$_('HomePage.features.voting.buttons.vote')}</button
+							>
+							<button class="vote-btn secondary"
+								><i class="fas fa-sync-alt"></i>
+								{$_('HomePage.features.voting.buttons.reveal')}</button
+							>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="content-side">
 				<div class="content-wrapper">
-					<div class="feature-badge purple"><i class="fas fa-vote-yea"></i> {$_('HomePage.features.voting.badge')}</div>
+					<div class="feature-badge purple">
+						<i class="fas fa-vote-yea"></i>
+						{$_('HomePage.features.voting.badge')}
+					</div>
 					<h2>{$_('HomePage.features.voting.title')}</h2>
 					<p>
 						{$_('HomePage.features.voting.description')}
@@ -96,7 +111,10 @@
 	<section class="feature-section results-section" data-feature="2">
 		<div class="container center-layout">
 			<div class="content-header">
-				<div class="feature-badge green"><i class="fas fa-chart-pie"></i> {$_('HomePage.features.results.badge')}</div>
+				<div class="feature-badge green">
+					<i class="fas fa-chart-pie"></i>
+					{$_('HomePage.features.results.badge')}
+				</div>
 				<h2>{$_('HomePage.features.results.title')}</h2>
 				<p>
 					{$_('HomePage.features.results.description')}
@@ -123,7 +141,9 @@
 							<div class="metric-icon"><i class="fas fa-bolt"></i></div>
 							<div class="metric-content">
 								<div class="metric-value">2.4s</div>
-								<div class="metric-label">{$_('HomePage.features.results.metrics.averageTime')}</div>
+								<div class="metric-label">
+									{$_('HomePage.features.results.metrics.averageTime')}
+								</div>
 							</div>
 						</div>
 						<div class="metric">
@@ -137,7 +157,9 @@
 							<div class="metric-icon"><i class="fas fa-users"></i></div>
 							<div class="metric-content">
 								<div class="metric-value">8/8</div>
-								<div class="metric-label">{$_('HomePage.features.results.metrics.participants')}</div>
+								<div class="metric-label">
+									{$_('HomePage.features.results.metrics.participants')}
+								</div>
 							</div>
 						</div>
 					</div>
@@ -152,7 +174,10 @@
 			<div class="security-grid">
 				<div class="security-card main-card">
 					<div class="card-header">
-						<div class="feature-badge orange"><i class="fas fa-lock"></i> {$_('HomePage.features.security.badge')}</div>
+						<div class="feature-badge orange">
+							<i class="fas fa-lock"></i>
+							{$_('HomePage.features.security.badge')}
+						</div>
 					</div>
 					<h2>{$_('HomePage.features.security.title')}</h2>
 					<p>

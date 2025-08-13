@@ -22,7 +22,21 @@
         },
         "plan": {
             "heading": "Pas de frais, pas de limites",
+            "subtitle": "Contrairement aux autres, tout est vraiment gratuit ici",
+            "competitor": {
+                "title": "Autres services",
+                "badge": "Trop cher",
+                "limitations": {
+                    "limitedParticipants": "Limité à 10 participants",
+                    "limitedVotes": "5 votes par mois",
+                    "accountRequired": "Compte obligatoire",
+                    "hiddenFees": "Frais cachés"
+                }
+            },
             "card": {
+                "recommended": "Recommandé",
+                "free": "GRATUIT",
+                "forever": "pour toujours",
                 "allInclusive": {
                     "title": "Tout inclus",
                     "description": "Another Planning Poker est un outil gratuit et sans publicité. Pas de compte à créer, pas de limite de participants, pas de frais cachés. Tout est conçu pour vous offrir la meilleure expérience possible."
