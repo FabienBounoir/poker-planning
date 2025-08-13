@@ -22,7 +22,21 @@
         },
         "plan": {
             "heading": "No Fees, No Limits",
+            "subtitle": "Unlike others, everything is truly free here",
+            "competitor": {
+                "title": "Other services",
+                "badge": "Too expensive",
+                "limitations": {
+                    "limitedParticipants": "Limited to 10 participants",
+                    "limitedVotes": "5 votes per month",
+                    "accountRequired": "Account required",
+                    "hiddenFees": "Hidden fees"
+                }
+            },
             "card": {
+                "recommended": "Recommended",
+                "free": "FREE",
+                "forever": "forever",
                 "allInclusive": {
                     "title": "All Inclusive",
                     "description": "Another Poker Planning is a free and ad-free tool. No account to create, no limit on participants, no hidden fees. Everything is designed to give you the best experience."
@@ -51,21 +65,61 @@
             "join": "Join"
         },
         "features": {
-            "estimationMethods": {
-                "title": "Estimation Methods",
-                "description": "With Another Poker Planning, estimate the complexity of a task using a multi-level scale. An approach designed to gather the team’s input and achieve a clear and precise consensus."
+            "estimation": {
+                "badge": "Estimation",
+                "title": "Intuitive Estimation Methods",
+                "description": "Estimate the complexity of your tasks with proven methods. Fibonacci, T-Shirt, or custom points - choose the approach that suits your team.",
+                "items": {
+                    "methods": "Fibonacci, T-Shirt, Custom Points",
+                    "interface": "Intuitive and fast interface",
+                    "design": "Adaptive and modern design"
+                }
             },
-            "simplifiedVoting": {
-                "title": "Simplified Voting",
-                "description": "Discover a smooth and intuitive experience for your poker planning sessions. Choose your estimate with a single click—simple and straightforward. Voting has never been so natural."
+            "voting": {
+                "badge": "Vote",
+                "title": "Simplified and Fast Voting",
+                "description": "A smooth and intuitive voting experience. Participate with one click, visualize progress in real-time, and reveal results when the team is ready.",
+                "buttons": {
+                    "vote": "Vote",
+                    "reveal": "Reveal"
+                },
+                "stats": {
+                    "averageTime": "Average voting time",
+                    "participation": "Participation"
+                }
             },
-            "result": {
-                "title": "Result",
-                "description": "Instantly view the team’s votes with a clear and elegant display. Each estimate is highlighted to facilitate discussion and quickly reach a consensus."
+            "results": {
+                "badge": "Results",
+                "title": "Analysis and Consensus",
+                "description": "Instantly visualize vote distribution and key metrics. Quickly identify convergences and facilitate discussions to reach consensus.",
+                "chart": {
+                    "title": "Vote distribution",
+                    "consensus": "consensus"
+                },
+                "metrics": {
+                    "averageTime": "Average time",
+                    "precision": "Precision",
+                    "participants": "Participants"
+                }
             },
-            "securityAndEphemerality": {
-                "title": "Security and Ephemerality",
-                "description": "Your data, your peace of mind. No information is saved; everything happens in real time. Once the vote is complete, the room self-destructs after a few hours. Because your discussions should remain as ephemeral as your decisions."
+            "security": {
+                "badge": "Security",
+                "title": "Security and Privacy",
+                "description": "Your data remains private. Ephemeral sessions, end-to-end encryption, and guaranteed anonymity for peaceful discussions.",
+                "features": {
+                    "encryption": {
+                        "title": "E2E Encryption",
+                        "description": "All data is encrypted end-to-end"
+                    },
+                    "ephemeral": {
+                        "title": "Ephemeral sessions",
+                        "description": "Data is automatically deleted"
+                    },
+                    "anonymity": {
+                        "title": "Guaranteed anonymity",
+                        "description": "No personal data is stored"
+                    }
+                }
             }
         }
     },

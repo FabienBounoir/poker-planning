@@ -22,7 +22,21 @@
         },
         "plan": {
             "heading": "Sin Costos, Sin Límites",
+            "subtitle": "A diferencia de otros, aquí todo es realmente gratis",
+            "competitor": {
+                "title": "Otros servicios",
+                "badge": "Demasiado caro",
+                "limitations": {
+                    "limitedParticipants": "Limitado a 10 participantes",
+                    "limitedVotes": "5 votos por mes",
+                    "accountRequired": "Cuenta obligatoria",
+                    "hiddenFees": "Costos ocultos"
+                }
+            },
             "card": {
+                "recommended": "Recomendado",
+                "free": "GRATIS",
+                "forever": "para siempre",
                 "allInclusive": {
                     "title": "Todo Incluido",
                     "description": "Another Planning Poker es una herramienta gratuita y sin anuncios. No necesitas crear una cuenta, no hay límites de participantes ni costos ocultos. Todo está diseñado para brindarte la mejor experiencia."
@@ -51,21 +65,61 @@
             "join": "Unirse"
         },
         "features": {
-            "estimationMethods": {
-                "title": "Métodos de Estimación",
-                "description": "Con Another Planning Poker, estima la complejidad de una tarea utilizando una escala de varios niveles. Un enfoque diseñado para recoger las opiniones del equipo y llegar a un consenso claro y preciso."
+            "estimation": {
+                "badge": "Estimación",
+                "title": "Métodos de Estimación Intuitivos",
+                "description": "Estima la complejidad de tus tareas con métodos probados. Fibonacci, T-Shirt, o puntos personalizados - elige el enfoque que se adapte a tu equipo.",
+                "items": {
+                    "methods": "Fibonacci, T-Shirt, Puntos personalizados",
+                    "interface": "Interfaz intuitiva y rápida",
+                    "design": "Diseño adaptativo y moderno"
+                }
             },
-            "simplifiedVoting": {
-                "title": "Votación Simplificada",
-                "description": "Descubre una experiencia fluida e intuitiva para tus sesiones de planificación de póker. Elige tu estimación con un solo clic, sin complicaciones. Votar nunca fue tan sencillo."
+            "voting": {
+                "badge": "Voto",
+                "title": "Votación Simplificada y Rápida",
+                "description": "Una experiencia de votación fluida e intuitiva. Participa con un clic, visualiza el progreso en tiempo real, y revela los resultados cuando el equipo esté listo.",
+                "buttons": {
+                    "vote": "Votar",
+                    "reveal": "Revelar"
+                },
+                "stats": {
+                    "averageTime": "Tiempo promedio de voto",
+                    "participation": "Participación"
+                }
             },
-            "result": {
-                "title": "Resultado",
-                "description": "Visualiza instantáneamente los votos del equipo con una visualización clara y elegante. Cada estimación está destacada para facilitar la discusión y alcanzar rápidamente un consenso."
+            "results": {
+                "badge": "Resultados",
+                "title": "Análisis y Consenso",
+                "description": "Visualiza instantáneamente la distribución de votos y las métricas clave. Identifica rápidamente las convergencias y facilita las discusiones para alcanzar un consenso.",
+                "chart": {
+                    "title": "Distribución de votos",
+                    "consensus": "consenso"
+                },
+                "metrics": {
+                    "averageTime": "Tiempo promedio",
+                    "precision": "Precisión",
+                    "participants": "Participantes"
+                }
             },
-            "securityAndEphemerality": {
-                "title": "Seguridad y Efimeridad",
-                "description": "Tus datos, tu tranquilidad. Ninguna información se guarda; todo sucede en tiempo real. Una vez completada la votación, la sala se autodestruye después de unas horas. Porque tus discusiones deben ser tan efímeras como tus decisiones."
+            "security": {
+                "badge": "Seguridad",
+                "title": "Seguridad y Privacidad",
+                "description": "Tus datos permanecen privados. Sesiones efímeras, cifrado de extremo a extremo, y anonimato garantizado para discusiones tranquilas.",
+                "features": {
+                    "encryption": {
+                        "title": "Cifrado E2E",
+                        "description": "Todos los datos están cifrados de extremo a extremo"
+                    },
+                    "ephemeral": {
+                        "title": "Sesiones efímeras",
+                        "description": "Los datos se eliminan automáticamente"
+                    },
+                    "anonymity": {
+                        "title": "Anonimato garantizado",
+                        "description": "No se almacenan datos personales"
+                    }
+                }
             }
         }
     },

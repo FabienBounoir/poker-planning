@@ -2,13 +2,9 @@
 	import { _ } from 'svelte-i18n';
 	import Blob1 from '$lib/components/blob/Blob1.svelte';
 	import Blob2 from '$lib/components/blob/blob2.svelte';
-	import Feature from '$lib/components/Feature.svelte';
+	import FeaturesShowcase from '$lib/components/FeaturesShowcase.svelte';
 	import Plan from '$lib/components/Plan.svelte';
 	import Banner from '$lib/components/Banner.svelte';
-	import Vote from '$lib/components/features/Vote.svelte';
-	import Result from '$lib/components/features/Result.svelte';
-	import Security from '$lib/components/features/Security.svelte';
-	import Estimation from '$lib/components/features/Estimation.svelte';
 </script>
 
 <svelte:head>
@@ -56,35 +52,7 @@
 
 	<Banner />
 
-	<Feature
-		title={$_('HomePage.features.estimationMethods.title')}
-		description={$_('HomePage.features.estimationMethods.description')}
-	>
-		<Estimation />
-	</Feature>
-
-	<Feature
-		title={$_('HomePage.features.simplifiedVoting.title')}
-		description={$_('HomePage.features.simplifiedVoting.description')}
-		invert={true}
-	>
-		<Vote />
-	</Feature>
-
-	<Feature
-		title={$_('HomePage.features.result.title')}
-		description={$_('HomePage.features.result.description')}
-	>
-		<Result />
-	</Feature>
-
-	<Feature
-		title={$_('HomePage.features.securityAndEphemerality.title')}
-		description={$_('HomePage.features.securityAndEphemerality.description')}
-		invert={true}
-	>
-		<Security />
-	</Feature>
+	<FeaturesShowcase />
 
 	<Plan />
 
