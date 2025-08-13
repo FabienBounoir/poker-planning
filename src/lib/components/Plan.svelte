@@ -355,7 +355,7 @@
 						position: relative;
 						overflow: hidden;
 						transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-						min-width: 220px;
+						width: 100%;
 						text-transform: uppercase;
 
 						&::before {
@@ -443,8 +443,7 @@
 					}
 
 					.cta-section .cta-button {
-						width: 100%;
-						min-width: auto;
+						padding: 1em 2em;
 					}
 				}
 			}

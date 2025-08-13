@@ -36,7 +36,7 @@
 				<div class="estimation-demo">
 					<div class="poker-table">
 						<div class="card-deck">
-							{#each ['🐶', 'XS', '3', '5', '1.5', '🐱', 'M'] as card, i}
+							{#each ['XS', '1', '3', '?', '8', '∞', '5'] as card, i}
 								<div
 									class="poker-card {i === 3 ? 'selected' : ''}"
 									style="animation-delay: {i * 0.2}s; z-index: {10 - i};"
@@ -62,7 +62,7 @@
 							{#each Array(4) as _, i}
 								<div class="user-avatar" style="animation-delay: {i * 200}ms;">
 									<div class="avatar-ring"></div>
-									<span class="user-initial">{String.fromCharCode(65 + i)}</span>
+									<span class="user-initial">{String.fromCharCode(65 + i * 5)}</span>
 									{#if i < 3}
 										<div class="vote-indicator"><i class="fas fa-check"></i></div>
 									{/if}
@@ -465,7 +465,7 @@
 		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 		cursor: pointer;
 		transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-		animation: cardShuffle 4s infinite ease-in-out;
+		animation: cardDynamicShuffle 6s infinite ease-in-out;
 		border: 2px solid var(--primary-300);
 		transform-origin: center center;
 		left: 50%;
@@ -475,20 +475,20 @@
 		&:hover {
 			transform: translate(-50%, -50%) scale(1.1);
 			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-			z-index: 20 !important;
+			z-index: 30 !important;
 		}
 
 		&.selected {
 			background: linear-gradient(145deg, var(--primary-600), var(--primary-700));
 			color: var(--primary-50);
-			animation: selectedCardFloat 3s infinite ease-in-out;
+			animation: selectedCardHighlight 4s infinite ease-in-out;
 			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 			border-color: var(--primary-800);
-			z-index: 15 !important;
 
 			&:hover {
 				transform: translate(-50%, -50%) scale(1.15);
 				box-shadow: 0 15px 35px rgba(var(--primary-600-rgb, 37, 99, 235), 0.4);
+				z-index: 35 !important;
 			}
 		}
 
@@ -931,34 +931,38 @@
 	}
 
 	/* Animations */
-	@keyframes cardShuffle {
+	@keyframes cardDynamicShuffle {
 		0% {
 			transform: translate(-50%, -50%) rotate(0deg) scale(1);
 			z-index: 1;
 		}
-		15% {
-			transform: translate(-30%, -70%) rotate(-15deg) scale(0.9);
-			z-index: 5;
-		}
-		30% {
-			transform: translate(-70%, -30%) rotate(25deg) scale(1.1);
+		12% {
+			transform: translate(-120%, -80%) rotate(-25deg) scale(0.95);
 			z-index: 8;
 		}
-		45% {
-			transform: translate(-20%, -20%) rotate(-10deg) scale(0.95);
-			z-index: 3;
+		25% {
+			transform: translate(20%, -120%) rotate(35deg) scale(1.05);
+			z-index: 12;
 		}
-		60% {
-			transform: translate(-80%, -60%) rotate(30deg) scale(1.05);
-			z-index: 7;
+		37% {
+			transform: translate(-90%, 20%) rotate(-15deg) scale(0.9);
+			z-index: 6;
+		}
+		50% {
+			transform: translate(80%, -50%) rotate(45deg) scale(1.1);
+			z-index: 15;
+		}
+		62% {
+			transform: translate(-20%, -90%) rotate(-30deg) scale(0.95);
+			z-index: 9;
 		}
 		75% {
-			transform: translate(-40%, -80%) rotate(-20deg) scale(0.9);
-			z-index: 4;
+			transform: translate(-110%, 50%) rotate(25deg) scale(1.02);
+			z-index: 11;
 		}
-		90% {
-			transform: translate(-60%, -40%) rotate(15deg) scale(1.02);
-			z-index: 6;
+		87% {
+			transform: translate(60%, 20%) rotate(-20deg) scale(0.98);
+			z-index: 7;
 		}
 		100% {
 			transform: translate(-50%, -50%) rotate(0deg) scale(1);
@@ -966,23 +970,32 @@
 		}
 	}
 
-	@keyframes selectedCardFloat {
+	@keyframes selectedCardHighlight {
 		0%,
 		100% {
-			transform: translate(-50%, -50%) scale(1.1) rotate(0deg);
-			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+			transform: translate(-50%, -50%) scale(1.2) rotate(0deg);
+			box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+			z-index: 25;
 		}
-		25% {
-			transform: translate(-50%, -60%) scale(1.15) rotate(2deg);
-			box-shadow: 0 15px 35px rgba(var(--primary-600-rgb, 37, 99, 235), 0.3);
+		20% {
+			transform: translate(-50%, -70%) scale(1.25) rotate(8deg);
+			box-shadow: 0 20px 45px rgba(var(--primary-600-rgb, 37, 99, 235), 0.4);
+			z-index: 25;
 		}
-		50% {
-			transform: translate(-50%, -45%) scale(1.12) rotate(-1deg);
-			box-shadow: 0 12px 30px rgba(var(--primary-600-rgb, 37, 99, 235), 0.25);
-		}
-		75% {
-			transform: translate(-50%, -55%) scale(1.14) rotate(1deg);
+		40% {
+			transform: translate(-50%, -40%) scale(1.18) rotate(-5deg);
 			box-shadow: 0 18px 40px rgba(var(--primary-600-rgb, 37, 99, 235), 0.35);
+			z-index: 25;
+		}
+		60% {
+			transform: translate(-50%, -65%) scale(1.22) rotate(12deg);
+			box-shadow: 0 22px 50px rgba(var(--primary-600-rgb, 37, 99, 235), 0.45);
+			z-index: 25;
+		}
+		80% {
+			transform: translate(-50%, -45%) scale(1.15) rotate(-8deg);
+			box-shadow: 0 16px 38px rgba(var(--primary-600-rgb, 37, 99, 235), 0.3);
+			z-index: 25;
 		}
 	}
 
