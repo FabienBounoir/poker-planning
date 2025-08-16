@@ -47,8 +47,7 @@
 
 	const isValidEmoji = (str: string): boolean => {
 		const trimmed = str.trim();
-		const emojiRegex =
-			/^[\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Component}\p{Emoji_Modifier_Base}\p{Emoji_Presentation}]$/u;
+		const emojiRegex = /^(?:\p{Emoji}(?:\uFE0F|\u200D\p{Emoji})*)$/u;
 		return emojiRegex.test(trimmed) && trimmed.length > 0;
 	};
 
@@ -79,7 +78,7 @@
 		}
 	};
 
-	onMount(async () => {
+	onMount(() => {
 		loadCustomEmojis();
 		checkScreenSize();
 
@@ -92,14 +91,7 @@
 
 		updateVisibilityState();
 
-		if (browser) {
-			try {
-				await import('emoji-picker-element');
-				emojiPickerLoaded = true;
-			} catch (error) {
-				console.warn("Erreur lors du chargement du sélecteur d'emoji:", error);
-			}
-		}
+		importEmojiPicker();
 
 		return () => {
 			window.removeEventListener('resize', handleResize);
@@ -108,6 +100,17 @@
 			window.removeEventListener('blur', updateVisibilityState);
 		};
 	});
+
+	const importEmojiPicker = async () => {
+		if (browser) {
+			try {
+				await import('emoji-picker-element');
+				emojiPickerLoaded = true;
+			} catch (error) {
+				console.warn("Erreur lors du chargement du sélecteur d'emoji:", error);
+			}
+		}
+	};
 
 	const handleReaction = (emoji: string) => {
 		if (disabled || isSmallScreen || !isPageActive) return;

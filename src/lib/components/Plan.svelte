@@ -17,9 +17,9 @@
 				<div class="card-header">
 					<h3>{$_('HomePage.plan.competitor.title')}</h3>
 					<div class="price-tag crossed-out">
-						<span class="currency">€</span>
-						<span class="amount">30</span>
-						<span class="period">/mois</span>
+						<span class="currency">{$_('HomePage.plan.competitor.price.currency')}</span>
+						<span class="amount">{$_('HomePage.plan.competitor.price.amount')}</span>
+						<span class="period">{$_('HomePage.plan.competitor.price.period')}</span>
 					</div>
 				</div>
 				<ul class="features-list limited">
@@ -84,7 +84,7 @@
 			left: 0;
 			right: 0;
 			bottom: 0;
-			background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M20 20c0 11.046-8.954 20-20 20v20h20V20z'/%3E%3C/g%3E%3C/svg%3E")
+			background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M20 20c0 11.046-8.954 20-20 20v20h20V20z'/%3E%3C/g%3E%3C/svg%3E")
 				repeat;
 			pointer-events: none;
 		}
@@ -138,10 +138,15 @@
 			&.competitor-card {
 				background: linear-gradient(
 					135deg,
-					rgba(255, 121, 0, 0.08) 0%,
-					rgba(255, 121, 0, 0.03) 100%
+					rgba(255, 255, 255, 0.95) 0%,
+					rgba(255, 255, 255, 0.8) 100%
 				);
-				border-color: rgba(255, 121, 0, 0.15);
+				border-color: var(--primary-300);
+				box-shadow:
+					0 20px 40px rgba(0, 0, 0, 0.1),
+					0 8px 16px rgba(0, 0, 0, 0.05),
+					inset 0 1px 0 rgba(255, 255, 255, 0.5);
+
 				opacity: 0.7;
 				transform: scale(0.95) translateY(10px);
 				filter: grayscale(0.2);
@@ -480,6 +485,11 @@
 		section.plan {
 			background: linear-gradient(135deg, var(--primary-900) 0%, var(--primary-800) 100%);
 
+			&::before {
+				background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M20 20c0 11.046-8.954 20-20 20v20h20V20z'/%3E%3C/g%3E%3C/svg%3E")
+					repeat;
+			}
+
 			.plan-header {
 				h1 {
 					background: linear-gradient(135deg, var(--primary-200) 0%, var(--primary-100) 100%);
@@ -495,12 +505,8 @@
 
 			.card {
 				&.competitor-card {
-					background: linear-gradient(
-						135deg,
-						rgba(255, 121, 0, 0.2) 0%,
-						rgba(255, 121, 0, 0.1) 100%
-					);
-					border-color: rgba(255, 121, 0, 0.3);
+					background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+					border-color: var(--primary-600);
 
 					.card-header h3 {
 						color: var(--primary-300);

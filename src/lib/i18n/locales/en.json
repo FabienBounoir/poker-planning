@@ -26,6 +26,11 @@
             "competitor": {
                 "title": "Other services",
                 "badge": "Too expensive",
+                "price": {
+                    "currency": "$",
+                    "amount": "30",
+                    "period": "/month"
+                },
                 "limitations": {
                     "limitedParticipants": "Limited to 10 participants",
                     "limitedVotes": "5 votes per month",

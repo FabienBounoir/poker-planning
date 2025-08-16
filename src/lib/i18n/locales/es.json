@@ -26,6 +26,11 @@
             "competitor": {
                 "title": "Otros servicios",
                 "badge": "Demasiado caro",
+                "price": {
+                    "currency": "€",
+                    "amount": "30",
+                    "period": "/mes"
+                },
                 "limitations": {
                     "limitedParticipants": "Limitado a 10 participantes",
                     "limitedVotes": "5 votos por mes",

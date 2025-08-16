@@ -1083,10 +1083,10 @@
 	@keyframes shieldFloat {
 		0%,
 		100% {
-			transform: translateY(0px) rotate(0deg);
+			transform: scale(1);
 		}
 		50% {
-			transform: translateY(-10px) rotate(5deg);
+			transform: scale(1.2);
 		}
 	}
 

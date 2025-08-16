@@ -26,6 +26,11 @@
             "competitor": {
                 "title": "Altri servizi",
                 "badge": "Troppo caro",
+                "price": {
+                    "currency": "€",
+                    "amount": "30",
+                    "period": "/mese"
+                },
                 "limitations": {
                     "limitedParticipants": "Limitato a 10 partecipanti",
                     "limitedVotes": "5 voti al mese",
