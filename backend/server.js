@@ -1,12 +1,33 @@
 const { Server } = require('socket.io');
 const { newUserJoined, roomDeleted, userLeft, stateUpdate } = require('./utils/statistics');
-const { arraysAreEqual, validateAvatar } = require('./utils/utils');
+const { arraysAreEqual, validateAvatar, sanitizeInput, isValidRoomId } = require('./utils/utils');
 const { UserRole, isValidRole } = require('./utils/roles');
 
 /**
  * @type {Server}
  */
 let io;
+
+// Rate limiting for socket connections
+const connectionRateLimit = new Map();
+const MAX_CONNECTIONS_PER_IP = 10;
+const RATE_LIMIT_WINDOW = 60000; // 1 minute
+
+const checkRateLimit = (ip) => {
+    const now = Date.now();
+    const connections = connectionRateLimit.get(ip) || [];
+    
+    // Remove old connections outside the window
+    const recentConnections = connections.filter(time => now - time < RATE_LIMIT_WINDOW);
+    
+    if (recentConnections.length >= MAX_CONNECTIONS_PER_IP) {
+        return false;
+    }
+    
+    recentConnections.push(now);
+    connectionRateLimit.set(ip, recentConnections);
+    return true;
+};
 
 const createSocketIOServer = (server, rooms) => {
     if (io) return io;
@@ -219,8 +240,8 @@ const createSocketIOServer = (server, rooms) => {
     }
 
     function formatName(name) {
-        return name
-            .trim()
+        if (!name || typeof name !== 'string') return 'Anonymous';
+        return sanitizeInput(name, 30)
             .split(/[\s.]+/)
             .map(segment =>
                 segment.charAt(0).toUpperCase() + segment.slice(1)
@@ -228,10 +249,38 @@ const createSocketIOServer = (server, rooms) => {
             .join(' ');
     }
 
-    io = new Server(server, { cors: { origin: "*" } });
+    // Configure CORS with proper origin restrictions
+    const allowedOrigins = [
+        'http://localhost:5173',
+        'http://localhost:4173', 
+        'https://anotherpp.vercel.app',
+        process.env.FRONTEND_URL
+    ].filter(Boolean);
+
+    io = new Server(server, { 
+        cors: { 
+            origin: allowedOrigins,
+            methods: ["GET", "POST"],
+            credentials: true
+        } 
+    });
 
     io.on('connection', (socket) => {
+        // Rate limiting check
+        const clientIP = socket.handshake.address;
+        if (!checkRateLimit(clientIP)) {
+            console.warn(`Rate limit exceeded for IP: ${clientIP}`);
+            socket.disconnect(true);
+            return;
+        }
+
         socket.on('join', ({ roomId, name, avatar, role = "player" }) => {
+            // Validate room ID
+            if (!isValidRoomId(roomId)) {
+                console.warn("Invalid room ID format");
+                return socket.emit("error", { reason: "Invalid room ID format" });
+            }
+
             const room = getRooms(roomId);
 
             console.log(roomId, name, role)
@@ -241,8 +290,8 @@ const createSocketIOServer = (server, rooms) => {
                 return socket.emit("error", { reason: "Room doesn't exist" });
             }
 
-            if (!name) {
-                console.warn("User without name");
+            if (!name || typeof name !== 'string' || sanitizeInput(name).length === 0) {
+                console.warn("User without valid name");
                 return socket.disconnect(true);
             }
 
@@ -335,9 +384,12 @@ const createSocketIOServer = (server, rooms) => {
                         break;
                     }
                     case 'state': {
+                        // Validate user story input
+                        const sanitizedUserStory = data.userStory ? sanitizeInput(data.userStory, 200) : '';
+                        
                         room.data.state = data.state;
-                        if (data.userStory) {
-                            room.data.userStory = data.userStory;
+                        if (sanitizedUserStory) {
+                            room.data.userStory = sanitizedUserStory;
                         }
 
                         if (data.state === "playing") {
@@ -348,8 +400,11 @@ const createSocketIOServer = (server, rooms) => {
                         break;
                     }
                     case 'hexcode':
-                        room.data.hexcode = data.hexcode;
-                        room.emit("hexcode", { hexcode: data.hexcode }, false);
+                        // Validate hexcode format
+                        if (data.hexcode && /^#[0-9A-F]{6}$/i.test(data.hexcode)) {
+                            room.data.hexcode = data.hexcode;
+                            room.emit("hexcode", { hexcode: data.hexcode }, false);
+                        }
                         break;
                     case 'toggleRole':
                         let change = false

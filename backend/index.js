@@ -4,44 +4,65 @@ const { createRoomId, rooms, getTotalUsers } = require('./rooms');
 const { createSocketIOServer } = require('./server');
 const cors = require('cors');
 const { newPokerPlanningCreated, sendFeedback } = require('./utils/statistics');
+const { securityHeaders } = require('./utils/security');
+const { sanitizeInput, isValidRoomId } = require('./utils/utils');
 const packageJson = require('../package.json');
 require('dotenv').config();
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: '1mb' })); // Limit payload size
+app.use(securityHeaders); // Add security headers
+
+// Configure CORS with proper origin restrictions
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:4173', 
+    'https://anotherpp.vercel.app',
+    process.env.FRONTEND_URL
+].filter(Boolean);
 
 app.use(cors({
-    origin: "*",
-    methods: ["GET", "POST", "PATCH", "OPTIONS", "PUT", "OPTIONS"]
-}))
-
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    next();
-});
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "OPTIONS"],
+    credentials: true
+}));
 
 app.get("/room", (req, res) => {
     const { roomId } = req.query;
+
+    // Validate room ID format
+    if (!isValidRoomId(roomId)) {
+        return res.status(400).json({ error: "Invalid room ID format." });
+    }
 
     const room = rooms.get(roomId);
     if (room) {
         return res.json(room?.data || {});
     }
 
-    return res.status(400).json({ error: "Room doesn't exist." });
+    return res.status(404).json({ error: "Room doesn't exist." });
 })
 
 app.post('/feedback', (req, res) => {
     const { email, feedback, feeling } = req.body;
 
-    if (!email || !feedback || !feeling) {
-        return res.status(400).json({ error: "Missing fields." });
+    // Validate and sanitize inputs
+    const sanitizedEmail = sanitizeInput(email, 100);
+    const sanitizedFeedback = sanitizeInput(feedback, 1000);
+    const sanitizedFeeling = sanitizeInput(feeling, 50);
+
+    if (!sanitizedEmail || !sanitizedFeedback || !sanitizedFeeling) {
+        return res.status(400).json({ error: "Missing or invalid fields." });
     }
 
-    sendFeedback(email, feedback, feeling)
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(sanitizedEmail)) {
+        return res.status(400).json({ error: "Invalid email format." });
+    }
+
+    sendFeedback(sanitizedEmail, sanitizedFeedback, sanitizedFeeling)
 
     res.json({ success: true });
 });
@@ -50,7 +71,10 @@ app.post('/room', (req, res) => {
     const { type, team, hexcode, avatar, autoReveal, cards, voteOnResults } = req.body;
 
     const roomId = createRoomId();
-    const formattedTeam = (team || 'NFS').trim().charAt(0).toUpperCase() + (team || 'NFS').slice(1).toLowerCase();
+    
+    // Sanitize team name
+    const sanitizedTeam = sanitizeInput(team || 'NFS', 30);
+    const formattedTeam = sanitizedTeam.charAt(0).toUpperCase() + sanitizedTeam.slice(1).toLowerCase();
 
     const roomData = {
         roomId,
@@ -80,28 +104,44 @@ app.post('/room', (req, res) => {
             break;
         default:
             console.log("Unknown room type", cards);
-            if (!cards || cards?.length === 0) return res.status(400).json({ error: "Unknown room type" });
-            roomData.cards = cards;
+            // Validate custom cards if provided
+            if (!cards || !Array.isArray(cards) || cards.length === 0 || cards.length > 15) {
+                return res.status(400).json({ error: "Invalid cards configuration" });
+            }
+            // Sanitize custom cards
+            roomData.cards = cards.map(card => sanitizeInput(card, 10)).filter(Boolean);
     }
 
+    // Validate hexcode
     if (hexcode) {
-        roomData.hexcode = hexcode;
+        if (/^#[0-9A-F]{6}$/i.test(hexcode)) {
+            roomData.hexcode = hexcode;
+        }
     }
 
+    // Validate avatar URL
     if (avatar) {
-        roomData.avatar = avatar;
+        try {
+            const avatarUrl = new URL(avatar);
+            if (avatarUrl.protocol === 'https:' && 
+                (avatarUrl.hostname === 'api.dicebear.com' || avatarUrl.hostname === 'i.imgur.com')) {
+                roomData.avatar = avatar;
+            }
+        } catch (e) {
+            // Invalid URL, ignore
+        }
     }
 
-    if (autoReveal) {
+    if (typeof autoReveal === 'boolean') {
         roomData.autoReveal = autoReveal;
     }
 
-    if (voteOnResults) {
+    if (typeof voteOnResults === 'boolean') {
         roomData.voteOnResults = voteOnResults;
     }
 
     rooms.set(roomId, { initialisation: true, data: roomData });
-    console.log("NEW ROOM CREATED", rooms);
+    console.log("NEW ROOM CREATED", roomId);
 
     newPokerPlanningCreated(roomData)
 
@@ -127,7 +167,7 @@ const server = http.createServer(app);
 
 createSocketIOServer(server, rooms);
 
-const PORT = 5876;
+const PORT = process.env.PORT || 5876;
 server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
