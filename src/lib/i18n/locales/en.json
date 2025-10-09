@@ -155,7 +155,8 @@
         "leaveObserver": "Leave observer mode",
         "copyError": "An error occurred while copying the room code.",
         "quickVote": "Quick Vote",
-        "hideVoting": "Hide Voting"
+        "hideVoting": "Hide Voting",
+        "TooManyVotes": "You are voting too quickly, please wait a moment."
     },
     "ManagerPage": {
         "welcomeMessage": "Welcome {USER}!",

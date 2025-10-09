@@ -155,7 +155,8 @@
         "leaveObserver": "Quitter le mode observateur",
         "copyError": "Une erreur s'est produite lors de la copie du code de la salle.",
         "quickVote": "Vote rapide",
-        "hideVoting": "Masquer le vote"
+        "hideVoting": "Masquer le vote",
+        "TooManyVotes": "Vous votez trop rapidement, veuillez patienter un instant."
     },
     "ManagerPage": {
         "welcomeMessage": "Bienvenue {USER}!",

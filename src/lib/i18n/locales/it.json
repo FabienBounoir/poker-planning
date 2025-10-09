@@ -155,7 +155,8 @@
         "leaveObserver": "Esci dalla modalità osservatore",
         "copyError": "Si è verificato un errore durante la copia del codice della stanza.",
         "quickVote": "Voto Veloce",
-        "hideVoting": "Nascondi Votazione"
+        "hideVoting": "Nascondi Votazione",
+        "TooManyVotes": "Stai votando troppo velocemente, attendi un momento."
     },
     "ManagerPage": {
         "welcomeMessage": "Benvenuto {USER}!",
