@@ -33,6 +33,11 @@
 {/if}
 
 <style lang="scss">
+	.tooltip-container {
+		display: flex;
+		align-items: center;
+	}
+
 	.tooltip {
 		border: 1px solid var(--primary-900);
 		box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);

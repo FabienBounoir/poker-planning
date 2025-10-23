@@ -155,7 +155,8 @@
         "leaveObserver": "Dejar el modo observador",
         "copyError": "Se produjo un error al copiar el código de la sala.",
         "quickVote": "Voto Rápido",
-        "hideVoting": "Ocultar Votación"
+        "hideVoting": "Ocultar Votación",
+        "TooManyVotes": "Estás votando demasiado rápido, por favor espera un momento."
     },
     "ManagerPage": {
         "welcomeMessage": "¡Bienvenido {USER}!",
@@ -170,6 +171,8 @@
         "noUserStoryDefined": "No se ha definido ninguna User Story.",
         "noParticipantsForVote": "No se encontraron participantes para iniciar la votación.",
         "firstVoterTooltip": "Primera persona en votar",
+        "slowestVoterTooltip": "Votante más lento",
+        "mostChangingVoterTooltip": "Más cambios de voto ({count} cambios)",
         "moyenneLabel": "Promedio",
         "medianeLabel": "Mediana"
     },

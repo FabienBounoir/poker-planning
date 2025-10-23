@@ -4,6 +4,9 @@ type User = {
     avatar?: string;
     selectedCard?: string;
     firstVoter?: boolean;
+    slowest?: boolean;
+    mostChanging?: boolean;
+    voteCount?: number;
 };
 
 export type Users = User[] | null;

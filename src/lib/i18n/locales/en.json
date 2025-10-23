@@ -155,7 +155,8 @@
         "leaveObserver": "Leave observer mode",
         "copyError": "An error occurred while copying the room code.",
         "quickVote": "Quick Vote",
-        "hideVoting": "Hide Voting"
+        "hideVoting": "Hide Voting",
+        "TooManyVotes": "You are voting too quickly, please wait a moment."
     },
     "ManagerPage": {
         "welcomeMessage": "Welcome {USER}!",
@@ -170,6 +171,8 @@
         "noUserStoryDefined": "No User Story has been defined.",
         "noParticipantsForVote": "No participants found to start the vote.",
         "firstVoterTooltip": "First person to vote",
+        "slowestVoterTooltip": "Slowest voter",
+        "mostChangingVoterTooltip": "Most changing voter ({count} changes)",
         "moyenneLabel": "Average",
         "medianeLabel": "Median"
     },

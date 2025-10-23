@@ -30,7 +30,7 @@ const createSocketIOServer = (server, rooms) => {
                     autoReveal: false,
                     voteOnResults: false,
                     date: new Date().toISOString(),
-                    firstVoter: null,
+                    firstVoters: [],
                 },
                 history: [],
                 timeout: null,
@@ -114,9 +114,16 @@ const createSocketIOServer = (server, rooms) => {
                     );
                 },
                 resetChoose() {
-                    object.data.firstVoter = null;
+                    object.data.firstVoters = [];
                     object.players.forEach((player) => {
-                        object.players.set(player.socket.id, { ...player, selectedCard: null, firstVoter: false });
+                        object.players.set(player.socket.id, {
+                            ...player,
+                            selectedCard: null,
+                            firstVoter: false,
+                            slowest: false,
+                            mostChanging: false,
+                            voteCount: 0
+                        });
                     });
                     this.emitPlayers();
                 },
@@ -268,7 +275,8 @@ const createSocketIOServer = (server, rooms) => {
                 name: formatName(name),
                 selectedCard: null,
                 role,
-                avatar: validateAvatar(avatar)
+                avatar: validateAvatar(avatar),
+                voteCount: 0
             };
 
             room.players.set(socket.id, player);
@@ -312,9 +320,36 @@ const createSocketIOServer = (server, rooms) => {
                             const player = room.players.get(socket.id);
                             if (!room?.data?.cards?.includes?.(data.card) && data.card != null) return;
 
-                            if (room.data.firstVoter === null) {
-                                room.data.firstVoter = player.name;
-                                player.firstVoter = true;
+
+                            if (room.data.state !== "result") {
+                                player.voteCount = (player.voteCount || 0) + 1;
+
+                                const index = room.data.firstVoters.indexOf(player.name);
+                                if (index > -1) {
+                                    room.data.firstVoters.splice(index, 1);
+                                }
+
+                                if (data.card !== null) {
+                                    room.data.firstVoters.push(player.name);
+                                }
+
+                                let mostChangingPlayer = null;
+                                let mostVotes = 0;
+
+                                room.players.forEach((p) => {
+                                    const count = p.voteCount || 0;
+                                    if (count >= 3 && count > mostVotes) {
+                                        mostVotes = count;
+                                        mostChangingPlayer = p.name;
+                                    }
+                                });
+
+                                room.players.forEach((p) => {
+                                    p.firstVoter = p.name === room.data.firstVoters[0];
+                                    p.slowest = p.name === room.data.firstVoters[room.data.firstVoters.length - 1] && room.data.firstVoters.length > 2;
+                                    p.mostChanging = p.name === mostChangingPlayer && mostVotes >= 3;
+                                    room.players.set(p.socket.id, p);
+                                });
                             }
 
                             player.selectedCard = data.card;
@@ -361,11 +396,33 @@ const createSocketIOServer = (server, rooms) => {
                         else if (player.role == UserRole.PLAYER) {
                             player.role = UserRole.OBSERVER;
                             player.selectedCard = null;
-                            player.firstVoter = false;
+
+                            const index = room.data.firstVoters.indexOf(player.name);
+                            if (index > -1) {
+                                room.data.firstVoters.splice(index, 1);
+                            }
                             change = true;
                         }
 
                         if (change) {
+                            let mostChangingPlayer = null;
+                            let mostVotes = 0;
+
+                            room.players.forEach((p) => {
+                                const count = p.voteCount || 0;
+                                if (count >= 3 && count > mostVotes) {
+                                    mostVotes = count;
+                                    mostChangingPlayer = p.name;
+                                }
+                            });
+
+                            room.players.forEach((p) => {
+                                p.firstVoter = p.name === room.data.firstVoters[0];
+                                p.slowest = p.name === room.data.firstVoters[room.data.firstVoters.length - 1] && room.data.firstVoters.length > 1;
+                                p.mostChanging = p.name === mostChangingPlayer && mostVotes >= 3;
+                                room.players.set(p.socket.id, p);
+                            });
+
                             room.players.set(socket.id, player);
                             room.emitPlayers();
 

@@ -37,12 +37,10 @@
 						class:selected={selectedLetter === card}
 						class:submitted={submittedLetter === card}
 						onclick={() => {
-							if (selectedLetter === card) {
-								selectedLetter = null;
-							} else {
+							if (selectedLetter !== card) {
 								selectedLetter = card;
+								sendVote();
 							}
-							sendVote();
 						}}
 					>
 						{card}

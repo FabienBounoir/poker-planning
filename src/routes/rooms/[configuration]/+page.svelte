@@ -56,6 +56,14 @@
 	let observers: Users = $state(null);
 
 	let waitingChangeRole = $state(false);
+
+	// Système de vote avec 3 votes rapides puis cooldown
+	let voteCount = 0;
+	let lastVoteTime = 0;
+	const MAX_FAST_VOTES = 3;
+	const COOLDOWN_MS = 3000; // 2 secondes de cooldown
+	const FAST_VOTE_RESET_MS = 10000; // Reset du compteur après 5 secondes sans vote
+
 	type FloatingReaction = {
 		id: string;
 		emoji: string;
@@ -287,6 +295,34 @@
 		submittedLetter = forceValue;
 	};
 
+	const sendVoteWithThrottle = (forceValue = selectedLetter) => {
+		const now = Date.now();
+
+		// Reset du compteur si plus de 5 secondes depuis le dernier vote
+		if (now - lastVoteTime > FAST_VOTE_RESET_MS) {
+			voteCount = 0;
+		}
+
+		// Si on a déjà fait 3 votes rapides, vérifier le cooldown
+		if (voteCount >= MAX_FAST_VOTES) {
+			if (now - lastVoteTime < COOLDOWN_MS) {
+				selectedLetter = null;
+				// Encore en cooldown, afficher un message
+				const remainingTime = Math.ceil((COOLDOWN_MS - (now - lastVoteTime)) / 1000);
+				toast.info(`Cooldown: ${remainingTime}s restantes`);
+				return;
+			} else {
+				// Cooldown terminé, reset du compteur
+				voteCount = 0;
+			}
+		}
+
+		// Envoyer le vote
+		lastVoteTime = now;
+		voteCount++;
+		sendVote(forceValue);
+	};
+
 	const errorWhenSendingVote = () => {
 		toast.error($_('RoomPage.ErrorWhenSendingVote'));
 		submittedLetter = null;
@@ -513,12 +549,10 @@
 									class:selected={selectedLetter === card}
 									class:submitted={submittedLetter === card}
 									on:click={() => {
-										if (selectedLetter === card) {
-											selectedLetter = null;
-										} else {
+										if (selectedLetter != card) {
 											selectedLetter = card;
+											sendVoteWithThrottle();
 										}
-										sendVote();
 									}}
 								>
 									{card}
@@ -531,7 +565,12 @@
 
 			<!-- Composant mobile voting -->
 			{#if pokerManager?.voteOnResults && !isObserver}
-				<MobileVoting cards={pokerManager.cards} bind:selectedLetter {submittedLetter} {sendVote} />
+				<MobileVoting
+					cards={pokerManager.cards}
+					bind:selectedLetter
+					{submittedLetter}
+					sendVote={sendVoteWithThrottle}
+				/>
 			{/if}
 		{/if}
 	</main>
@@ -1009,7 +1048,7 @@
 
 		.compact-cards {
 			h4 {
-				color: var(--primary-300);
+				color: var(--primary-300) !important;
 			}
 		}
 
