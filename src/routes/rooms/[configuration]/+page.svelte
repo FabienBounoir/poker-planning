@@ -1048,7 +1048,7 @@
 
 		.compact-cards {
 			h4 {
-				color: var(--primary-300);
+				color: var(--primary-300) !important;
 			}
 		}
 

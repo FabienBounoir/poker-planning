@@ -171,6 +171,8 @@
         "noUserStoryDefined": "Aucune User Story n'a été définie.",
         "noParticipantsForVote": "Aucune participant trouvé pour pouvoir lancer le vote.",
         "firstVoterTooltip": "Première personne à voter",
+        "slowestVoterTooltip": "Votant le plus lent",
+        "mostChangingVoterTooltip": "A le plus changé de vote ({count} changements)",
         "moyenneLabel": "Moyenne",
         "medianeLabel": "Médiane"
     },
