@@ -367,6 +367,7 @@
 {/if}
 
 <main>
+	<pre>{JSON.stringify(pokerManager, null, 2)}</pre>
 	{#if editRoom}
 		<div class="manager">
 			<EditConfiguration bind:editRoom {pokerManager} {deleteRoom} {updateRoom} />

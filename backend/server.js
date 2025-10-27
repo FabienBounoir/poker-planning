@@ -2,6 +2,7 @@ const { Server } = require('socket.io');
 const { newUserJoined, roomDeleted, userLeft, stateUpdate } = require('./utils/statistics');
 const { arraysAreEqual, validateAvatar } = require('./utils/utils');
 const { UserRole, isValidRole } = require('./utils/roles');
+const { cleanupUUIDMappings } = require('./rooms');
 
 /**
  * @type {Server}
@@ -306,6 +307,7 @@ const createSocketIOServer = (server, rooms) => {
                     room.timeout = setTimeout(() => {
                         if (!room.players.size) {
                             rooms.delete(roomId);
+                            cleanupUUIDMappings(roomId);
                             console.log(`Room ${roomId} deleted after inactivity.`);
                             roomDeleted(room.data);
                         }
@@ -470,6 +472,7 @@ const createSocketIOServer = (server, rooms) => {
                     case 'delete-room':
                         if (player.role === UserRole.MANAGER) {
                             rooms.delete(roomId);
+                            cleanupUUIDMappings(roomId);
                             room.emitDeleteRoom();
                         }
                         break;

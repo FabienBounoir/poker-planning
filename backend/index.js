@@ -1,6 +1,6 @@
 const express = require('express');
 const http = require('http');
-const { createRoomId, rooms, getTotalUsers } = require('./rooms');
+const { createRoomId, rooms, getTotalUsers, getRoomIdFromUUID, createUUIDForRoom } = require('./rooms');
 const { createSocketIOServer } = require('./server');
 const cors = require('cors');
 const { newPokerPlanningCreated, sendFeedback } = require('./utils/statistics');
@@ -44,6 +44,27 @@ app.post('/feedback', (req, res) => {
     sendFeedback(email, feedback, feeling)
 
     res.json({ success: true });
+});
+
+app.get('/room/resolve/:uuid', (req, res) => {
+    try {
+        const { uuid } = req.params;
+
+        if (!uuid) {
+            return res.status(400).json({ error: "UUID is required." });
+        }
+
+        const roomId = getRoomIdFromUUID(uuid);
+
+        if (!roomId) {
+            return res.status(404).json({ error: "Room not found for this UUID." });
+        }
+
+        return res.json({ roomId, uuid });
+    } catch (error) {
+        console.error("Error resolving UUID:", error);
+        return res.status(500).json({ error: "Internal server error." });
+    }
 });
 
 app.post('/room', (req, res) => {
@@ -100,8 +121,10 @@ app.post('/room', (req, res) => {
         roomData.voteOnResults = voteOnResults;
     }
 
+    roomData.uuid = createUUIDForRoom(roomId);
+
     rooms.set(roomId, { initialisation: true, data: roomData });
-    console.log("NEW ROOM CREATED", rooms);
+    console.log("NEW ROOM CREATED", roomId, "with UUID", roomData.uuid);
 
     newPokerPlanningCreated(roomData)
 
