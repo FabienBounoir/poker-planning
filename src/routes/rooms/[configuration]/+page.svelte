@@ -56,6 +56,7 @@
 	let observers: Users = $state(null);
 
 	let waitingChangeRole = $state(false);
+	let theme = '';
 
 	// Système de vote avec 3 votes rapides puis cooldown
 	let voteCount = 0;
@@ -149,6 +150,11 @@
 		}
 
 		status = 'init';
+
+		const today = new Date();
+		if (today.getMonth() === 9 && today.getDate() >= 20) {
+			theme = 'halloween';
+		}
 	});
 
 	onDestroy(() => {
@@ -201,6 +207,12 @@
 				if (payload.state == 'playing' && payload.state != pokerManager?.state) {
 					selectedLetter = null;
 					submittedLetter = null;
+
+					if (theme == 'halloween') {
+						toast.info("It's Halloween! 🎃👻");
+						const audio = new Audio('/easterEgg/impact.mp3');
+						audio.play();
+					}
 				} else if (payload?.state == 'result') {
 					if (payload?.result) {
 						resultItems = payload.result;
@@ -1087,6 +1099,64 @@
 			.observer {
 				color: var(--primary-200);
 			}
+		}
+	}
+
+	/* ===== ANIMATION HALLOWEEN ===== */
+
+	/* Overlay avec effet de brume */
+	.halloween-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		pointer-events: none;
+		z-index: 9999;
+		background: radial-gradient(
+			ellipse at center,
+			rgba(255, 102, 0, 0.08) 0%,
+			rgba(153, 0, 255, 0.12) 50%,
+			rgba(0, 0, 0, 0.2) 100%
+		);
+		animation: halloweenPulse 2s ease-in-out infinite;
+	}
+
+	@keyframes halloweenPulse {
+		0%,
+		100% {
+			opacity: 0.5;
+		}
+		50% {
+			opacity: 0.8;
+		}
+	}
+
+	/* Émojis volants */
+	.halloween-emoji {
+		position: absolute;
+		font-size: 2.5rem;
+		animation: floatUp 3s ease-out forwards;
+		filter: drop-shadow(0 0 8px rgba(255, 102, 0, 0.7));
+		user-select: none;
+	}
+
+	@keyframes floatUp {
+		0% {
+			top: 110%;
+			transform: rotate(0deg) scale(0.5);
+			opacity: 0;
+		}
+		10% {
+			opacity: 1;
+		}
+		90% {
+			opacity: 1;
+		}
+		100% {
+			top: -10%;
+			transform: rotate(360deg) scale(1.1);
+			opacity: 0;
 		}
 	}
 </style>

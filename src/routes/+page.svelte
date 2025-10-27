@@ -5,6 +5,19 @@
 	import FeaturesShowcase from '$lib/components/FeaturesShowcase.svelte';
 	import Plan from '$lib/components/Plan.svelte';
 	import Banner from '$lib/components/Banner.svelte';
+	import { onMount } from 'svelte';
+
+	let customTheme = $state('');
+
+	onMount(() => {
+		const today = new Date();
+		if (
+			(today.getMonth() === 9 && today.getDate() >= 15) ||
+			(today.getMonth() === 10 && today.getDate() <= 1)
+		) {
+			customTheme = 'halloween';
+		}
+	});
 </script>
 
 <svelte:head>
@@ -24,7 +37,7 @@
 </svelte:head>
 
 <main>
-	<section class="head">
+	<section class={'head ' + customTheme}>
 		<Blob2 />
 		<main>
 			<div>
@@ -72,6 +85,16 @@
 		align-items: center;
 		gap: 1em;
 		position: relative;
+
+		&.halloween {
+			background:
+				url(/easterEgg/spider_top.webp) no-repeat,
+				url(/easterEgg/spider_bottom.webp) no-repeat right bottom,
+				var(--primary-50);
+			background-size: contain;
+		}
+
+		background-size: contain;
 
 		main {
 			display: flex;
@@ -196,6 +219,14 @@
 	@media (prefers-color-scheme: dark) {
 		section.head {
 			background-color: var(--primary-950);
+
+			&.halloween {
+				background:
+					url(./easterEgg/spider_top.webp) no-repeat,
+					url(./easterEgg/spider_bottom.webp) no-repeat right bottom,
+					var(--primary-950);
+				background-size: contain;
+			}
 			h1,
 			h2 {
 				color: var(--primary-50);

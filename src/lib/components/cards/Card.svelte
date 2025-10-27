@@ -1,4 +1,6 @@
 <script>
+	import { onMount } from 'svelte';
+
 	let {
 		content,
 		cardSelected = $bindable(),
@@ -9,6 +11,18 @@
 		clickHandler = null,
 		canRemove = true
 	} = $props();
+
+	let customTheme = $state('');
+
+	onMount(() => {
+		const today = new Date();
+		if (
+			(today.getMonth() === 9 && today.getDate() >= 15) ||
+			(today.getMonth() === 10 && today.getDate() <= 1)
+		) {
+			customTheme = 'halloween';
+		}
+	});
 </script>
 
 <main
@@ -17,6 +31,7 @@
 	class:selected={cardSelected === content}
 	class:submit={submittedLetter === content}
 	class:interact
+	class:halloween={customTheme === 'halloween'}
 	style="--card-height: {height}; {style}"
 	on:click={() => {
 		if (cardSelected === content) {
@@ -55,6 +70,14 @@
 			filter 0.3s,
 			scale 0.3s,
 			background-color 3s !important;
+
+		&.halloween {
+			background:
+				url(/easterEgg/spider_top.webp) no-repeat,
+				url(/easterEgg/spider_bottom.webp) no-repeat right bottom,
+				var(--primary-200);
+			background-size: contain;
+		}
 
 		&:not(.interact) {
 			pointer-events: none;
@@ -95,6 +118,15 @@
 			background-color: var(--primary-800);
 			border-color: #333;
 			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+			&.halloween {
+				background:
+					url(/easterEgg/spider_top.webp) no-repeat,
+					url(/easterEgg/spider_bottom.webp) no-repeat right bottom,
+					var(--primary-800);
+				background-size: contain;
+			}
+
 			p {
 				color: var(--primary-200);
 			}
