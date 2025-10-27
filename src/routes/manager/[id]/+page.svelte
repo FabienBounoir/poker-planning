@@ -57,6 +57,11 @@
 
 	let animatePlayer = true;
 	let timeoutDisableAnimation: ReturnType<typeof setTimeout> | null = null;
+	let theme = '';
+	let halloweenActive = $state(false);
+	let halloweenEmojis = $state<Array<{ id: number; emoji: string; left: number; delay: number }>>(
+		[]
+	);
 
 	const canStarVote = () => {
 		if (pokerManager?.userStory == '') {
@@ -67,10 +72,51 @@
 			return toast.error($_('ManagerPage.noParticipantsForVote'));
 		}
 
+		checkTheme();
+
 		moyenne = null;
 		mediane = null;
 
 		changeState('playing');
+	};
+
+	const checkTheme = () => {
+		if (theme === 'halloween') {
+			halloweenActive = true;
+
+			const emojis = ['🎃', '👻', '🦇', '🕷️', '💀', '🕸️', '🍬', '🧙'];
+			const emojiCount = 15;
+			const animationDuration = 4000;
+			const spawnInterval = animationDuration / emojiCount;
+
+			let count = 0;
+			const spawnEmoji = () => {
+				if (count < emojiCount) {
+					const newEmoji = {
+						id: Date.now() + count,
+						emoji: emojis[Math.floor(Math.random() * emojis.length)],
+						left: Math.random() * 100,
+						delay: 0
+					};
+
+					halloweenEmojis = [...halloweenEmojis, newEmoji];
+					count++;
+
+					requestAnimationFrame(() => {
+						setTimeout(() => spawnEmoji(), spawnInterval);
+					});
+				}
+			};
+
+			// Démarrer l'apparition progressive
+			spawnEmoji();
+
+			// Nettoyer après l'animation
+			setTimeout(() => {
+				halloweenActive = false;
+				halloweenEmojis = [];
+			}, animationDuration + 2000); // Laisser le temps aux derniers émojis de terminer
+		}
 	};
 
 	const connect = () => {
@@ -312,6 +358,11 @@
 	};
 
 	onMount(() => {
+		const today = new Date();
+		if (today.getMonth() === 9 && today.getDate() >= 20) {
+			theme = 'halloween';
+		}
+
 		connect();
 	});
 
@@ -366,7 +417,23 @@
 	{/if}
 {/if}
 
-<main>
+<!-- Effet Halloween spectaculaire -->
+{#if halloweenActive}
+	<div class="halloween-overlay" transition:fade={{ duration: 300 }}>
+		{#each halloweenEmojis as emoji (emoji.id)}
+			<div
+				class="halloween-emoji"
+				style="left: {emoji.left}%; top: 110%;"
+				in:scale={{ duration: 200, start: 0.3 }}
+				out:fade={{ duration: 300 }}
+			>
+				{emoji.emoji}
+			</div>
+		{/each}
+	</div>
+{/if}
+
+<main class:halloween-mode={halloweenActive}>
 	{#if editRoom}
 		<div class="manager">
 			<EditConfiguration bind:editRoom {pokerManager} {deleteRoom} {updateRoom} />
@@ -1159,6 +1226,188 @@
 					}
 				}
 			}
+		}
+	}
+
+	/* ===== ANIMATIONS HALLOWEEN SPECTACULAIRES ===== */
+
+	/* Overlay avec effet de brume */
+	.halloween-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		pointer-events: none;
+		z-index: 9999;
+		background: radial-gradient(
+			ellipse at center,
+			rgba(255, 102, 0, 0.1) 0%,
+			rgba(153, 0, 255, 0.15) 50%,
+			rgba(0, 0, 0, 0.3) 100%
+		);
+		animation: halloweenPulse 2s ease-in-out infinite;
+	}
+
+	@keyframes halloweenPulse {
+		0%,
+		100% {
+			opacity: 0.6;
+		}
+		50% {
+			opacity: 0.9;
+		}
+	}
+
+	/* Émojis volants */
+	.halloween-emoji {
+		position: absolute;
+		font-size: 3rem;
+		animation: floatUp 4s ease-out forwards;
+		filter: drop-shadow(0 0 10px rgba(255, 102, 0, 0.8));
+		user-select: none;
+	}
+
+	@keyframes floatUp {
+		0% {
+			top: 110%;
+			transform: rotate(0deg) scale(0.5);
+			opacity: 0;
+		}
+		10% {
+			opacity: 1;
+		}
+		90% {
+			opacity: 1;
+		}
+		100% {
+			top: -10%;
+			transform: rotate(360deg) scale(1.2);
+			opacity: 0;
+		}
+	}
+
+	/* Mode Halloween pour le main */
+	main.halloween-mode {
+		animation:
+			halloweenShake 0.5s ease-in-out,
+			halloweenGlow 2s ease-in-out;
+
+		.manager {
+			animation: cardsPulse 2s ease-in-out;
+
+			.container {
+				h1 {
+					animation: titleGlow 1.5s ease-in-out;
+					text-shadow:
+						0 0 10px rgba(255, 102, 0, 0.8),
+						0 0 20px rgba(255, 102, 0, 0.6),
+						0 0 30px rgba(153, 0, 255, 0.4);
+				}
+			}
+
+			button {
+				animation: buttonPulse 1s ease-in-out;
+			}
+		}
+
+		.users {
+			.user {
+				animation: userFloat 2s ease-in-out;
+			}
+		}
+	}
+
+	@keyframes halloweenShake {
+		0%,
+		100% {
+			transform: translateX(0);
+		}
+		10%,
+		30%,
+		50%,
+		70%,
+		90% {
+			transform: translateX(-5px);
+		}
+		20%,
+		40%,
+		60%,
+		80% {
+			transform: translateX(5px);
+		}
+	}
+
+	@keyframes halloweenGlow {
+		0% {
+			filter: brightness(1);
+		}
+		25% {
+			filter: brightness(1.3) hue-rotate(15deg);
+		}
+		50% {
+			filter: brightness(1.1) hue-rotate(-15deg);
+		}
+		75% {
+			filter: brightness(1.3) hue-rotate(15deg);
+		}
+		100% {
+			filter: brightness(1);
+		}
+	}
+
+	@keyframes cardsPulse {
+		0%,
+		100% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.02);
+		}
+	}
+
+	@keyframes titleGlow {
+		0%,
+		100% {
+			text-shadow:
+				0 0 5px rgba(255, 102, 0, 0.5),
+				0 0 10px rgba(255, 102, 0, 0.3);
+		}
+		50% {
+			text-shadow:
+				0 0 20px rgba(255, 102, 0, 1),
+				0 0 40px rgba(255, 102, 0, 0.8),
+				0 0 60px rgba(153, 0, 255, 0.6);
+		}
+	}
+
+	@keyframes buttonPulse {
+		0%,
+		100% {
+			transform: scale(1);
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		}
+		25% {
+			transform: scale(1.05);
+			box-shadow:
+				0 0 20px rgba(255, 102, 0, 0.6),
+				0 0 40px rgba(255, 102, 0, 0.3);
+		}
+		75% {
+			transform: scale(1.05);
+			box-shadow:
+				0 0 20px rgba(153, 0, 255, 0.6),
+				0 0 40px rgba(153, 0, 255, 0.3);
+		}
+	}
+
+	@keyframes userFloat {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(-10px);
 		}
 	}
 </style>
