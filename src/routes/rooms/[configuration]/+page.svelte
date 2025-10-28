@@ -210,8 +210,13 @@
 
 					if (theme == 'halloween') {
 						toast.info("It's Halloween! 🎃👻");
-						const audio = new Audio('/easterEgg/impact.mp3');
-						audio.play();
+						try {
+							const audio = new Audio('/easterEgg/impact.mp3');
+							audio.volume = 0.70;
+							audio.play();
+						} catch (err) {
+							console.error('Erreur lors de la création/lecture de l\'audio:', err);
+						}
 					}
 				} else if (payload?.state == 'result') {
 					if (payload?.result) {
