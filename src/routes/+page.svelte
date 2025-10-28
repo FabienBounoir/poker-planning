@@ -222,8 +222,8 @@
 
 			&.halloween {
 				background:
-					url(./easterEgg/spider_top.webp) no-repeat,
-					url(./easterEgg/spider_bottom.webp) no-repeat right bottom,
+					url(/easterEgg/spider_top.webp) no-repeat,
+					url(/easterEgg/spider_bottom.webp) no-repeat right bottom,
 					var(--primary-950);
 				background-size: contain;
 			}
