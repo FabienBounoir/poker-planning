@@ -1,11 +1,12 @@
 import { error, json } from "@sveltejs/kit";
+const IMGUR_CLIENT_ID = import.meta.env.VITE_IMGUR_CLIENT_ID;
 
 
 /**
  * @type {import("./$types").RequestHandler}
  */
 export const POST = async ({ request }) => {
-    const blob = await request.text();
+    const base64 = await request.text();
 
     const myHeaders = new Headers();
     myHeaders.append("accept", "application/json");
@@ -26,7 +27,7 @@ export const POST = async ({ request }) => {
     const requestOptions = {
         method: "POST",
         headers: myHeaders,
-        body: "data:image/png;base64," + blob,
+        body: "data:image/png;base64," + base64,
         redirect: "follow"
     };
 
@@ -37,6 +38,21 @@ export const POST = async ({ request }) => {
     }
     catch (e) {
         console.error("[CUSTOM AVATAR] Error while fetching the server", e);
-        return error({ status: 500, body: e });
+
+        console.log("Use fallback to imgur");
+        const imgur = await uploadToImgur(base64);
+        return json(imgur);
     }
 };
+
+async function uploadToImgur(base64) {
+    const res = await fetch("https://api.imgur.com/3/image", {
+        method: "POST",
+        headers: {
+            Authorization: `Client-ID ${IMGUR_CLIENT_ID}`,
+        },
+        body: new URLSearchParams({ image: base64 })
+    });
+    if (!res.ok) throw new Error("imgur failed");
+    return { url: (await res.json()).data.link };
+}
