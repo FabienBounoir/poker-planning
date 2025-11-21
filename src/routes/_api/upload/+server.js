@@ -26,7 +26,7 @@ export const POST = async ({ request }) => {
     const requestOptions = {
         method: "POST",
         headers: myHeaders,
-        body: blob,
+        body: "data:image/png;base64," + blob,
         redirect: "follow"
     };
 
