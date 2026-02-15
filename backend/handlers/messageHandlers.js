@@ -1,7 +1,7 @@
 const { UserRole } = require('../utils/roles');
 
 /**
- * Gère le vote d'un joueur
+ * Handles player voting
  */
 function handleVote(room, socket, data, callback) {
     try {
@@ -41,7 +41,7 @@ function handleVote(room, socket, data, callback) {
 }
 
 /**
- * Gère le changement d'état du jeu
+ * Handles game state changes
  */
 function handleState(room, data) {
     room.data.state = data.state;
@@ -57,7 +57,7 @@ function handleState(room, data) {
 }
 
 /**
- * Gère le changement de couleur
+ * Handles color changes
  */
 function handleHexcode(room, data) {
     room.data.hexcode = data.hexcode;
@@ -65,7 +65,7 @@ function handleHexcode(room, data) {
 }
 
 /**
- * Gère le changement de rôle (joueur <-> observateur)
+ * Handles role changes (player <-> observer)
  */
 function handleToggleRole(room, socket, callback) {
     const player = room.getPlayer(socket.id);
@@ -100,7 +100,7 @@ function handleToggleRole(room, socket, callback) {
 }
 
 /**
- * Gère l'envoi d'une réaction
+ * Handles reaction sending
  */
 function handleReaction(room, socket, data, callback) {
     try {

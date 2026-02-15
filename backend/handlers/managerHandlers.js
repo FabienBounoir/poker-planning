@@ -3,7 +3,7 @@ const { arraysAreEqual } = require('../utils/utils');
 const { updateCardsForRoomType } = require('../helpers/roomHelpers');
 
 /**
- * Gère la suppression d'une room par le manager
+ * Handles room deletion by the manager
  */
 function handleDeleteRoom(room, player, rooms, roomId) {
     if (player.role === UserRole.MANAGER) {
@@ -13,7 +13,7 @@ function handleDeleteRoom(room, player, rooms, roomId) {
 }
 
 /**
- * Gère la mise à jour de la configuration d'une room
+ * Handles room configuration updates
  */
 function handleUpdateRoom(room, player, data, callback) {
     if (player.role === UserRole.MANAGER) {

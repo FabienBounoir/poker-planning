@@ -4,7 +4,7 @@ const { isValidRole } = require('../utils/roles');
 const { formatName } = require('../helpers/roomHelpers');
 
 /**
- * Gère la connexion d'un utilisateur à une room
+ * Handles user connection to a room
  */
 function handleJoin(socket, room, { roomId, name, avatar, role = "player" }) {
     console.log(roomId, name, role);
@@ -44,7 +44,7 @@ function handleJoin(socket, room, { roomId, name, avatar, role = "player" }) {
 }
 
 /**
- * Gère la déconnexion d'un utilisateur
+ * Handles user disconnection
  */
 function handleDisconnect(socket, rooms, roomId) {
     console.log(`User ${socket.id} disconnected`);

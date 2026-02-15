@@ -79,7 +79,7 @@ function formatName(name) {
 }
 
 /**
- * Met à jour les cartes selon le type de room
+ * Updates cards based on room type
  */
 function updateCardsForRoomType(room) {
     switch (room.data.type) {

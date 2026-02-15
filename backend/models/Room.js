@@ -3,7 +3,7 @@ const { stateUpdate, roomDeleted } = require('../utils/statistics');
 const { processResultState } = require('../helpers/roomHelpers');
 
 /**
- * Classe représentant une room de poker planning
+ * Class representing a poker planning room
  */
 class Room {
     constructor(roomId, roomData = {}) {
@@ -27,7 +27,7 @@ class Room {
     }
 
     /**
-     * Émet un événement à tous les joueurs
+     * Emits an event to all players
      */
     emit(type, data, manager = false) {
         this.players.forEach((player) => {
@@ -42,7 +42,7 @@ class Room {
     }
 
     /**
-     * Émet la liste des joueurs et observateurs
+     * Emits the list of players and observers
      */
     emitPlayers(manager = false) {
         const players = [];
@@ -73,7 +73,7 @@ class Room {
     }
 
     /**
-     * Met à jour l'état du jeu et émet les changements
+     * Updates game state and emits changes
      */
     emitUpdateGame(state, configUpdate = false) {
         let element = { ...this.data };
@@ -97,14 +97,14 @@ class Room {
     }
 
     /**
-     * Émet un message à tous les joueurs
+     * Emits a message to all players
      */
     emitMessage(message, type = "info") {
         this.emit('message', { message, type });
     }
 
     /**
-     * Supprime la room
+     * Deletes the room
      */
     emitDeleteRoom() {
         this.emit('delete-room');
@@ -114,14 +114,14 @@ class Room {
     }
 
     /**
-     * Émet une réaction flottante
+     * Emits a floating reaction
      */
     emitFloatingReaction(reaction) {
         this.emit('floating-reaction', { reaction });
     }
 
     /**
-     * Nettoie les réactions expirées (> 5 secondes)
+     * Cleans up expired reactions (> 5 seconds)
      */
     cleanupExpiredReactions() {
         const now = Date.now();
@@ -131,7 +131,7 @@ class Room {
     }
 
     /**
-     * Réinitialise tous les votes
+     * Resets all votes
      */
     resetChoose() {
         this.data.votingOrder = [];
@@ -149,7 +149,7 @@ class Room {
     }
 
     /**
-     * Vérifie si tous les joueurs ont voté et révèle automatiquement si activé
+     * Checks if all players have voted and auto-reveals if enabled
      */
     checkAllPlayersSelected() {
         console.log("Check all players selected");
@@ -183,7 +183,7 @@ class Room {
     }
 
     /**
-     * Met à jour les badges des joueurs (premier votant, plus lent, le plus changeant)
+     * Updates player badges (first voter, slowest, most changing)
      */
     updatePlayerBadges() {
         let mostChangingPlayer = null;
@@ -206,14 +206,14 @@ class Room {
     }
 
     /**
-     * Ajoute un joueur à la room
+     * Adds a player to the room
      */
     addPlayer(socketId, player) {
         this.players.set(socketId, player);
     }
 
     /**
-     * Retire un joueur de la room
+     * Removes a player from the room
      */
     removePlayer(socketId) {
         this.players.delete(socketId);
@@ -221,14 +221,14 @@ class Room {
     }
 
     /**
-     * Récupère un joueur par son ID
+     * Gets a player by their ID
      */
     getPlayer(socketId) {
         return this.players.get(socketId);
     }
 
     /**
-     * Vérifie si la room est vide
+     * Checks if the room is empty
      */
     isEmpty() {
         return this.players.size === 0;
