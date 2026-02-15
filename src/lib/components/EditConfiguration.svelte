@@ -58,11 +58,14 @@
 	});
 
 	const avatarUrl = [
-		'https://api.dicebear.com/9.x/adventurer/svg',
+		'https://api.dicebear.com/9.x/initials/svg',
 		'https://api.dicebear.com/9.x/avataaars/svg',
 		'https://api.dicebear.com/9.x/dylan/svg',
 		'https://api.dicebear.com/9.x/miniavs/svg',
-		'https://api.dicebear.com/9.x/personas/svg'
+		'https://api.dicebear.com/9.x/bottts-neutral/svg',
+		'https://api.dicebear.com/9.x/personas/svg',
+		'https://api.dicebear.com/9.x/adventurer/svg',
+		'https://api.dicebear.com/9.x/toon-head/svg'
 	];
 
 	const seed = 'bouns';

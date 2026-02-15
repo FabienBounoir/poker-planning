@@ -1,6 +1,7 @@
 const ALLOWED_AVATAR_HOSTS = [
   "i.imgur.com",
-  "img.draftbot.fr"
+  "img.draftbot.fr",
+  "api.dicebear.com"
 ];
 
 
