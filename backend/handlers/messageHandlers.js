@@ -11,13 +11,13 @@ function handleVote(room, socket, data, callback) {
         if (room.data.state !== "result") {
             player.voteCount = (player.voteCount || 0) + 1;
 
-            const index = room.data.firstVoters.indexOf(player.name);
+            const index = room.data.votingOrder.indexOf(player.name);
             if (index > -1) {
-                room.data.firstVoters.splice(index, 1);
+                room.data.votingOrder.splice(index, 1);
             }
 
             if (data.card !== null) {
-                room.data.firstVoters.push(player.name);
+                room.data.votingOrder.push(player.name);
             }
 
             room.updatePlayerBadges();
@@ -79,9 +79,9 @@ function handleToggleRole(room, socket, callback) {
         player.role = UserRole.OBSERVER;
         player.selectedCard = null;
 
-        const index = room.data.firstVoters.indexOf(player.name);
+        const index = room.data.votingOrder.indexOf(player.name);
         if (index > -1) {
-            room.data.firstVoters.splice(index, 1);
+            room.data.votingOrder.splice(index, 1);
         }
         change = true;
     }

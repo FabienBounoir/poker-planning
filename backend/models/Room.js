@@ -18,7 +18,7 @@ class Room {
             autoReveal: false,
             voteOnResults: false,
             date: new Date().toISOString(),
-            firstVoters: [],
+            votingOrder: [],
             ...roomData
         };
         this.history = [];
@@ -134,7 +134,7 @@ class Room {
      * Réinitialise tous les votes
      */
     resetChoose() {
-        this.data.firstVoters = [];
+        this.data.votingOrder = [];
         this.players.forEach((player) => {
             this.players.set(player.socket.id, {
                 ...player,
@@ -198,8 +198,8 @@ class Room {
         });
 
         this.players.forEach((p) => {
-            p.firstVoter = p.name === this.data.firstVoters[0];
-            p.slowest = p.name === this.data.firstVoters[this.data.firstVoters.length - 1] && this.data.firstVoters.length > 2;
+            p.firstVoter = p.name === this.data.votingOrder[0];
+            p.slowest = p.name === this.data.votingOrder[this.data.votingOrder.length - 1] && this.data.votingOrder.length > 2;
             p.mostChanging = p.name === mostChangingPlayer && mostVotes >= 3;
             this.players.set(p.socket.id, p);
         });
