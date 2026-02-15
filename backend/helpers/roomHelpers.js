@@ -1,4 +1,4 @@
-const { UserRole } = require('../utils/roles');
+const { UserRole } = require('../utils/constants');
 
 /**
  * Traite les résultats du vote et met à jour l'historique

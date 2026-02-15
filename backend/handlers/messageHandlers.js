@@ -1,4 +1,5 @@
-const { UserRole } = require('../utils/roles');
+const { UserRole } = require('../utils/constants');
+const { GameState } = require('../utils/constants');
 
 /**
  * Handles player voting
@@ -8,7 +9,7 @@ function handleVote(room, socket, data, callback) {
         const player = room.getPlayer(socket.id);
         if (!room?.data?.cards?.includes?.(data.card) && data.card != null) return;
 
-        if (room.data.state !== "result") {
+        if (room.data.state !== GameState.RESULT) {
             player.voteCount = (player.voteCount || 0) + 1;
 
             const index = room.data.votingOrder.indexOf(player.name);
@@ -30,8 +31,8 @@ function handleVote(room, socket, data, callback) {
         callback({ success: true });
         room.checkAllPlayersSelected();
 
-        if (room.data.state === "result" && room?.data?.voteOnResults) {
-            room.emitUpdateGame("result");
+        if (room.data.state === GameState.RESULT && room?.data?.voteOnResults) {
+            room.emitUpdateGame(GameState.RESULT);
         }
     }
     catch (e) {
@@ -49,7 +50,7 @@ function handleState(room, data) {
         room.data.userStory = data.userStory;
     }
 
-    if (data.state === "playing") {
+    if (data.state === GameState.PLAYING) {
         room.resetChoose();
     }
 

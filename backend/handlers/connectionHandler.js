@@ -1,6 +1,6 @@
 const { roomDeleted } = require('../utils/statistics');
 const { validateAvatar } = require('../utils/utils');
-const { isValidRole } = require('../utils/roles');
+const { isValidRole, GameState } = require('../utils/constants');
 const { formatName } = require('../helpers/roomHelpers');
 
 /**
@@ -40,7 +40,7 @@ function handleJoin(socket, room, { roomId, name, avatar, role = "player" }) {
     };
 
     room.addPlayer(socket.id, player);
-    room.emitPlayers(room.data.state !== "waiting");
+    room.emitPlayers(room.data.state !== GameState.WAITING);
 }
 
 /**
@@ -52,19 +52,19 @@ function handleDisconnect(socket, rooms, roomId) {
     const room = rooms.get(roomId);
     if (!room) return;
     
-    if (room?.data?.state === "deleted") {
+    if (room?.data?.state === GameState.DELETED) {
         return; // Don't do anything if the room is already deleted
     }
 
     room.removePlayer(socket.id);
 
     if (room.players.size) {
-        room.emitPlayers(room.data.state !== "waiting");
+        room.emitPlayers(room.data.state !== GameState.WAITING);
     } else {
         console.log("Setup Timeout 1 hour to delete inactive room");
 
-        if (['result'].includes(room?.data?.state)) {
-            room.data.state = 'waiting';
+        if ([GameState.RESULT].includes(room?.data?.state)) {
+            room.data.state = GameState.WAITING;
             room.data.userStory = '';
         }
 

@@ -1,4 +1,4 @@
-const avatarName = /\/(\w+)\/svg$/;
+const avatarName = /([^\/]+)\/svg$/;
 
 export const dataToShortBinary = (date) => {
     const match = date?.avatar?.match?.(avatarName);

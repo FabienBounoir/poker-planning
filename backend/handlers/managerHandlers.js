@@ -1,4 +1,4 @@
-const { UserRole } = require('../utils/roles');
+const { UserRole } = require('../utils/constants');
 const { arraysAreEqual } = require('../utils/utils');
 const { updateCardsForRoomType } = require('../helpers/roomHelpers');
 

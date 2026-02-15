@@ -1,4 +1,5 @@
-const { UserRole } = require('../utils/roles');
+const { UserRole } = require('../utils/constants');
+const { GameState } = require('../utils/constants');
 const { stateUpdate, roomDeleted } = require('../utils/statistics');
 const { processResultState } = require('../helpers/roomHelpers');
 
@@ -11,7 +12,7 @@ class Room {
         this.players = new Map();
         this.data = {
             cards: [],
-            state: 'waiting',
+            state: GameState.WAITING,
             userStory: '',
             hexcode: '#FF7F00',
             avatar: 'https://api.dicebear.com/9.x/dylan/svg',
@@ -87,7 +88,7 @@ class Room {
             stateUpdate(element, this.roomId, state);
         }
 
-        if (state === "result") {
+        if (state === GameState.RESULT) {
             processResultState(this, element);
         } else {
             this.data.result = this.data.defender = null;
@@ -109,7 +110,7 @@ class Room {
     emitDeleteRoom() {
         this.emit('delete-room');
         console.log(`Room ${this.roomId} deleted by manager.`);
-        this.data.state = "deleted";
+        this.data.state = GameState.DELETED;
         roomDeleted(this.data);
     }
 
@@ -177,8 +178,8 @@ class Room {
 
             if (!hasActivePlayer) return;
 
-            this.data.state = "result";
-            this.emitUpdateGame("result");
+            this.data.state = GameState.RESULT;
+            this.emitUpdateGame(GameState.RESULT);
         }, 2000);
     }
 
