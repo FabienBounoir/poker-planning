@@ -1,13 +1,13 @@
 const { roomDeleted } = require('../utils/statistics');
-const { validateAvatar } = require('../utils/utils');
-const { isValidRole, GameState } = require('../utils/constants');
+const { validateAvatar, generateUserId } = require('../utils/utils');
+const { isValidRole, GameState, UserRole } = require('../utils/constants');
 const { formatName } = require('../helpers/roomHelpers');
 
 /**
  * Handles user connection to a room
  */
-function handleJoin(socket, room, { roomId, name, avatar, role = "player" }) {
-    console.log(roomId, name, role);
+function handleJoin(socket, room, { roomId, name, avatar, role = "player", userId = null }) {
+    console.log(roomId, name, role, "userId:", userId);
 
     if (!name) {
         console.warn("User without name");
@@ -27,7 +27,50 @@ function handleJoin(socket, room, { roomId, name, avatar, role = "player" }) {
         console.log("Timeout removed for room", roomId, "because user", socket.id, "reconnected.");
     }
     
+    // Check if a disconnected player with the same userId exists
+    let reconnectedPlayer = null;
+    if (userId) {
+        const disconnectedPlayer = room.findDisconnectedPlayer(userId);
+        
+        if (disconnectedPlayer && disconnectedPlayer.player.role === role) {
+            // Reconnect the existing player with updated name and avatar
+            const formattedName = formatName(name);
+            const validatedAvatar = validateAvatar(avatar);
+            
+            console.log(`Reconnecting player ${name} (userId: ${userId}) with new socket ${socket.id}`);
+            reconnectedPlayer = room.reconnectPlayer(
+                disconnectedPlayer.id, 
+                socket.id, 
+                socket, 
+                formattedName, 
+                validatedAvatar
+            );
+            
+            if (reconnectedPlayer) {
+                socket.emit("game-update", room.data);
+                socket.emit("user-id", { userId: reconnectedPlayer.userId });
+                
+                // Send the player's current state (including their vote)
+                socket.emit("player-state", {
+                    selectedCard: reconnectedPlayer.selectedCard,
+                    voteCount: reconnectedPlayer.voteCount,
+                    firstVoter: reconnectedPlayer.firstVoter,
+                    slowest: reconnectedPlayer.slowest,
+                    mostChanging: reconnectedPlayer.mostChanging
+                });
+                
+                room.emitPlayers(room.data.state !== GameState.WAITING);
+                console.log(`Player ${name} successfully reconnected (name updated to: ${formattedName}, vote: ${reconnectedPlayer.selectedCard || 'none'})`);
+                return;
+            }
+        }
+    }
+    
+    // No disconnected player found or reconnection failed, create new player
+    const newUserId = userId || generateUserId();
+    
     socket.emit("game-update", room.data);
+    socket.emit("user-id", { userId: newUserId });
 
     const player = {
         id: socket.id,
@@ -36,7 +79,9 @@ function handleJoin(socket, room, { roomId, name, avatar, role = "player" }) {
         selectedCard: null,
         role,
         avatar: validateAvatar(avatar),
-        voteCount: 0
+        voteCount: 0,
+        disconnected: false,
+        userId: newUserId
     };
 
     room.addPlayer(socket.id, player);
@@ -56,9 +101,25 @@ function handleDisconnect(socket, rooms, roomId) {
         return; // Don't do anything if the room is already deleted
     }
 
-    room.removePlayer(socket.id);
+    const player = room.getPlayer(socket.id);
+    
+    // Only use soft disconnect for players - remove managers and observers immediately
+    console.log("player.role", player.role)
+    if (player && (player.role === UserRole.PLAYER)) {
+        console.log(`Soft disconnecting player ${player.name} (socket: ${socket.id})`);
+        // Mark player as disconnected instead of removing
+        room.markPlayerAsDisconnected(socket.id);
+        
+        // Clean up old disconnected players
+        room.cleanupDisconnectedPlayers();
+    } else {
+        room.removePlayer(socket.id);
+    }
 
-    if (room.players.size) {
+    // Count active (non-disconnected) players
+    const activePlayers = Array.from(room.players.values()).filter(p => !p.disconnected);
+
+    if (activePlayers.length > 0) {
         room.emitPlayers(room.data.state !== GameState.WAITING);
     } else {
         console.log("Setup Timeout 1 hour to delete inactive room");
@@ -70,6 +131,7 @@ function handleDisconnect(socket, rooms, roomId) {
 
         room.timeout = setTimeout(() => {
             if (room.isEmpty()) {
+                room.stopCleanupInterval();
                 rooms.delete(roomId);
                 console.log(`Room ${roomId} deleted after inactivity.`);
                 roomDeleted(room.data);

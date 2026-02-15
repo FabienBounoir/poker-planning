@@ -25,6 +25,36 @@ class Room {
         this.history = [];
         this.timeout = null;
         this.floatingReactions = [];
+        this.cleanupInterval = null;
+        
+        // Start periodic cleanup of disconnected players (every 30 seconds)
+        this.startCleanupInterval();
+    }
+
+    /**
+     * Starts an interval to periodically clean up disconnected players
+     */
+    startCleanupInterval() {
+        if (this.cleanupInterval) {
+            clearInterval(this.cleanupInterval);
+        }
+        
+        this.cleanupInterval = setInterval(() => {
+            const hasRemovedPlayers = this.cleanupDisconnectedPlayers();
+            if (hasRemovedPlayers) {
+                this.emitPlayers(this.data.state !== GameState.WAITING);
+            }
+        }, 30000); // Check every 30 seconds
+    }
+
+    /**
+     * Stops the cleanup interval (should be called when room is deleted)
+     */
+    stopCleanupInterval() {
+        if (this.cleanupInterval) {
+            clearInterval(this.cleanupInterval);
+            this.cleanupInterval = null;
+        }
     }
 
     /**
@@ -48,20 +78,32 @@ class Room {
     emitPlayers(manager = false) {
         const players = [];
         const observers = [];
+        const playersForManager = [];
+        const observersForManager = [];
         
         this.players.forEach((player, id) => {
+            const playerData = { ...player, id, socket: undefined };
+            
             if (player.role === UserRole.PLAYER) {
-                players.push({ ...player, id, socket: undefined });
+                playersForManager.push(playerData);
+                // Only include non-disconnected players for non-manager view
+                if (!player.disconnected) {
+                    players.push(playerData);
+                }
             }
             else if (player.role === UserRole.OBSERVER) {
-                observers.push({ ...player, id, socket: undefined });
+                observersForManager.push(playerData);
+                // Only include non-disconnected observers for non-manager view
+                if (!player.disconnected) {
+                    observers.push(playerData);
+                }
             }
         });
 
         this.players.forEach((player) => {
             if (manager) {
                 if (player.role === UserRole.MANAGER) {
-                    player.socket.emit("players", { players, observers });
+                    player.socket.emit("players", { players: playersForManager, observers: observersForManager });
                 }
                 else {
                     player.socket.emit("players", { observers });
@@ -108,6 +150,7 @@ class Room {
      * Deletes the room
      */
     emitDeleteRoom() {
+        this.stopCleanupInterval();
         this.emit('delete-room');
         console.log(`Room ${this.roomId} deleted by manager.`);
         this.data.state = GameState.DELETED;
@@ -166,8 +209,9 @@ class Room {
             let hasActivePlayer = false;
 
             for (const player of this.players.values()) {
-                console.log("Check player", player.name, player.selectedCard);
-                if (player.role === UserRole.PLAYER) {
+                console.log("Check player", player.name, player.selectedCard, "disconnected:", player.disconnected);
+                // Ignore disconnected players
+                if (player.role === UserRole.PLAYER && !player.disconnected) {
                     hasActivePlayer = true;
                     if (!player.selectedCard) {
                         console.log("Not all players have selected a card");
@@ -222,6 +266,89 @@ class Room {
     }
 
     /**
+     * Marks a player as disconnected instead of removing them
+     */
+    markPlayerAsDisconnected(socketId) {
+        const player = this.players.get(socketId);
+        if (player) {
+            player.disconnected = true;
+            player.disconnectedAt = Date.now();
+            this.players.set(socketId, player);
+            this.floatingReactions = this.floatingReactions.filter(r => !r.id.startsWith(socketId));
+        }
+    }
+
+    /**
+     * Finds a disconnected player by userId
+     */
+    findDisconnectedPlayer(userId) {
+        for (const [id, player] of this.players.entries()) {
+            if (player.userId === userId && player.disconnected) {
+                return { id, player };
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Reconnects a player by updating their socket and removing disconnected status
+     */
+    reconnectPlayer(oldSocketId, newSocketId, newSocket, newName = null, newAvatar = null) {
+        const player = this.players.get(oldSocketId);
+        if (player) {
+            // Remove old entry
+            this.players.delete(oldSocketId);
+            
+            // Update player with new socket info
+            player.id = newSocketId;
+            player.socket = newSocket;
+            player.disconnected = false;
+            delete player.disconnectedAt;
+            
+            // Update name and avatar if provided
+            if (newName) {
+                player.name = newName;
+            }
+            if (newAvatar !== null) {
+                player.avatar = newAvatar;
+            }
+            
+            // Add with new socket ID
+            this.players.set(newSocketId, player);
+            
+            // Check if all players have voted now (in case auto-reveal is enabled)
+            if (this.data.state === GameState.PLAYING && player.role === UserRole.PLAYER) {
+                this.checkAllPlayersSelected();
+            }
+            
+            return player;
+        }
+        return null;
+    }
+
+    /**
+     * Cleans up players that have been disconnected for too long (> 2 minutes)
+     */
+    cleanupDisconnectedPlayers() {
+        const now = Date.now();
+        const timeout = 2 * 60 * 1000; // 2 minutes
+        
+        let hasRemovedPlayers = false;
+        
+        for (const [id, player] of this.players.entries()) {
+            if (player.disconnected && player.disconnectedAt) {
+                if (now - player.disconnectedAt > timeout) {
+                    console.log(`Removing player ${player.name} after ${timeout/1000}s of disconnection`);
+                    this.players.delete(id);
+                    hasRemovedPlayers = true;
+                }
+            }
+        }
+        
+        return hasRemovedPlayers;
+    }
+
+    /**
      * Gets a player by their ID
      */
     getPlayer(socketId) {
@@ -232,7 +359,9 @@ class Room {
      * Checks if the room is empty
      */
     isEmpty() {
-        return this.players.size === 0;
+        // A room is empty if there are no active (non-disconnected) players
+        const activePlayers = Array.from(this.players.values()).filter(p => !p.disconnected);
+        return activePlayers.length === 0;
     }
 }
 

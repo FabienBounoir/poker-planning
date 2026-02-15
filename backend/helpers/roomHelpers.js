@@ -19,7 +19,8 @@ function processResultState(room, element) {
 
     room.players.forEach((player) => {
         const selectedCard = player?.selectedCard?.toUpperCase?.();
-        if (player.role === UserRole.PLAYER && selectedCard) {
+        // Ignore disconnected players in results
+        if (player.role === UserRole.PLAYER && selectedCard && !player.disconnected) {
             totalPlayers++;
             if (!resultsByItem.has(selectedCard)) {
                 resultsByItem.set(selectedCard, []);

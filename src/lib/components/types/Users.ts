@@ -7,6 +7,7 @@ type User = {
     slowest?: boolean;
     mostChanging?: boolean;
     voteCount?: number;
+    disconnected?: boolean;
 };
 
 export type Users = User[] | null;

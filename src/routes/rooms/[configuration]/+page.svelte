@@ -34,6 +34,7 @@
 	let roomId: string;
 	let avatarType: string | null = $state('dylan');
 	let hexcode = $state('');
+	let userId: string | null = $state(null);
 
 	let pokerManager: PokerManager | null = $state(null);
 	let status = $state('waiting');
@@ -125,6 +126,10 @@
 				isObserver = window.localStorage.getItem('observer') == 'true';
 			}
 
+			if (window?.localStorage?.getItem?.('userId')) {
+				userId = window.localStorage.getItem('userId');
+			}
+
 			// Old configuration format (many user like this format)
 			if ($page.params.configuration && ROOM_ID_REGEX.test($page.params.configuration)) {
 				roomId = $page.params.configuration;
@@ -187,11 +192,28 @@
 					roomId,
 					name: username,
 					avatar: customAvatarUrl,
-					role: isObserver ? 'observer' : 'player'
+					role: isObserver ? 'observer' : 'player',
+					userId: userId
 				});
 
 				if (submittedLetter != null) {
 					sendVote(submittedLetter);
+				}
+			});
+
+			io.on('user-id', (payload) => {
+				if (payload?.userId) {
+					userId = payload.userId;
+					window.localStorage.setItem('userId', userId);
+					console.log('Received and saved userId:', userId);
+				}
+			});
+
+			io.on('player-state', (payload) => {
+				if (payload?.selectedCard) {
+					selectedLetter = payload.selectedCard;
+					submittedLetter = payload.selectedCard;
+					console.log('Restored player state: vote =', payload.selectedCard);
 				}
 			});
 
