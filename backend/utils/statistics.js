@@ -52,58 +52,6 @@ const newPokerPlanningCreated = async (pokerPlanning) => {
     }
 }
 
-const newUserJoined = async (name, pokerPlanning, roomId) => {
-    return //disable this stats
-    if (name == "ADMIN") return;
-    try {
-        await fetch(process.env.STATISTIC_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "content": null,
-                "embeds": [{
-                    "footer": {
-                        "text": `➜ ${name} joined the \`${pokerPlanning.team}\` room`,
-                        "icon_url": formatAvatar(pokerPlanning.avatar) + `?seed=${name}&roomId=${roomId}`
-                    },
-                    "color": parseInt((pokerPlanning.hexcode || "#ff7900").slice(1), 16),
-                }],
-            })
-        })
-    }
-    catch (error) {
-        console.error("[New STATS user joined] error: ", error);
-    }
-}
-
-const userLeft = async (name, pokerPlanning, roomId) => {
-    return //disable this stats
-    if (name == "ADMIN") return;
-    try {
-        await fetch(process.env.STATISTIC_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "content": null,
-                "embeds": [{
-                    "footer": {
-                        "text": `⬅ ${name} left the \`${pokerPlanning.team}\` room`,
-                        "icon_url": formatAvatar(pokerPlanning.avatar) + `?seed=${name}&roomId=${roomId}`
-                    },
-                    "color": parseInt((pokerPlanning.hexcode || "#ff7900").slice(1), 16),
-                }],
-            })
-        })
-    }
-    catch (error) {
-        console.error("[New STATS user left] error: ", error);
-    }
-}
-
 const roomDeleted = async (pokerPlanning) => {
     try {
         const res = await fetch(process.env.STATISTIC_API_URL, {
@@ -183,9 +131,7 @@ const formatAvatar = (avatarUrl) => {
 
 module.exports = {
     newPokerPlanningCreated,
-    newUserJoined,
     roomDeleted,
-    userLeft,
     stateUpdate,
     sendFeedback
 }
