@@ -11,7 +11,7 @@ function processResultState(room, element) {
         room.history = [];
     }
 
-    let history = {
+    let historyEntry = {
         story: room?.data?.userStory || null,
         winner: null,
         results: [],
@@ -26,7 +26,7 @@ function processResultState(room, element) {
             }
             resultsByItem.get(selectedCard).push({ name: player.name, avatar: player.avatar });
 
-            history.results.push({ name: player.name, card: selectedCard });
+            historyEntry.results.push({ name: player.name, card: selectedCard });
         }
     });
 
@@ -39,7 +39,7 @@ function processResultState(room, element) {
             })).sort((a, b) => b.players.length - a.players.length);
 
             room.data.result = element.result = result;
-            history.winner = result[0].item;
+            historyEntry.winner = result[0].item;
 
             if (resultsByItem.size > 1) {
                 const lastItem = result[result.length - 1];
@@ -54,7 +54,14 @@ function processResultState(room, element) {
         }
     }
 
-    room.history.push(history);
+    // update story history if exists, otherwise add it
+    const existingHistoryIndex = room.history.findIndex(h => h.story === historyEntry.story);
+    if (existingHistoryIndex !== -1) {
+        room.history[existingHistoryIndex] = historyEntry;
+    } else {
+        room.history.push(historyEntry);
+    }
+
     element.history = room.history;
 }
 
