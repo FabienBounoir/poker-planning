@@ -44,6 +44,7 @@
 
 <style lang="scss">
 	.observer-container {
+		z-index: 10;
 		position: fixed;
 		top: 20vh;
 		left: 0;

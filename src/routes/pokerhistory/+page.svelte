@@ -346,6 +346,10 @@
 				color: var(--primary-200);
 			}
 
+			> h2, p{
+				color: var(--primary-200);
+			}
+
 			.poker-history {
 				background-color: var(--primary-700);
 				color: var(--primary-200);
@@ -354,6 +358,9 @@
 				&:hover {
 					background-color: var(--primary-600);
 				}
+
+				.delete {
+					color: rgb(123, 0, 0)				}
 			}
 
 			.play-container {

@@ -68,7 +68,7 @@
 			return toast.error($_('ManagerPage.noUserStoryDefined'));
 		}
 
-		if (players && players.length < 1) {
+		if (players && players?.filter((p) => !p?.disconnected)?.length < 1) {
 			return toast.error($_('ManagerPage.noParticipantsForVote'));
 		}
 
@@ -560,6 +560,7 @@
 			{#each displayUserType == 'PLAYERS' ? players : observers as user (user.id)}
 				<div
 					class="user"
+					class:disconnected={user?.disconnected}
 					class:defender={resultDefender?.name == user?.name &&
 						resultDefender?.item == user?.selectedCard}
 					out:maybe={{ fn: slide, axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
@@ -894,6 +895,24 @@
 					opacity: 0.5;
 				}
 
+				&.disconnected {
+					opacity: 0.6;
+					border: 2px dashed var(--primary-400);
+					background-color: var(--primary-100);
+					
+					.profile {
+						h2 {
+							opacity: 0.7;
+							font-style: italic;
+						}
+						
+						.image-container img {
+							opacity: 0.5;
+							filter: grayscale(50%);
+						}
+					}
+				}
+
 				&.defender {
 					box-shadow: 0 0 5px var(--primary-800);
 					animation: breathing 2s infinite ease-in-out;
@@ -1167,63 +1186,87 @@
 					}
 				}
 
-				.user {
-					background-color: var(--primary-500);
+			}
+			.user {
+				background-color: var(--primary-500);
 
-					&.defender {
-						box-shadow: 0 0 5px var(--primary-300);
-
-						@keyframes breathing {
-							0% {
-								box-shadow: 0 0 0 5px var(--primary-500);
-							}
-							50% {
-								box-shadow: 0 0 0 1px var(--primary-500);
-							}
-							100% {
-								box-shadow: 0 0 0 5px var(--primary-500);
-							}
-						}
-					}
-
+				&.disconnected {
+					opacity: 0.6 !important;
+					border: 2px dashed var(--primary-600) !important;
+					background-color: var(--primary-900) !important;
+					
 					.profile {
-						.user-reaction-overlay {
-							background: linear-gradient(135deg, var(--primary-800), var(--primary-700));
-							border: 2px solid var(--primary-500);
-							box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-
-							&::before {
-								background: linear-gradient(
-									45deg,
-									var(--primary-500),
-									var(--primary-300),
-									var(--primary-500)
-								);
-							}
+						h2 {
+							opacity: 0.7 !important;
+							color: var(--primary-300) !important;
+							font-style: italic;
 						}
-
-						svg {
-							path {
-								fill: var(--primary-950);
-							}
-						}
-
-						.img-skeleton {
-							border: 2px solid var(--primary-900);
-						}
-
-						.name-skeleton {
-							background: linear-gradient(120deg, var(--primary-400), var(--primary-800));
-
-							background-size: 200% 200%;
+						
+						.image-container img {
+							opacity: 0.5 !important;
+							filter: grayscale(50%) !important;
 						}
 					}
-
+					
 					p {
-						color: var(--primary-950);
-						font-weight: 700;
-						font-size: 1.3em;
+						opacity: 0.7 !important;
+						color: var(--primary-300) !important;
 					}
+				}
+
+				&.defender {
+					box-shadow: 0 0 5px var(--primary-300);
+
+					@keyframes breathing {
+						0% {
+							box-shadow: 0 0 0 5px var(--primary-500);
+						}
+						50% {
+							box-shadow: 0 0 0 1px var(--primary-500);
+						}
+						100% {
+							box-shadow: 0 0 0 5px var(--primary-500);
+						}
+					}
+				}
+
+				.profile {
+					.user-reaction-overlay {
+						background: linear-gradient(135deg, var(--primary-800), var(--primary-700));
+						border: 2px solid var(--primary-500);
+						box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+						&::before {
+							background: linear-gradient(
+								45deg,
+								var(--primary-500),
+								var(--primary-300),
+								var(--primary-500)
+							);
+						}
+					}
+
+					svg {
+						path {
+							fill: var(--primary-950);
+						}
+					}
+
+					.img-skeleton {
+						border: 2px solid var(--primary-900);
+					}
+
+					.name-skeleton {
+						background: linear-gradient(120deg, var(--primary-400), var(--primary-800));
+
+						background-size: 200% 200%;
+					}
+				}
+
+				p {
+					color: var(--primary-950);
+					font-weight: 700;
+					font-size: 1.3em;
 				}
 			}
 		}

@@ -1,6 +1,7 @@
 const ALLOWED_AVATAR_HOSTS = [
   "i.imgur.com",
-  "img.draftbot.fr"
+  "img.draftbot.fr",
+  "api.dicebear.com"
 ];
 
 
@@ -28,7 +29,15 @@ const validateAvatar = (avatarUrl) => {
   return avatarUrl;
 };
 
+/**
+ * Generates a unique user ID
+ */
+const generateUserId = () => {
+  return `user_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+};
+
 module.exports = {
     arraysAreEqual,
-    validateAvatar
+    validateAvatar,
+    generateUserId
 };

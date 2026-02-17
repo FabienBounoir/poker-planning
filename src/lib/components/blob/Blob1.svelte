@@ -173,20 +173,6 @@
 		--second-color: var(--primary-500);
 
 		transition: scale 0.3s !important;
-		cursor: pointer;
-
-		svg.halloween {
-			filter: drop-shadow(0 0 10px rgba(255, 145, 77, 0.4));
-		}
-
-		&:active {
-			scale: 1.1;
-		}
-
-		&.halloween:active {
-			scale: 1.1;
-			filter: drop-shadow(0 0 20px rgba(255, 145, 77, 0.6));
-		}
 	}
 
 	/* Animation Halloween uniquement */
@@ -247,8 +233,6 @@
 			--halloween-hat: #5b0092;
 			--halloween-scar: #e68600;
 			--halloween-stars: #a020f0;
-
-			filter: drop-shadow(0 0 15px rgba(255, 163, 102, 0.5));
 		}
 
 		svg.halloween {

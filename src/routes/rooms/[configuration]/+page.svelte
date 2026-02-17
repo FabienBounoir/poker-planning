@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import AvatarCreation from '$lib/components/AvatarCreation.svelte';
-	import Card from '$lib/components/cards/Card.svelte';
 	import ConfettiFullscreen from '$lib/components/ConfettiFullscreen.svelte';
 	import Observers from '$lib/components/Observers.svelte';
 	import UserStory from '$lib/components/UserStory.svelte';
@@ -11,7 +10,7 @@
 	import type { PokerManager } from '$lib/components/types/PokerManager';
 	import type { ResultDefender } from '$lib/components/types/ResultDefender';
 	import type { ResultItems } from '$lib/components/types/ResultItems';
-	import type { Users } from '$lib/components/types/Users';
+	import type { Users, UsersPublic } from '$lib/components/types/Users';
 	import myshades from '$lib/myshades';
 	import { arraysAreEqual } from '$lib/utils';
 	import type { Socket } from 'socket.io-client';
@@ -34,6 +33,7 @@
 	let roomId: string;
 	let avatarType: string | null = $state('dylan');
 	let hexcode = $state('');
+	let userId: string | null = $state(null);
 
 	let pokerManager: PokerManager | null = $state(null);
 	let status = $state('waiting');
@@ -52,8 +52,8 @@
 	let resultItems: ResultItems = $state(null);
 	let resultDefender: ResultDefender = $state(null);
 
-	let players: Users = $state(null);
-	let observers: Users = $state(null);
+	let players: UsersPublic = $state(null);
+	let observers: UsersPublic = $state(null);
 
 	let waitingChangeRole = $state(false);
 	let theme = '';
@@ -125,6 +125,10 @@
 				isObserver = window.localStorage.getItem('observer') == 'true';
 			}
 
+			if (window?.localStorage?.getItem?.('userId')) {
+				userId = window.localStorage.getItem('userId');
+			}
+
 			// Old configuration format (many user like this format)
 			if ($page.params.configuration && ROOM_ID_REGEX.test($page.params.configuration)) {
 				roomId = $page.params.configuration;
@@ -187,11 +191,26 @@
 					roomId,
 					name: username,
 					avatar: customAvatarUrl,
-					role: isObserver ? 'observer' : 'player'
+					role: isObserver ? 'observer' : 'player',
+					userId: userId
 				});
 
 				if (submittedLetter != null) {
 					sendVote(submittedLetter);
+				}
+			});
+
+			io.on('user-id', (payload) => {
+				if (payload?.userId) {
+					window.localStorage.setItem('userId', payload.userId);
+				}
+			});
+
+			io.on('player-state', (payload) => {
+				if (payload?.selectedCard) {
+					selectedLetter = payload.selectedCard;
+					submittedLetter = payload.selectedCard;
+					console.log('Restored player state: vote =', payload.selectedCard);
 				}
 			});
 
@@ -212,7 +231,7 @@
 						toast.info("It's Halloween! 🎃👻");
 						try {
 							const audio = new Audio('/easterEgg/impact.mp3');
-							audio.volume = 0.70;
+							audio.volume = 0.40;
 							audio.play();
 						} catch (err) {
 							console.error('Erreur lors de la création/lecture de l\'audio:', err);
@@ -285,6 +304,13 @@
 				io.disconnect();
 				io.removeAllListeners();
 				submitting = false;
+				
+				if (pokerManager !== null) {
+					toast.warning($_('common.connectionWithServerLost'));
+				}
+				
+				pokerManager = null;
+				status = 'init';
 			});
 		} catch (e) {
 			console.error('Websocket error', e);

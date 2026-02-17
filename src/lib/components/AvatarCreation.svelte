@@ -96,18 +96,27 @@
 		customAvatarUrl = '';
 		window.localStorage.removeItem('avatar');
 	};
+
+	const generateRandomSeed = () => {
+		return Math.random().toString(36).substring(2, 10);
+	};
 </script>
 
 <div class="avatar-creation">
-	<img
-		src={customAvatarUrl ||
-			`https://api.dicebear.com/9.x/${avatarType || 'dylan'}/svg?seed=${formatName(username)}`}
-		alt="User-avatar"
-		class:loading
-		on:loadstart={() => (loading = true)}
-		on:load={() => (loading = false)}
-		on:error={(customAvatarUrl = '')}
-	/>
+	<button type="button" class="randomize" on:click={() => (customAvatarUrl = `https://api.dicebear.com/9.x/${avatarType || 'dylan'}/svg?seed=${generateRandomSeed()}`)}>
+		<img
+			src={customAvatarUrl ||
+				`https://api.dicebear.com/9.x/${avatarType || 'dylan'}/svg?seed=${formatName(username)}`}
+			alt="User-avatar"
+			class:loading
+			on:loadstart={() => (loading = true)}
+			on:load={() => (loading = false)}
+			on:error={(customAvatarUrl = '')}
+		/>
+		<div class="randomize-overlay" class:disabled={customAvatarUrl}>
+			<i class="fa-solid fa-dice"></i>
+		</div>
+	</button>
 	<div class="edit" style={isCustomAvatarEnabled ? '' : 'display: none'}>
 		<svg
 			width="30"
@@ -162,6 +171,44 @@
 </div>
 
 <style lang="scss">
+	.randomize{
+		border: none;
+		padding: 0;
+		background: none;
+		cursor: pointer;
+		outline: none;
+		position: relative;
+		width: 100%;
+		height: 100%;
+
+		.randomize-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			border-radius: 100%;
+			background: color-mix(in srgb, var(--primary-950), transparent 40%);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			opacity: 0;
+			transition: opacity 0.3s ease;
+			pointer-events: none;
+
+			i {
+				color: var(--primary-400);
+				font-size: 2rem;
+				animation: shake 0.5s ease-in-out infinite;
+				filter: opacity(0.8);
+			}
+		}
+
+		&:hover .randomize-overlay:not(.disabled) {
+			opacity: 1;
+		}
+	}
+
 	.avatar-creation {
 		border-radius: 100%;
 		border: 2px solid var(--primary-700);
@@ -240,6 +287,18 @@
 		100% {
 			transform: rotate(360deg) scale(1);
 			filter: blur(3px) brightness(1);
+		}
+	}
+
+	@keyframes shake {
+		0%, 100% {
+			transform: rotate(0deg);
+		}
+		25% {
+			transform: rotate(-15deg);
+		}
+		75% {
+			transform: rotate(15deg);
 		}
 	}
 </style>

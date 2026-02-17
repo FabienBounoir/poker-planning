@@ -4,6 +4,7 @@ const { createRoomId, rooms, getTotalUsers } = require('./rooms');
 const { createSocketIOServer } = require('./server');
 const cors = require('cors');
 const { newPokerPlanningCreated, sendFeedback } = require('./utils/statistics');
+const { GameState } = require('./utils/constants');
 const packageJson = require('../package.json');
 require('dotenv').config();
 
@@ -56,7 +57,7 @@ app.post('/room', (req, res) => {
         roomId,
         team: formattedTeam,
         cards: [],
-        state: 'waiting',
+        state: GameState.WAITING,
         userStory: '',
         voteOnResults: false,
         type: type || "TSHIRT",
@@ -101,7 +102,7 @@ app.post('/room', (req, res) => {
     }
 
     rooms.set(roomId, { initialisation: true, data: roomData });
-    console.log("NEW ROOM CREATED", rooms);
+    console.log("NEW ROOM CREATED WITH ID", roomId, "AND TYPE", type);
 
     newPokerPlanningCreated(roomData)
 

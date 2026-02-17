@@ -1,6 +1,6 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
-	let { code = 'XXX-XXX', url, hexcode } = $props();
+	let { code = 'XXX-XXX', url } = $props();
 	import { _ } from 'svelte-i18n';
 	import { toast } from 'svelte-sonner';
 
