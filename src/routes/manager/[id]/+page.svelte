@@ -68,7 +68,7 @@
 			return toast.error($_('ManagerPage.noUserStoryDefined'));
 		}
 
-		if (players && players.length < 1) {
+		if (players && players?.filter((p) => !p?.disconnected)?.length < 1) {
 			return toast.error($_('ManagerPage.noParticipantsForVote'));
 		}
 

@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import AvatarCreation from '$lib/components/AvatarCreation.svelte';
-	import Card from '$lib/components/cards/Card.svelte';
 	import ConfettiFullscreen from '$lib/components/ConfettiFullscreen.svelte';
 	import Observers from '$lib/components/Observers.svelte';
 	import UserStory from '$lib/components/UserStory.svelte';
@@ -11,7 +10,7 @@
 	import type { PokerManager } from '$lib/components/types/PokerManager';
 	import type { ResultDefender } from '$lib/components/types/ResultDefender';
 	import type { ResultItems } from '$lib/components/types/ResultItems';
-	import type { Users } from '$lib/components/types/Users';
+	import type { Users, UsersPublic } from '$lib/components/types/Users';
 	import myshades from '$lib/myshades';
 	import { arraysAreEqual } from '$lib/utils';
 	import type { Socket } from 'socket.io-client';
@@ -53,8 +52,8 @@
 	let resultItems: ResultItems = $state(null);
 	let resultDefender: ResultDefender = $state(null);
 
-	let players: Users = $state(null);
-	let observers: Users = $state(null);
+	let players: UsersPublic = $state(null);
+	let observers: UsersPublic = $state(null);
 
 	let waitingChangeRole = $state(false);
 	let theme = '';

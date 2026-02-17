@@ -26,7 +26,7 @@ function handleVote(room, socket, data, callback) {
 
         player.selectedCard = data.card;
         room.players.set(socket.id, player);
-        room.emitPlayers(true);
+        room.emitPlayers();
 
         callback({ success: true });
         room.checkAllPlayersSelected();

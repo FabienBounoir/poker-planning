@@ -42,7 +42,7 @@ class Room {
         this.cleanupInterval = setInterval(() => {
             const hasRemovedPlayers = this.cleanupDisconnectedPlayers();
             if (hasRemovedPlayers) {
-                this.emitPlayers(this.data.state !== GameState.WAITING);
+                this.emitPlayers();
             }
         }, 30000); // Check every 30 seconds
     }
@@ -75,39 +75,34 @@ class Room {
     /**
      * Emits the list of players and observers
      */
-    emitPlayers(manager = false) {
+    emitPlayers() {
         const players = [];
         const observers = [];
         const playersForManager = [];
         const observersForManager = [];
         
         this.players.forEach((player, id) => {
-            const playerData = { ...player, id, socket: undefined };
-            
+            const playerData = { ...player, id, socket: undefined, userId: undefined };
+            console.log("player", player, playerData)
             if (player.role === UserRole.PLAYER) {
                 playersForManager.push(playerData);
-                // Only include non-disconnected players for non-manager view
+
                 if (!player.disconnected) {
-                    players.push(playerData);
+                    players.push({name: player.name, avatar: player.avatar, id: player.id});
                 }
             }
             else if (player.role === UserRole.OBSERVER) {
                 observersForManager.push(playerData);
-                // Only include non-disconnected observers for non-manager view
+
                 if (!player.disconnected) {
-                    observers.push(playerData);
+                    observers.push({ name: player.name, avatar: player.avatar, id: player.id });
                 }
             }
         });
 
         this.players.forEach((player) => {
-            if (manager) {
-                if (player.role === UserRole.MANAGER) {
-                    player.socket.emit("players", { players: playersForManager, observers: observersForManager });
-                }
-                else {
-                    player.socket.emit("players", { observers });
-                }
+            if (player.role === UserRole.MANAGER) {
+                player.socket.emit("players", { players: playersForManager, observers: observersForManager });
             }
             else {
                 player.socket.emit("players", { players, observers });
@@ -209,7 +204,6 @@ class Room {
             let hasActivePlayer = false;
 
             for (const player of this.players.values()) {
-                console.log("Check player", player.name, player.selectedCard, "disconnected:", player.disconnected);
                 // Ignore disconnected players
                 if (player.role === UserRole.PLAYER && !player.disconnected) {
                     hasActivePlayer = true;
@@ -293,8 +287,8 @@ class Room {
     /**
      * Reconnects a player by updating their socket and removing disconnected status
      */
-    reconnectPlayer(oldSocketId, newSocketId, newSocket, newName = null, newAvatar = null) {
-        const player = this.players.get(oldSocketId);
+    reconnectPlayer(oldSocketId, newSocketId, newSocket, newInfo = {}) {
+        let player = this.players.get(oldSocketId);
         if (player) {
             // Remove old entry
             this.players.delete(oldSocketId);
@@ -305,13 +299,7 @@ class Room {
             player.disconnected = false;
             delete player.disconnectedAt;
             
-            // Update name and avatar if provided
-            if (newName) {
-                player.name = newName;
-            }
-            if (newAvatar !== null) {
-                player.avatar = newAvatar;
-            }
+            player = { ...player, ...newInfo };
             
             // Add with new socket ID
             this.players.set(newSocketId, player);
