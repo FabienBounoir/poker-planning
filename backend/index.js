@@ -102,7 +102,7 @@ app.post('/room', (req, res) => {
     }
 
     rooms.set(roomId, { initialisation: true, data: roomData });
-    console.log("NEW ROOM CREATED", rooms);
+    console.log("NEW ROOM CREATED WITH ID", roomId, "AND TYPE", type);
 
     newPokerPlanningCreated(roomData)
 
