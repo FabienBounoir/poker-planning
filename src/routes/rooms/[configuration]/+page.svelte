@@ -202,9 +202,7 @@
 
 			io.on('user-id', (payload) => {
 				if (payload?.userId) {
-					userId = payload.userId;
-					window.localStorage.setItem('userId', userId);
-					console.log('Received and saved userId:', userId);
+					window.localStorage.setItem('userId', payload.userId);
 				}
 			});
 
@@ -233,7 +231,7 @@
 						toast.info("It's Halloween! 🎃👻");
 						try {
 							const audio = new Audio('/easterEgg/impact.mp3');
-							audio.volume = 0.70;
+							audio.volume = 0.40;
 							audio.play();
 						} catch (err) {
 							console.error('Erreur lors de la création/lecture de l\'audio:', err);
@@ -306,6 +304,13 @@
 				io.disconnect();
 				io.removeAllListeners();
 				submitting = false;
+				
+				if (pokerManager !== null) {
+					toast.warning($_('common.connectionWithServerLost'));
+				}
+				
+				pokerManager = null;
+				status = 'init';
 			});
 		} catch (e) {
 			console.error('Websocket error', e);

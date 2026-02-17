@@ -83,7 +83,6 @@ class Room {
         
         this.players.forEach((player, id) => {
             const playerData = { ...player, id, socket: undefined, userId: undefined };
-            console.log("player", player, playerData)
             if (player.role === UserRole.PLAYER) {
                 playersForManager.push(playerData);
 
