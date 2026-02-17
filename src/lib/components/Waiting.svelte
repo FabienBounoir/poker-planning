@@ -63,7 +63,7 @@
 				greetingMessages.delete(playerId);
 				greetings = new Set(greetings);
 				greetingMessages = new Map(greetingMessages);
-			}, 30000000);
+			}, 10000);
 		}
 
 		return particle;
