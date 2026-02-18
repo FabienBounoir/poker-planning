@@ -40,7 +40,31 @@ function handleUpdateRoom(room, player, data, callback) {
     }
 }
 
+function handleForceDisconnection({ userId }, rooms, roomId) {
+    const room = rooms.get(roomId);
+    if (!room) {
+        return;
+    }
+    
+    const player = room.getPlayer(userId);
+    if (!player) {
+        console.warn("Player not found for disconnect with ID:", userId);
+        return;
+    }
+
+    if (!player.disconnected) {
+        console.warn("Player with ID:", userId, "is not marked as disconnected. Ignoring disconnect event.");
+        return;
+    }
+
+    console.log("Handling disconnect for player with ID:", userId, "in room:", roomId);
+    
+    room.removePlayer(userId);
+    room.emitPlayers();
+}
+
 module.exports = {
     handleDeleteRoom,
-    handleUpdateRoom
+    handleUpdateRoom,
+    handleForceDisconnection
 };

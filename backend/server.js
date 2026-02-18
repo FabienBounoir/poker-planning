@@ -2,7 +2,7 @@ const { Server } = require('socket.io');
 const Room = require('./models/Room');
 const { handleJoin, handleDisconnect } = require('./handlers/connectionHandler');
 const { handleVote, handleState, handleHexcode, handleToggleRole, handleReaction } = require('./handlers/messageHandlers');
-const { handleDeleteRoom, handleUpdateRoom } = require('./handlers/managerHandlers');
+const { handleDeleteRoom, handleUpdateRoom, handleForceDisconnection } = require('./handlers/managerHandlers');
 
 let io;
 
@@ -45,7 +45,7 @@ const createSocketIOServer = (server, rooms) => {
 
             socket.on('message', ({ type, data }, callback) => {
                 const player = room.getPlayer(socket.id);
-                
+
                 switch (type) {
                     case 'vote':
                         handleVote(room, socket, data, callback);
@@ -73,6 +73,10 @@ const createSocketIOServer = (server, rooms) => {
                     
                     case 'update-room':
                         handleUpdateRoom(room, player, data, callback);
+                        break;
+                    
+                    case 'disconnect-user':
+                        handleForceDisconnection(data, rooms, roomId);
                         break;
                     
                     default:
