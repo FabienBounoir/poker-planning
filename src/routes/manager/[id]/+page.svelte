@@ -9,7 +9,7 @@
 	import type { PokerManager } from '$lib/components/types/PokerManager';
 	import type { ResultDefender } from '$lib/components/types/ResultDefender';
 	import type { ResultItems } from '$lib/components/types/ResultItems';
-	import type { Users } from '$lib/components/types/Users';
+	import type { User, Users } from '$lib/components/types/Users';
 	import Valided from '$lib/components/Valided.svelte';
 	import myshades from '$lib/myshades';
 	import { dataToShortBinary } from '$lib/utils';
@@ -357,6 +357,14 @@
 		displayUserType = type;
 	};
 
+	const handleUserClick = (user: User) => {
+		if (user?.disconnected) {			
+			if (checkSocketConnected()) {
+				io.send({ type: 'disconnect-user', data: { userId: user.id } });
+			}
+		}
+	};
+
 	onMount(() => {
 		const today = new Date();
 		if (today.getMonth() === 9 && today.getDate() >= 20) {
@@ -488,16 +496,16 @@
 					<button
 						class="danger"
 						aria-label="Terminer les votes"
-						on:click={() => {
+						onclick={() => {
 							changeState('result');
 						}}>{$_('ManagerPage.endVoteButton')}</button
 					>
 				{:else if pokerManager.state == 'result' || pokerManager.state == 'waiting'}
-					<button aria-label="Commencer les votes" on:click={canStarVote}
+					<button aria-label="Commencer les votes" onclick={canStarVote}
 						>{$_('ManagerPage.startVoteButton')}</button
 					>
 				{/if}
-				<button aria-label="menu-button" on:click={() => (editRoom = true)}>
+				<button aria-label="menu-button" onclick={() => (editRoom = true)}>
 					<i class="fa-solid fa-edit"></i>
 				</button>
 			</div>
@@ -509,7 +517,7 @@
 				>
 					{#each resultsItem as { item, pourcentage }}
 						<span
-							on:click={() => {
+							onclick={() => {
 								if (viewCards == item) {
 									viewCards = null;
 								} else {
@@ -533,7 +541,7 @@
 					<div
 						class="player"
 						class:active={displayUserType == 'PLAYERS'}
-						on:click={() => changeDisplayUserType('PLAYERS')}
+						onclick={() => changeDisplayUserType('PLAYERS')}
 					>
 						<i class="fa-solid fa-user"></i>
 						{players.length || 0}
@@ -542,7 +550,7 @@
 						<div
 							class="observer"
 							class:active={displayUserType == 'OBSERVERS'}
-							on:click={() => changeDisplayUserType('OBSERVERS')}
+							onclick={() => changeDisplayUserType('OBSERVERS')}
 						>
 							<i class="fa-solid fa-eye"></i>
 							{observers.length || 0}
@@ -560,14 +568,26 @@
 			{#each displayUserType == 'PLAYERS' ? players : observers as user (user.id)}
 				<div
 					class="user"
+					class:clickable={true}
 					class:disconnected={user?.disconnected}
 					class:defender={resultDefender?.name == user?.name &&
 						resultDefender?.item == user?.selectedCard}
-					out:maybe={{ fn: slide, axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
-					in:maybe={{ fn: slide, axis: 'x', duration: 500, delay: 0, easing: cubicInOut }}
 					class:Lowlight={viewCards != null &&
 						viewCards != user?.selectedCard &&
 						pokerManager.state == 'result'}
+					out:maybe={{ fn: slide, axis: 'y', duration: 300, delay: 0, easing: cubicInOut }}
+					in:maybe={{ fn: slide, axis: 'x', duration: 500, delay: 0, easing: cubicInOut }}
+					onclick={() => handleUserClick(user)}
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							handleUserClick(user);
+						}
+					}}
+					role="button"
+					tabindex="0"
+					title={user?.disconnected 
+						? $_('ManagerPage.clickToDelete', { default: 'Cliquer pour supprimer définitivement' }) : ''}
 				>
 					<div class="profile">
 						<div class="image-container">
@@ -675,7 +695,23 @@
 							</Tooltip>
 						{/if}
 					</div>
-					{#if pokerManager.state === 'playing' && displayUserType == 'PLAYERS'}
+					
+					{#if user?.disconnected}
+						<div class="user-status">
+							<div class="disconnected-indicator">
+								<i class="fa-solid fa-trash"></i>
+							</div>
+							{#if pokerManager.state === 'playing' && displayUserType == 'PLAYERS'}
+								<div class="vote-result">
+									<Valided themeDisconnected={true} valided={user.selectedCard != null} />
+								</div>
+							{:else if pokerManager.state === 'result' && displayUserType == 'PLAYERS'}
+								<div class="vote-result">
+									<p>{user.selectedCard}</p>
+								</div>
+							{/if}
+						</div>
+					{:else if pokerManager.state === 'playing' && displayUserType == 'PLAYERS'}
 						<Valided valided={user.selectedCard != null} />
 					{:else if pokerManager.state === 'result' && displayUserType == 'PLAYERS'}
 						<p>{user.selectedCard}</p>
@@ -890,15 +926,31 @@
 				font-weight: 600;
 				color: var(--primary-950);
 				box-sizing: border-box;
-
+				transition: all 0.2s ease-in-out;
+				
 				&.Lowlight {
 					opacity: 0.5;
 				}
 
 				&.disconnected {
-					opacity: 0.6;
+					opacity: 0.7;
 					border: 2px dashed var(--primary-400);
 					background-color: var(--primary-100);
+				
+					cursor: pointer;
+					
+					&:hover {
+						background-color: #fee;
+						border-color: #ef4444;
+
+						transform: translateY(-2px);
+						box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+						background-color: var(--primary-300);
+					}
+
+					&:active {
+						transform: translateY(0);
+					}
 					
 					.profile {
 						h2 {
@@ -1063,6 +1115,73 @@
 					color: var(--primary-950);
 					font-size: 1.5em;
 				}
+
+				.user-status {
+					position: relative;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					
+					.disconnected-indicator {
+						position: absolute;
+						top: 50%;
+						left: 50%;
+						transform: translate(-50%, -50%);
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						color: #ef4444;
+						font-size: 1.2em;
+						opacity: 0;
+						visibility: hidden;
+						transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+						pointer-events: none;
+						z-index: 2;
+						
+						i {
+							animation: pulse 2s ease-in-out infinite;
+						}
+						
+						@keyframes pulse {
+							0%, 100% {
+								opacity: 1;
+								transform: scale(1);
+							}
+							50% {
+								opacity: 0.7;
+								transform: scale(1.1);
+							}
+						}
+					}
+					
+					.vote-result {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+						opacity: 1;
+						visibility: visible;
+						z-index: 1;
+						
+						p {
+							margin: 0;
+						}
+					}
+				}
+
+				&:hover {
+					.user-status {
+						.disconnected-indicator {
+							opacity: 1;
+							visibility: visible;
+						}
+						
+						.vote-result {
+							opacity: 0;
+							visibility: hidden;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -1191,9 +1310,14 @@
 				background-color: var(--primary-500);
 
 				&.disconnected {
-					opacity: 0.6 !important;
+					opacity: 0.7 !important;
 					border: 2px dashed var(--primary-600) !important;
 					background-color: var(--primary-900) !important;
+					
+					&:hover {
+						background-color: #7f1d1d !important;
+						border-color: #dc2626 !important;
+					}
 					
 					.profile {
 						h2 {
@@ -1267,6 +1391,12 @@
 					color: var(--primary-950);
 					font-weight: 700;
 					font-size: 1.3em;
+				}
+
+				.user-status {
+					.disconnected-indicator {
+						color: #dc2626;
+					}
 				}
 			}
 		}

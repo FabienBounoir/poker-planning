@@ -174,7 +174,8 @@
         "slowestVoterTooltip": "Votante più lento",
         "mostChangingVoterTooltip": "Più cambi di voto ({count} cambi)",
         "moyenneLabel": "Media",
-        "medianeLabel": "Mediana"
+        "medianeLabel": "Mediana",
+        "clickToDelete": "Clicca per eliminare definitivamente"
     },
     "selectCategories": {
         "types": {
