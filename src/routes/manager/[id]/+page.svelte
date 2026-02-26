@@ -15,7 +15,7 @@
 	import { dataToShortBinary } from '$lib/utils';
 	import type { Socket } from 'socket.io-client';
 	import ioClient from 'socket.io-client';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, tick } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import { toast } from 'svelte-sonner';
 	import { backOut, cubicInOut, elasticInOut, elasticOut } from 'svelte/easing';
@@ -58,6 +58,9 @@
 	let animatePlayer = true;
 	let timeoutDisableAnimation: ReturnType<typeof setTimeout> | null = null;
 	let theme = '';
+	let informationContainer: HTMLDivElement | null = $state(null);
+	let displayUsersInTwoColumns = $state(false);
+	let recalculateColumnsTimeout: ReturnType<typeof setTimeout> | null = null;
 	let halloweenActive = $state(false);
 	let halloweenEmojis = $state<Array<{ id: number; emoji: string; left: number; delay: number }>>(
 		[]
@@ -158,6 +161,17 @@
 			} else if (players.length == 0 && observers.length == 0) {
 				displayUserType = 'PLAYERS';
 			}
+
+			void updateUsersColumnsLayout();
+
+			if (recalculateColumnsTimeout) {
+				clearTimeout(recalculateColumnsTimeout);
+			}
+
+			recalculateColumnsTimeout = setTimeout(() => {
+				void updateUsersColumnsLayout();
+				recalculateColumnsTimeout = null;
+			}, 350);
 		});
 
 		io.on('state', (payload) => {
@@ -347,6 +361,44 @@
 		}
 	};
 
+	const getDisplayedUsersCount = () => {
+		if (displayUserType == 'PLAYERS') {
+			return players?.length || 0;
+		}
+
+		return observers?.length || 0;
+	};
+
+	const updateUsersColumnsLayout = async () => {
+		if (!window || typeof window === 'undefined' || !informationContainer) {
+			return;
+		}
+
+		if (window.innerWidth <= 950) {
+			displayUsersInTwoColumns = false;
+			return;
+		}
+
+		const usersCount = getDisplayedUsersCount();
+		if (usersCount <= 1) {
+			displayUsersInTwoColumns = false;
+			return;
+		}
+
+		displayUsersInTwoColumns = false;
+		await tick();
+
+		if (!informationContainer) {
+			return;
+		}
+
+		displayUsersInTwoColumns = informationContainer.scrollHeight > informationContainer.clientHeight + 1;
+	};
+
+	const handleWindowResize = () => {
+		void updateUsersColumnsLayout();
+	};
+
 	const changeDisplayUserType = (type: string) => {
 		animatePlayer = false;
 
@@ -372,6 +424,8 @@
 		}
 
 		connect();
+		window.addEventListener('resize', handleWindowResize);
+		void updateUsersColumnsLayout();
 	});
 
 	onDestroy(() => {
@@ -389,6 +443,12 @@
 			clearTimeout(timeoutId);
 		}
 		reactionTimeouts.clear();
+
+		if (recalculateColumnsTimeout) {
+			clearTimeout(recalculateColumnsTimeout);
+		}
+
+		window.removeEventListener('resize', handleWindowResize);
 	});
 
 	$effect(() => {
@@ -399,6 +459,15 @@
 
 	$effect(() => {
 		url = `${window.location.protocol}//${window.location.host}/rooms/${dataToShortBinary(pokerManager)}`;
+	});
+
+	$effect(() => {
+		displayUserType;
+		players;
+		observers;
+		pokerManager.state;
+		informationContainer;
+		void updateUsersColumnsLayout();
 	});
 </script>
 
@@ -534,7 +603,11 @@
 		</div>
 	{/if}
 
-	<div class="information">
+	<div
+		class="information"
+		class:two-columns={displayUsersInTwoColumns}
+		bind:this={informationContainer}
+	>
 		{#if players != null}
 			<div class="header" in:fade={{ duration: 3000, delay: 200, easing: elasticOut }}>
 				<div class="button-user-type-container">
@@ -860,8 +933,19 @@
 			max-height: 100dvh;
 			padding: 0 3em;
 			overflow-y: auto;
-			display: flex;
-			flex-direction: column;
+			display: grid;
+			grid-template-columns: 1fr;
+			column-gap: 1em;
+			align-content: start;
+
+			&.two-columns {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+
+			> .header,
+			> .no-participants {
+				grid-column: 1 / -1;
+			}
 
 			.tooltip {
 				text-align: center;
@@ -1196,6 +1280,7 @@
 				overflow-y: initial;
 				max-height: none;
 				padding: 0;
+				grid-template-columns: 1fr;
 
 				.user {
 					.profile {
