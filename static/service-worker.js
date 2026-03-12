@@ -1,6 +1,6 @@
 "use strict";
 // Cache Name
-const CACHE_NAME = "anotherpp-v1.8.1";
+const CACHE_NAME = "anotherpp-v1.11.3";
 // Cache Files
 const FILES_TO_CACHE = ["/offline.html"];
 

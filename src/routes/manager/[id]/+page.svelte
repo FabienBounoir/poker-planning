@@ -370,7 +370,7 @@
 	};
 
 	const updateUsersColumnsLayout = async () => {
-		if (!window || typeof window === 'undefined' || !informationContainer) {
+		if (typeof window === 'undefined' || !informationContainer) {
 			return;
 		}
 
@@ -448,7 +448,9 @@
 			clearTimeout(recalculateColumnsTimeout);
 		}
 
-		window.removeEventListener('resize', handleWindowResize);
+		if (typeof window !== 'undefined') {
+			window.removeEventListener('resize', handleWindowResize);
+		}
 	});
 
 	$effect(() => {
