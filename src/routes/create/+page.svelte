@@ -321,7 +321,7 @@
 			placeholder="XS,S,M,L,XL"
 			on:input={(e) => {
 				const cardsSplit = e.target.value.split(',');
-				customCard.cards = cardsSplit.filter((card) => card).map((card) => card.trim().slice(0, 3));
+				customCard.cards = cardsSplit.filter((card) => card).map((card) => card.trim().slice(0, 5));
 			}}
 		/>
 
@@ -335,7 +335,7 @@
 						in:fade
 						on:click={() => (customCard.cards = customCard.cards.filter((c) => c !== card))}
 					>
-						<p>{`${card}`.slice(0, 3)}</p>
+						<p>{`${card}`.slice(0, 5)}</p>
 					</button>
 				{/each}
 

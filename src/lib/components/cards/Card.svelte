@@ -46,7 +46,7 @@
 		}
 	}}
 >
-	<p>{`${content}`.slice(0, 3)}</p>
+	<p>{`${content}`.slice(0, 5)}</p>
 </main>
 
 <style lang="scss">
