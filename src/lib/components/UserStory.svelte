@@ -3,9 +3,21 @@
 
 	let { userStory } = $props();
 
+	const patterns = [
+		{ regex: /NFS-\d+/i, baseUrl: "https://portail.agir.orange.com/browse/" },
+		{ regex: /CARTEJEUNE_BLM-\d+/i, baseUrl: "https://jira.constellation.soprasteria.com/browse/" },
+		{ regex: /BLM-\d+/i, baseUrl: "https://jira.constellation.soprasteria.com/browse/CARTEJEUNE_" },
+	];
+
 	const includeUS_ID = (userStory: string) => {
-		const match = userStory.match(/NFS-\d+/i);
-		return match ? `https://portail.agir.orange.com/browse/${match[0]}` : null;
+		for (const { regex, baseUrl } of patterns) {
+			const match = userStory.match(regex);
+			if (match) {
+				return `${baseUrl}${match[0]}`;
+			}
+		}
+
+		return null;
 	};
 </script>
 
